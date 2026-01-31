@@ -13,7 +13,7 @@ class ApkHelper: ObservableObject {
     
     let objectWillChange = ObservableObjectPublisher()
     
-    @Published var apks: [ApkItem] = [] {
+    var apks: [ApkItem] = [] {
         didSet {
             if (selectedIndex >= apks.count) {
                 selectedIndex = max(0, apks.count - 1)

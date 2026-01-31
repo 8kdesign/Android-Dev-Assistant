@@ -12,26 +12,6 @@ import Foundation
 }
 
 @discardableResult
-func runOnMainThread(delayDuration: Double = 0, _ block: @MainActor @escaping () async throws -> Void) -> Task<(), Never> {
-    if (delayDuration > 0) {
-        return Task { @LogicActor in
-            try? await Task.sleep(nanoseconds: UInt64(delayDuration * 1_000_000_000))
-            if (Task.isCancelled) { return }
-            Task { @MainActor in
-                try? await block()
-            }
-        }
-    }
-    return Task { @MainActor in
-        if (delayDuration > 0) {
-            try? await Task.sleep(nanoseconds: UInt64(delayDuration * 1_000_000_000))
-        }
-        if (Task.isCancelled) { return }
-        try? await block()
-    }
-}
-
-@discardableResult
 func runOnLogicThread(delayDuration: Double = 0, repeatDuration: Double = -1, _ block: @LogicActor @escaping () async throws -> Void) -> Task<(), Never> {
     return Task { @LogicActor in
         if (delayDuration > 0) {

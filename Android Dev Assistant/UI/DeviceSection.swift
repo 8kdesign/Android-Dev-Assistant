@@ -24,14 +24,27 @@ struct DeviceSection: View {
                 Button {
                     adbHelper.selectedDevice = item
                 } label: {
-                    Text(item)
+                    Text(getName(item) ?? "")
                 }
             }
         } label: {
-            Text("\(adbHelper.selectedDevice ?? "No device connected") \(Image(systemName: "chevron.down"))")
-                .font(.title3)
+            HStack {
+                Text(getName(adbHelper.selectedDevice) ?? "No device connected")
+                    .font(.title3)
+                    .lineLimit(1)
+                Image(systemName: "chevron.down")
+            }
         }.buttonStyle(.plain)
             .padding(.all)
+    }
+    
+}
+
+extension DeviceSection {
+    
+    private func getName(_ id: String?) -> String? {
+        guard let id else { return nil }
+        return adbHelper.deviceNameMap[id] ?? id
     }
     
 }

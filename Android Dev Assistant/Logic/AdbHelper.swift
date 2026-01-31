@@ -15,10 +15,11 @@ class AdbHelper: ObservableObject {
 
     let objectWillChange = ObservableObjectPublisher()
     
-    @Published var adbPath: String? = nil
-    @Published var currentDevices: Set<String> = []
+    var adbPath: String? = nil
+    var currentDevices: Set<String> = []
     @Published var selectedDevice: String? = nil
-    @Published var isInstalling: String? = nil
+    var isInstalling: String? = nil
+    var deviceNameMap: [String: String] = [:]
 
     func initialize() {
         runOnLogicThread {
@@ -38,6 +39,9 @@ class AdbHelper: ObservableObject {
                             self.selectedDevice = id
                         }
                         self.objectWillChange.send()
+                        runOnLogicThread {
+                            await self.getName(forDeviceId: id)
+                        }
                     case "offline":
                         self.currentDevices.remove(id)
                         if self.selectedDevice == id {
@@ -47,6 +51,16 @@ class AdbHelper: ObservableObject {
                     default: ()
                     }
                 }
+            }
+        }
+    }
+    
+    @LogicActor private func getName(forDeviceId id: String) async {
+        let name = try? await runAdbCommand(adbPath: await adbPath, arguments: ["-s", id, "shell", "getprop", "ro.product.model"])
+        if let name, !name.isEmpty {
+            Task { @MainActor in
+                deviceNameMap[id] = name.trimmingCharacters(in: .whitespacesAndNewlines)
+                self.objectWillChange.send()
             }
         }
     }

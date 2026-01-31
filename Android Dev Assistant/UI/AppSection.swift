@@ -71,7 +71,7 @@ extension AppSection: DropDelegate {
                 }
                 guard let url,
                       let item = ApkItem.fromPath(url) else { return }
-                runOnMainThread {
+                Task { @MainActor in
                     apkHelper.addApk(item)
                 }
             }
