@@ -37,7 +37,13 @@ class AdbHelper: ObservableObject {
                         if self.selectedDevice == nil {
                             self.selectedDevice = id
                         }
-                    case "offline": self.currentDevices.remove(id)
+                        self.objectWillChange.send()
+                    case "offline":
+                        self.currentDevices.remove(id)
+                        if self.selectedDevice == id {
+                            self.selectedDevice = self.currentDevices.first
+                        }
+                        self.objectWillChange.send()
                     default: ()
                     }
                 }
