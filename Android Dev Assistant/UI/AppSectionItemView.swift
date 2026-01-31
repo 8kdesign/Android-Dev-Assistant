@@ -17,7 +17,7 @@ struct AppSectionItemView: View {
     var select: () -> ()
     
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 7) {
             ContentView()
             if (isSelected) {
                 TogglesView()
@@ -26,7 +26,7 @@ struct AppSectionItemView: View {
     }
     
     private func ContentView() -> some View {
-        VStack(spacing: 5) {
+        VStack(spacing: 7) {
             Text(item.name)
                 .lineLimit(1)
                 .truncationMode(.tail)
@@ -47,7 +47,7 @@ struct AppSectionItemView: View {
             .frame(maxWidth: .infinity)
             .background(RoundedRectangle(cornerRadius: 10)
                 .fill(Color(red: 0.2, green: 0.2, blue: 0.2)))
-            .opacity(isSelected ? 1 : 0.5)
+            .opacity(isSelected ? 1 : 0.3)
             .onTapGesture {
                 select()
             }
@@ -58,6 +58,7 @@ struct AppSectionItemView: View {
             HStack(spacing: 5) {
                 ToggleItemView(icon: "arrow.down.app", label: "Install", isLoading: adbHelper.isInstalling == item.path) { adbHelper.install(item: item) }
                     .disabled(adbHelper.isInstalling != nil || adbHelper.selectedDevice == nil)
+                ToggleItemView(icon: "folder", label: "Folder") { openFolder(item) }
                 ToggleItemView(icon: "trash", label: "Remove") { apkHelper.removeApk(item.path) }
             }
         }.frame(maxWidth: .infinity, alignment: .leading)
@@ -86,8 +87,8 @@ struct AppSectionItemView: View {
             }.padding(.all, 10)
                 .frame(width: 60, height: 50)
                 .background(RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
-                )
+                    .fill(Color(red: 0.2, green: 0.2, blue: 0.2))
+                ).opacity(0.7)
         }.buttonStyle(.plain)
     }
     

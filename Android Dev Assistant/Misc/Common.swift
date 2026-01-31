@@ -6,6 +6,11 @@
 //
 
 import Foundation
+import AppKit
+
+enum CommonError: Error {
+    case adbNotFound
+}
 
 @LogicActor func runAdbCommand(adbPath: String?, arguments: [String]) async throws -> String {
     guard let adbPath else { throw CommonError.adbNotFound }
@@ -48,6 +53,7 @@ import Foundation
     return FileManager.default.isExecutableFile(atPath: adb) ? adb : nil
 }
 
-enum CommonError: Error {
-    case adbNotFound
+func openFolder(_ item: ApkItem) {
+    let url = URL(fileURLWithPath: item.path).deletingLastPathComponent()
+    NSWorkspace.shared.open(url)
 }

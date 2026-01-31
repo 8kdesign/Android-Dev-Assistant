@@ -14,14 +14,19 @@ struct AppSection: View {
     @State var selectedIndex: Int = 0
     
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 15) {
-                ForEach(Array(apkHelper.apks.enumerated()), id: \.offset) { index, item in
-                    AppSectionItemView(item: item, isSelected: index == selectedIndex) {
-                        apkHelper.selectedIndex = index
+        ZStack {
+            if (apkHelper.apks.isEmpty) {
+                EmptyListView()
+            }
+            ScrollView {
+                LazyVStack(spacing: 15) {
+                    ForEach(Array(apkHelper.apks.enumerated()), id: \.offset) { index, item in
+                        AppSectionItemView(item: item, isSelected: index == selectedIndex) {
+                            apkHelper.selectedIndex = index
+                        }
                     }
-                }
-            }.padding(.all)
+                }.padding(.all)
+            }
         }.frame(maxWidth: 300, maxHeight: .infinity)
             .background(Color(red: 0.1, green: 0.1, blue: 0.1))
             .onDrop(of: [.fileURL], delegate: self)
@@ -30,6 +35,20 @@ struct AppSection: View {
                     self.selectedIndex = selectedIndex
                 }
             }
+    }
+    
+    private func EmptyListView() -> some View {
+        VStack {
+            Text("Drag and drop APK files here to add them.")
+                .font(.title3.bold())
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, alignment: .center)
+            Image(systemName: "plus.square.dashed")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 40, height: 40)
+        }.padding(.all)
+            .opacity(0.5)
     }
 
 }
@@ -50,13 +69,8 @@ extension AppSection: DropDelegate {
                 } else {
                     url = nil
                 }
-                guard let fileURL = url,
-                      fileURL.isFileURL,
-                      fileURL.pathExtension == "apk",
-                      let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path()) else { return }
-                let name = fileURL.lastPathComponent
-                let lastModified = attributes[.modificationDate] as? Date ?? Date()
-                let item = ApkItem(path: fileURL.path(), name: name, lastModified: lastModified)
+                guard let url,
+                      let item = ApkItem.fromPath(url) else { return }
                 runOnMainThread {
                     apkHelper.addApk(item)
                 }

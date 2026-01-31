@@ -51,8 +51,7 @@ class AdbHelper: ObservableObject {
         objectWillChange.send()
         runOnLogicThread {
             do {
-                let result = try await runAdbCommand(adbPath: adbPath, arguments: ["-s", selectedDevice, "install", item.path])
-                print(result)
+                let _ = try await runAdbCommand(adbPath: adbPath, arguments: ["-s", selectedDevice, "install", item.path])
             } catch {
                 print(error)
             }
