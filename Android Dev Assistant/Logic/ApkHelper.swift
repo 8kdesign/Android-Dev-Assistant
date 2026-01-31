@@ -35,7 +35,7 @@ class ApkHelper: ObservableObject {
     @MainActor func addApk(_ item: ApkItem) {
         if apks.contains(where: { $0.path == item.path }) { return }
         apks.append(item)
-        apks.sort(by: { $0.lastModified > $1.lastModified })
+        apks.sort(by: { ($0.lastModified ?? Date(timeIntervalSince1970: 0)) > ($1.lastModified ?? Date(timeIntervalSince1970: 0)) })
         runOnLogicThread {
             StorageHelper.shared.addLink(item.path)
         }

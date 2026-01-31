@@ -15,7 +15,7 @@ struct AppSection: View {
     
     var body: some View {
         ZStack {
-            if (apkHelper.apks.isEmpty) {
+            if apkHelper.apks.isEmpty {
                 EmptyListView()
             }
             ScrollView {
