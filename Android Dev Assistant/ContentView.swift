@@ -8,17 +8,16 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @StateObject var adbHelper: ADBHelper = ADBHelper.shared
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+            
+        }.padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onAppear {
+                adbHelper.initialize()
+            }
     }
-}
-
-#Preview {
-    ContentView()
 }
