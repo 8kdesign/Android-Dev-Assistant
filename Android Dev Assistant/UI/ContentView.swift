@@ -12,9 +12,13 @@ struct ContentView: View {
     @EnvironmentObject var adbHelper: AdbHelper
     
     var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             AppSection()
-            DeviceSection()
+            VStack(spacing: 0) {
+                DeviceSection()
+                Divider()
+                LogsSection()
+            }
         }.frame(minWidth: 600, maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
             .background(Color(red: 0.05, green: 0.05, blue: 0.05))
             .onAppear {

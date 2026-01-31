@@ -20,6 +20,7 @@ class AdbHelper: ObservableObject {
     @Published var selectedDevice: String? = nil
     var isInstalling: String? = nil
     var deviceNameMap: [String: String] = [:]
+    var logs: [String] = []
 
     func initialize() {
         runOnLogicThread {
@@ -71,15 +72,31 @@ class AdbHelper: ObservableObject {
         objectWillChange.send()
         runOnLogicThread {
             do {
-                let _ = try await runAdbCommand(adbPath: adbPath, arguments: ["-s", selectedDevice, "install", item.path])
+                let result = try await runAdbCommand(adbPath: adbPath, arguments: ["-s", selectedDevice, "install", item.path])
+                Task { @MainActor in
+                    self.insertLog(string: result)
+                }
             } catch {
-                print(error)
+                Task { @MainActor in
+                    self.insertLog(string: error.localizedDescription)
+                }
             }
             Task { @MainActor in
                 self.isInstalling = nil
                 self.objectWillChange.send()
             }
         }
+    }
+    
+    private func insertLog(string: String) {
+        let date = Date().formatted(date: .omitted, time: .shortened)
+        string.split(whereSeparator: \.isNewline).forEach { line in
+            logs.append("\(date): \(line)")
+            if (logs.count > 10) {
+                logs.removeFirst()
+            }
+        }
+        objectWillChange.send()
     }
     
 }
