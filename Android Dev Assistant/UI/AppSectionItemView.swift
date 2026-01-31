@@ -1,0 +1,94 @@
+//
+//  AppSectionItemView.swift
+//  Android Dev Assistant
+//
+//  Created by Chong Wen Hao on 31/1/26.
+//
+
+import SwiftUI
+
+struct AppSectionItemView: View {
+    
+    @EnvironmentObject var apkHelper: ApkHelper
+    @EnvironmentObject var adbHelper: AdbHelper
+    
+    var item: ApkItem
+    var isSelected: Bool
+    var select: () -> ()
+    
+    var body: some View {
+        VStack(spacing: 10) {
+            ContentView()
+            if (isSelected) {
+                TogglesView()
+            }
+        }
+    }
+    
+    private func ContentView() -> some View {
+        VStack(spacing: 5) {
+            Text(item.name)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Text(item.path)
+                .lineLimit(1)
+                .truncationMode(.head)
+                .font(.callout)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .opacity(0.3)
+            Text(item.lastModified.formatted(date: .numeric, time: .shortened))
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .font(.caption)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .opacity(0.5)
+        }.padding(.all)
+            .frame(maxWidth: .infinity)
+            .background(RoundedRectangle(cornerRadius: 10)
+                .fill(Color(red: 0.2, green: 0.2, blue: 0.2)))
+            .opacity(isSelected ? 1 : 0.5)
+            .onTapGesture {
+                select()
+            }
+    }
+    
+    private func TogglesView() -> some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 5) {
+                ToggleItemView(icon: "arrow.down.app", label: "Install", isLoading: adbHelper.isInstalling == item.path) { adbHelper.install(item: item) }
+                    .disabled(adbHelper.isInstalling != nil || adbHelper.selectedDevice == nil)
+                ToggleItemView(icon: "trash", label: "Remove") { apkHelper.removeApk(item.path) }
+            }
+        }.frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    private func ToggleItemView(icon: String, label: String, isLoading: Bool = false, action: @escaping () -> ()) -> some View {
+        Button {
+            action()
+        } label: {
+            VStack {
+                if isLoading {
+                    ProgressView()
+                        .controlSize(.small)
+                        .tint(.gray)
+                } else {
+                    Image(systemName: icon)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                    Text(label)
+                        .font(.caption)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+            }.padding(.all, 10)
+                .frame(width: 60, height: 50)
+                .background(RoundedRectangle(cornerRadius: 10)
+                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                )
+        }.buttonStyle(.plain)
+    }
+    
+}

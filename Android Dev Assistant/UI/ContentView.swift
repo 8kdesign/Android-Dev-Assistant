@@ -1,0 +1,24 @@
+//
+//  ContentView.swift
+//  Android Dev Assistant
+//
+//  Created by Chong Wen Hao on 31/1/26.
+//
+
+import SwiftUI
+
+struct ContentView: View {
+    
+    @EnvironmentObject var adbHelper: AdbHelper
+    
+    var body: some View {
+        HStack {
+            AppSection()
+            DeviceSection()
+        }.frame(minWidth: 600, maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
+            .background(Color(red: 0.05, green: 0.05, blue: 0.05))
+            .onAppear {
+                adbHelper.initialize()
+            }
+    }
+}
