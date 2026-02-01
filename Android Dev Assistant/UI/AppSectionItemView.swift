@@ -71,8 +71,8 @@ struct AppSectionItemView: View {
             VStack {
                 if isLoading {
                     ProgressView()
+                        .progressViewStyle(.circular)
                         .controlSize(.small)
-                        .tint(.gray)
                 } else {
                     Image(systemName: icon)
                         .resizable()
