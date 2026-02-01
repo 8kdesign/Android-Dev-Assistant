@@ -22,11 +22,7 @@ struct ScreenshotOverlayView: View {
                     editingImage = image
                     hideCurrentImage {}
                 } label: {
-                    Image(nsImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxWidth: 80)
-                        .clipShape(RoundedRectangle(cornerRadius: 5))
+                    ImageView(image: image)
                         .padding(.all, 5)
                         .background(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -48,6 +44,23 @@ struct ScreenshotOverlayView: View {
             }.sheet(isPresented: Binding(get: { editingImage != nil }, set: { if !$0 { editingImage = nil } })) {
                 ScreenshotEditView(image: $editingImage)
             }
+    }
+    
+    @ViewBuilder
+    private func ImageView(image: NSImage) -> some View {
+        if image.size.width > image.size.height {
+            Image(nsImage: image)
+                .resizable()
+                .scaledToFit()
+                .frame(maxHeight: 80)
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+        } else {
+            Image(nsImage: image)
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: 80)
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+        }
     }
     
 }
