@@ -11,11 +11,14 @@ struct DeviceSection: View {
     
     @EnvironmentObject var apkHelper: ApkHelper
     @EnvironmentObject var adbHelper: AdbHelper
+    @State var input: String = ""
+    @FocusState var focusState
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             CurrentDeviceSelector()
             if let deviceId = adbHelper.selectedDevice {
+                InputView(deviceId: deviceId)
                 MenuGridView(deviceId: deviceId)
             }
         }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -44,6 +47,45 @@ struct DeviceSection: View {
             .frame(maxWidth: .infinity, alignment: .leading)
     }
     
+    private func InputView(deviceId: String) -> some View {
+        HStack {
+            Image(systemName: "keyboard")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20, height: 20)
+                .padding(.all, 10)
+            HStack {
+                TextField("", text: $input)
+                    .textFieldStyle(.plain)
+                    .frame(maxWidth: .infinity)
+                    .focused($focusState)
+                Image(systemName: "xmark.circle")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                    .opacity(0.3)
+                    .onTapGesture {
+                        input = ""
+                        focusState = false
+                    }
+            }.padding(.horizontal, 20)
+                .frame(height: 40)
+                .background(Capsule().fill(Color(red: 0.1, green: 0.1, blue: 0.1)))
+                .frame(maxWidth: 200, alignment: .leading)
+            Button {
+                sendText()
+            } label: {
+                Image(systemName: "paperplane.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .frame(width: 36, height: 36)
+                    .background(Circle().fill(input.isEmpty ? Color(red: 0.15, green: 0.15, blue: 0.15) : .red))
+            }.buttonStyle(.plain)
+        }.padding([.horizontal, .bottom])
+            
+    }
+    
     private func MenuGridView(deviceId: String) -> some View {
         ScrollView {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 110), spacing: 5)], spacing: 5) {
@@ -59,6 +101,13 @@ extension DeviceSection {
     private func getName(_ id: String?) -> String? {
         guard let id else { return nil }
         return adbHelper.deviceNameMap[id] ?? id
+    }
+    
+    private func sendText() {
+        if input.isEmpty { return }
+        adbHelper.inputText(input: input)
+        input = ""
+        focusState = false
     }
     
 }

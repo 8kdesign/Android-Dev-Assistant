@@ -119,6 +119,22 @@ class AdbHelper: ObservableObject {
         }
     }
     
+    func inputText(input: String) {
+        guard let adbPath, let selectedDevice else { return }
+        runOnLogicThread {
+            do {
+                let _ = try await runAdbCommand(adbPath: adbPath, arguments: ["-s", selectedDevice, "shell", "input", "text", "'\(input)'"])
+                Task { @MainActor in
+                    self.insertLog(string: "Paste success")
+                }
+            } catch {
+                Task { @MainActor in
+                    self.insertLog(string: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
     private func insertLog(string: String) {
         let date = Date().formatted(date: .omitted, time: .shortened)
         string.split(whereSeparator: \.isNewline).forEach { line in
