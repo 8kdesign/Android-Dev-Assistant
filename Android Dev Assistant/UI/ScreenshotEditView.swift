@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import AppKit
+import UniformTypeIdentifiers
 
 struct ScreenshotEditView: View {
     
@@ -60,9 +62,10 @@ struct ScreenshotEditView: View {
         HStack {
             Spacer()
             FooterItemView(name: "Copy", icon: "list.clipboard") {
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.writeObjects([image])
+                ScreenshotHelper.copyToClipboard(image: image)
+            }
+            FooterItemView(name: "Save", icon: "square.and.arrow.down") {
+                ScreenshotHelper.save(image: image)
             }
             Spacer()
         }.frame(maxWidth: .infinity)
@@ -77,15 +80,14 @@ struct ScreenshotEditView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 16, height: 16)
-                    .foregroundStyle(.black)
-                    .padding(.all, 5)
-                    .background(Circle().fill(.white))
+                    .padding(.all, 12)
+                    .background(Circle().fill(Color(red: 0.15, green: 0.15, blue: 0.15)))
                 Text(name)
                     .font(.caption)
-                    .frame(maxWidth: .infinity)
                     .lineLimit(1)
                     .truncationMode(.tail)
-            }.padding(.all)
+            }.frame(width: 80)
+                .padding(.all)
         }.buttonStyle(.plain)
     }
     

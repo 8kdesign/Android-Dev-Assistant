@@ -10,7 +10,6 @@ import SwiftUI
 struct ContentView: View {
     
     @EnvironmentObject var adbHelper: AdbHelper
-    @EnvironmentObject var screenshotHelper: ScreenshotHelper
     
     var body: some View {
         ZStack {
