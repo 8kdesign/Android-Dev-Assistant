@@ -16,37 +16,39 @@ struct ScreenshotOverlayView: View {
     @State var timer: Timer? = nil
     
     var body: some View {
-        VStack {
-            if let image {
-                Button {
-                    editingImage = image
-                    hideCurrentImage {}
-                } label: {
-                    ImageView(image: image)
-                        .padding(.all, 5)
-                        .background(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                }.padding(.all, 20)
-                    .buttonStyle(.plain)
-                    .offset(x: isShowing ? 0 : 100)
-            }
-        }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-            .onReceive(adbHelper.$screenshotImage) { image in
+        ZStack {
+            VStack {
                 if let image {
-                    adbHelper.screenshotImage = nil
-                    hideCurrentImage {
-                        showImage(image)
-                    }
+                    Button {
+                        editingImage = image
+                        hideCurrentImage {}
+                    } label: {
+                        ImageView(image: image)
+                            .padding(.all, 5)
+                            .background(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }.padding(.all, 20)
+                        .buttonStyle(.plain)
+                        .offset(x: isShowing ? 0 : 100)
                 }
-            }.onDisappear {
-                timer?.invalidate()
-                timer = nil
-                isShowing = false
-                image = nil
-                editingImage = nil
-            }.sheet(isPresented: Binding(get: { editingImage != nil }, set: { if !$0 { editingImage = nil } })) {
+            }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+            if editingImage != nil {
                 ScreenshotEditView(image: $editingImage)
             }
+        }.onReceive(adbHelper.$screenshotImage) { image in
+            if let image {
+                adbHelper.screenshotImage = nil
+                hideCurrentImage {
+                    showImage(image)
+                }
+            }
+        }.onDisappear {
+            timer?.invalidate()
+            timer = nil
+            isShowing = false
+            image = nil
+            editingImage = nil
+        }
     }
     
     @ViewBuilder
