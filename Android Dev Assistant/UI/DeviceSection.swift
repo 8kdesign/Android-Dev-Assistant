@@ -13,9 +13,12 @@ struct DeviceSection: View {
     @EnvironmentObject var adbHelper: AdbHelper
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             CurrentDeviceSelector()
-        }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            if let deviceId = adbHelper.selectedDevice {
+                MenuGridView(deviceId: deviceId)
+            }
+        }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
     
     private func CurrentDeviceSelector() -> some View {
@@ -32,10 +35,21 @@ struct DeviceSection: View {
                 Text(getName(adbHelper.selectedDevice) ?? "No device connected")
                     .font(.title3)
                     .lineLimit(1)
-                Image(systemName: "chevron.down")
+                if adbHelper.selectedDevice != nil {
+                    Image(systemName: "chevron.down")
+                }
             }
         }.buttonStyle(.plain)
             .padding(.all)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    private func MenuGridView(deviceId: String) -> some View {
+        ScrollView {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 110), spacing: 5)], spacing: 5) {
+                MenuGridItem(deviceId: deviceId, name: "Screenshot", icon: "camera.viewfinder") { adbHelper.screenshot() }
+            }.padding([.horizontal, .bottom])
+        }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
 }

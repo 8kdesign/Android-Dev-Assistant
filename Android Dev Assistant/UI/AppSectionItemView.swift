@@ -23,7 +23,7 @@ struct AppSectionItemView: View {
                 TogglesView()
             }
         }.padding(.all, 5)
-            .background(RoundedRectangle(cornerRadius: 10)
+            .background(RoundedRectangle(cornerRadius: 15)
                 .fill(isSelected ? Color(red: 0.07, green: 0.07, blue: 0.07) : .clear))
     }
     

@@ -12,7 +12,7 @@ enum CommonError: Error {
     case adbNotFound
 }
 
-@LogicActor func runAdbCommand(adbPath: String?, arguments: [String]) async throws -> String {
+@LogicActor func runAdbCommand(adbPath: String?, arguments: [String]) async throws -> Data {
     guard let adbPath else { throw CommonError.adbNotFound }
     let process = Process()
     process.executableURL = URL(fileURLWithPath: adbPath)
@@ -21,9 +21,9 @@ enum CommonError: Error {
     process.standardOutput = pipe
     process.standardError = pipe
     try process.run()
-    process.waitUntilExit()
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    return String(decoding: data, as: UTF8.self)
+    process.waitUntilExit()
+    return data
 }
 
 @LogicActor func startADBDeviceListener(adbPath: String, callback: @escaping (String) -> ()) {

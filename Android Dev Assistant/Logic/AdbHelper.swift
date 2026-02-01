@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import AppKit
 
 class AdbHelper: ObservableObject {
     
@@ -57,7 +58,8 @@ class AdbHelper: ObservableObject {
     }
     
     @LogicActor private func getName(forDeviceId id: String) async {
-        let name = try? await runAdbCommand(adbPath: await adbPath, arguments: ["-s", id, "shell", "getprop", "ro.product.model"])
+        guard let data = try? await runAdbCommand(adbPath: await adbPath, arguments: ["-s", id, "shell", "getprop", "ro.product.model"]) else { return }
+        let name = String(data: data, encoding: .utf8)
         if let name, !name.isEmpty {
             Task { @MainActor in
                 deviceNameMap[id] = name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -73,8 +75,9 @@ class AdbHelper: ObservableObject {
         runOnLogicThread {
             do {
                 let result = try await runAdbCommand(adbPath: adbPath, arguments: ["-s", selectedDevice, "install", item.path])
+                let message = String(data: result, encoding: .utf8)
                 Task { @MainActor in
-                    self.insertLog(string: result)
+                    self.insertLog(string: message ?? "Result parse error")
                 }
             } catch {
                 Task { @MainActor in
@@ -84,6 +87,28 @@ class AdbHelper: ObservableObject {
             Task { @MainActor in
                 self.isInstalling = nil
                 self.objectWillChange.send()
+            }
+        }
+    }
+    
+    func screenshot() {
+        guard let adbPath, let selectedDevice else { return }
+        runOnLogicThread {
+            do {
+                let result = try await runAdbCommand(adbPath: adbPath, arguments: ["-s", selectedDevice, "exec-out", "screencap", "-p"])
+                let image = NSImage(data: result)
+                if let image {
+                    let pasteboard = NSPasteboard.general
+                    pasteboard.clearContents()
+                    pasteboard.writeObjects([image])
+                }
+                Task { @MainActor in
+                    self.insertLog(string: image != nil ? "Screenshot copied to clipboard" : "Screenshot failed")
+                }
+            } catch {
+                Task { @MainActor in
+                    self.insertLog(string: error.localizedDescription)
+                }
             }
         }
     }
