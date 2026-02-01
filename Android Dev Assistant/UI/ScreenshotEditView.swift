@@ -163,10 +163,10 @@ struct ScreenshotEditView: View {
         HStack {
             Spacer()
             FooterItemView(name: "Copy", icon: "list.clipboard") {
-                ScreenshotHelper.copyToClipboard(image: image)
+                ScreenshotHelper.copyToClipboard(image: cropImage(image))
             }
             FooterItemView(name: "Save", icon: "square.and.arrow.down") {
-                ScreenshotHelper.save(image: image)
+                ScreenshotHelper.save(image: cropImage(image))
             }
             Spacer()
         }.frame(maxWidth: .infinity)
@@ -276,6 +276,18 @@ extension ScreenshotEditView {
             }
             dragCorner = .invalid
         }
+    }
+    
+    private func cropImage(_ image: NSImage) -> NSImage {
+        guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return image }
+        let originalWidth = CGFloat(cgImage.width)
+        let originalHeight = CGFloat(cgImage.height)
+        let cropX = originalWidth * leftCrop
+        let cropY = originalHeight * topCrop
+        let croppedWidth = originalWidth * (rightCrop - leftCrop)
+        let croppedHeight = originalHeight * (bottomCrop - topCrop)
+        guard let croppedImage = cgImage.cropping(to: CGRect(x: cropX, y: cropY, width: croppedWidth, height: croppedHeight)) else { return image }
+        return NSImage(cgImage: croppedImage, size: CGSize(width: croppedWidth, height: croppedHeight))
     }
     
 }
