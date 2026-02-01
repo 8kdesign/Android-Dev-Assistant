@@ -12,12 +12,14 @@ struct Android_Dev_AssistantApp: App {
     
     @StateObject var apkHelper: ApkHelper = ApkHelper()
     @StateObject var adbHelper: AdbHelper = AdbHelper.shared
+    @StateObject var screenshotHelper: ScreenshotHelper = ScreenshotHelper()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(apkHelper)
                 .environmentObject(adbHelper)
+                .environmentObject(screenshotHelper)
         }
     }
 }

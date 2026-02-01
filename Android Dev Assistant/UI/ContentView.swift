@@ -10,15 +10,19 @@ import SwiftUI
 struct ContentView: View {
     
     @EnvironmentObject var adbHelper: AdbHelper
+    @EnvironmentObject var screenshotHelper: ScreenshotHelper
     
     var body: some View {
-        HStack(spacing: 0) {
-            AppSection()
-            VStack(spacing: 0) {
-                DeviceSection()
-                Divider()
-                LogsSection()
+        ZStack {
+            HStack(spacing: 0) {
+                AppSection()
+                VStack(spacing: 0) {
+                    DeviceSection()
+                    Divider()
+                    LogsSection()
+                }
             }
+            ScreenshotOverlayView()
         }.frame(minWidth: 600, maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
             .background(Color(red: 0.05, green: 0.05, blue: 0.05))
             .onAppear {

@@ -18,10 +18,12 @@ class AdbHelper: ObservableObject {
     
     var adbPath: String? = nil
     var currentDevices: Set<String> = []
-    @Published var selectedDevice: String? = nil
-    var isInstalling: String? = nil
     var deviceNameMap: [String: String] = [:]
+    @Published var selectedDevice: String? = nil
+
+    var isInstalling: String? = nil
     var logs: [String] = []
+    @Published var screenshotImage: NSImage? = nil
 
     func initialize() {
         runOnLogicThread {
@@ -101,6 +103,10 @@ class AdbHelper: ObservableObject {
                     let pasteboard = NSPasteboard.general
                     pasteboard.clearContents()
                     pasteboard.writeObjects([image])
+                    Task { @MainActor in
+                        self.screenshotImage = image
+                        self.objectWillChange.send()
+                    }
                 }
                 Task { @MainActor in
                     self.insertLog(string: image != nil ? "Screenshot copied to clipboard" : "Screenshot failed")
