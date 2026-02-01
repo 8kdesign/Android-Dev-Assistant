@@ -22,7 +22,9 @@ struct AppSectionItemView: View {
             if (isSelected) {
                 TogglesView()
             }
-        }
+        }.padding(.all, 5)
+            .background(RoundedRectangle(cornerRadius: 10)
+                .fill(isSelected ? Color(red: 0.07, green: 0.07, blue: 0.07) : .clear))
     }
     
     private func ContentView() -> some View {
@@ -53,12 +55,12 @@ struct AppSectionItemView: View {
                 ToggleItemView(icon: "arrow.down.app", label: "Install", isLoading: adbHelper.isInstalling == item.path) { adbHelper.install(item: item) }
                     .disabled(adbHelper.isInstalling != nil || adbHelper.selectedDevice == nil)
                 ToggleItemView(icon: "folder", label: "Folder") { openFolder(item) }
-                ToggleItemView(icon: "trash", label: "Remove") { apkHelper.removeApk(item.path) }
+                ToggleItemView(icon: "trash", label: "Remove", isDangerous: true) { apkHelper.removeApk(item.path) }
             }
         }.frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    private func ToggleItemView(icon: String, label: String, isLoading: Bool = false, action: @escaping () -> ()) -> some View {
+    private func ToggleItemView(icon: String, label: String, isLoading: Bool = false, isDangerous: Bool = false, action: @escaping () -> ()) -> some View {
         Button {
             action()
         } label: {
@@ -81,7 +83,7 @@ struct AppSectionItemView: View {
             }.padding(.all, 10)
                 .frame(width: 60, height: 50)
                 .background(RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(red: 0.2, green: 0.2, blue: 0.2))
+                    .fill(Color(red: isDangerous ? 0.4 : 0.2, green: 0.2, blue: 0.2))
                 ).opacity(0.7)
         }.buttonStyle(.plain)
     }
