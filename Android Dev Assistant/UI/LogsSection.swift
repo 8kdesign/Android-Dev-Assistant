@@ -19,6 +19,8 @@ struct LogsSection: View {
                         .font(.caption)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .multilineTextAlignment(.leading)
+                        .foregroundStyle(.white)
+                        .foregroundColor(.white)
                 }
             }.padding(.all)
         }.frame(maxWidth: .infinity, alignment: .topLeading)

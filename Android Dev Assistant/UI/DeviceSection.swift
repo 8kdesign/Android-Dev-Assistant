@@ -31,6 +31,8 @@ struct DeviceSection: View {
                     adbHelper.selectedDevice = item
                 } label: {
                     Text(getName(item) ?? "")
+                        .foregroundStyle(.white)
+                        .foregroundColor(.white)
                 }
             }
         } label: {
@@ -38,8 +40,12 @@ struct DeviceSection: View {
                 Text(getName(adbHelper.selectedDevice) ?? "No device connected")
                     .font(.title3)
                     .lineLimit(1)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
                 if adbHelper.selectedDevice != nil {
                     Image(systemName: "chevron.down")
+                        .foregroundStyle(.white)
+                        .foregroundColor(.white)
                 }
             }
         }.buttonStyle(.plain)
@@ -54,15 +60,21 @@ struct DeviceSection: View {
                 .scaledToFit()
                 .frame(width: 20, height: 20)
                 .padding(.all, 10)
+                .foregroundStyle(.white)
+                .foregroundColor(.white)
             HStack {
                 TextField("", text: $input)
                     .textFieldStyle(.plain)
                     .frame(maxWidth: .infinity)
                     .focused($focusState)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
                 Image(systemName: "xmark.circle")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
                     .opacity(0.3)
                     .onTapGesture {
                         input = ""
@@ -81,6 +93,8 @@ struct DeviceSection: View {
                     .frame(width: 16, height: 16)
                     .frame(width: 36, height: 36)
                     .background(Circle().fill(input.isEmpty ? Color(red: 0.15, green: 0.15, blue: 0.15) : .red))
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
             }.buttonStyle(.plain)
         }.padding([.horizontal, .bottom])
             

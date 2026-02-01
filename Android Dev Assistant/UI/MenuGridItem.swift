@@ -24,6 +24,8 @@ struct MenuGridItem: View {
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .truncationMode(.tail)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
                     .opacity(0.7)
                 HStack {
                     Image(systemName: icon)
@@ -31,6 +33,8 @@ struct MenuGridItem: View {
                         .scaledToFit()
                         .frame(width: 40, height: 40)
                         .rotationEffect(.degrees(-30))
+                        .foregroundStyle(.white)
+                        .foregroundColor(.white)
                         .opacity(0.2)
                         .offset(x: 20, y: 20)
                 }.frame(maxWidth: .infinity, alignment: .trailing)
