@@ -24,7 +24,7 @@ struct AppSectionItemView: View {
             }
         }.padding(.all, 5)
             .background(RoundedRectangle(cornerRadius: 15)
-                .fill(isSelected ? Color(red: 0.07, green: 0.07, blue: 0.07) : .clear))
+                .fill(isSelected ? Color(red: 0.05, green: 0.05, blue: 0.05) : .clear))
     }
     
     private func ContentView() -> some View {

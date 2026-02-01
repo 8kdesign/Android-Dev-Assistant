@@ -14,7 +14,7 @@ struct Android_Dev_AssistantApp: App {
     @StateObject var adbHelper: AdbHelper = AdbHelper.shared
     
     var body: some Scene {
-        WindowGroup {
+        Window("Android Dev Assistant", id: "main") {
             ContentView()
                 .environmentObject(apkHelper)
                 .environmentObject(adbHelper)

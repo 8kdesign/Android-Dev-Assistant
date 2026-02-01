@@ -41,6 +41,9 @@ struct ScreenshotOverlayView: View {
             }.onDisappear {
                 timer?.invalidate()
                 timer = nil
+                isShowing = false
+                image = nil
+                editingImage = nil
             }.sheet(isPresented: Binding(get: { editingImage != nil }, set: { if !$0 { editingImage = nil } })) {
                 ScreenshotEditView(image: $editingImage)
             }
