@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  Android Dev Assistant
+
+  Created by Chong Wen Hao on 2/2/26.
+  
+*/
+
+"CFBundleDisplayName" = "Android Dev Assistant";
+"CFBundleName" = "Android Dev Assistant";

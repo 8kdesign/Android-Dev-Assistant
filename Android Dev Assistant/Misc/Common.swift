@@ -57,3 +57,9 @@ func openFolder(_ item: ApkItem) {
     let url = URL(fileURLWithPath: item.path).deletingLastPathComponent()
     NSWorkspace.shared.open(url)
 }
+
+func copyToClipboard(_ item: any NSPasteboardWriting) {
+    let pasteboard = NSPasteboard.general
+    pasteboard.clearContents()
+    pasteboard.writeObjects([item])
+}

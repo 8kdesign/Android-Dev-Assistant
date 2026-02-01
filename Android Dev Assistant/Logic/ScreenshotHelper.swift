@@ -11,12 +11,6 @@ import UniformTypeIdentifiers
 
 class ScreenshotHelper {
     
-    static func copyToClipboard(image: NSImage) {
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.writeObjects([image])
-    }
-    
     static func save(image: NSImage) {
         guard let data = image.pngData else { return }
         let panel = NSSavePanel()

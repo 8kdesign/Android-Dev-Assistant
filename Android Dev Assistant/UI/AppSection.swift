@@ -40,7 +40,7 @@ struct AppSection: View {
     private func EmptyListView() -> some View {
         VStack {
             Text("Drag and drop APK files here to add them.")
-                .font(.title3.bold())
+                .font(.title3)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
             Image(systemName: "plus.square.dashed")

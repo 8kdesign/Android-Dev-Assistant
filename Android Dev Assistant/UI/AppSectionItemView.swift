@@ -60,7 +60,7 @@ struct AppSectionItemView: View {
         }.frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    private func ToggleItemView(icon: String, label: String, isLoading: Bool = false, isDangerous: Bool = false, action: @escaping () -> ()) -> some View {
+    private func ToggleItemView(icon: String, label: LocalizedStringResource, isLoading: Bool = false, isDangerous: Bool = false, action: @escaping () -> ()) -> some View {
         Button {
             action()
         } label: {

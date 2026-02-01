@@ -163,16 +163,16 @@ struct ScreenshotEditView: View {
         HStack {
             Spacer()
             FooterItemView(name: "Copy", icon: "list.clipboard") {
-                ScreenshotHelper.copyToClipboard(image: cropImage(image))
+                copyToClipboard(cropImage(image))
             }
-            FooterItemView(name: "Save", icon: "square.and.arrow.down") {
+            FooterItemView(name: "Save", icon: "square.and.arrow.up") {
                 ScreenshotHelper.save(image: cropImage(image))
             }
             Spacer()
         }.frame(maxWidth: .infinity)
     }
     
-    private func FooterItemView(name: String, icon: String, action: @escaping () -> ()) -> some View {
+    private func FooterItemView(name: LocalizedStringResource, icon: String, action: @escaping () -> ()) -> some View {
         Button {
             action()
         } label: {

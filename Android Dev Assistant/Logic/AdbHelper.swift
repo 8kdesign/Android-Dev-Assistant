@@ -100,10 +100,8 @@ class AdbHelper: ObservableObject {
                 let result = try await runAdbCommand(adbPath: adbPath, arguments: ["-s", selectedDevice, "exec-out", "screencap", "-p"])
                 let image = NSImage(data: result)
                 if let image {
-                    let pasteboard = NSPasteboard.general
-                    pasteboard.clearContents()
-                    pasteboard.writeObjects([image])
                     Task { @MainActor in
+                        copyToClipboard(image)
                         self.screenshotImage = image
                         self.objectWillChange.send()
                     }
