@@ -17,11 +17,10 @@ struct AppSectionItemView: View {
     var select: () -> ()
     
     var body: some View {
-        VStack(spacing: 7) {
+        VStack(spacing: 0) {
             ContentView()
             if (isSelected) {
                 TogglesView()
-                    .padding(.all, 5)
             }
         }.background(Color(red: 0.1, green: 0.1, blue: 0.1))
             .clipShape(RoundedRectangle(cornerRadius: 15))
@@ -59,7 +58,7 @@ struct AppSectionItemView: View {
                     .disabled(adbHelper.isInstalling != nil || adbHelper.selectedDevice == nil)
                 ToggleItemView(icon: "folder", label: "Folder") { openFolder(item) }
                 ToggleItemView(icon: "trash", label: "Remove", isDangerous: true) { apkHelper.removeApk(item.path) }
-            }
+            }.padding(.all, 10)
         }.frame(maxWidth: .infinity, alignment: .leading)
     }
     
@@ -87,8 +86,7 @@ struct AppSectionItemView: View {
                         .foregroundStyle(.white)
                         .foregroundColor(.white)
                 }
-            }.padding(.all, 10)
-                .frame(width: 60, height: 50)
+            }.frame(width: 60, height: 50)
                 .background(RoundedRectangle(cornerRadius: 10)
                     .fill(Color(red: isDangerous ? 0.4 : 0.05, green: 0.05, blue: 0.05))
                 ).opacity(0.7)
