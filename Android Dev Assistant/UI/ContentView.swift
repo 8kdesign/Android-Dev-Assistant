@@ -22,7 +22,7 @@ struct ContentView: View {
                 }
             }
             ScreenshotOverlayView()
-        }.frame(minWidth: 600, maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
+        }.frame(minWidth: 900, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
             .background(Color(red: 0.05, green: 0.05, blue: 0.05))
             .onAppear {
                 adbHelper.initialize()

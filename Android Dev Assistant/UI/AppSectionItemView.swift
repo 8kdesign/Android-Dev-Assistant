@@ -21,10 +21,10 @@ struct AppSectionItemView: View {
             ContentView()
             if (isSelected) {
                 TogglesView()
+                    .padding(.all, 5)
             }
-        }.padding(.all, 5)
-            .background(RoundedRectangle(cornerRadius: 15)
-                .fill(isSelected ? Color(red: 0.05, green: 0.05, blue: 0.05) : .clear))
+        }.background(Color(red: 0.1, green: 0.1, blue: 0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 15))
     }
     
     private func ContentView() -> some View {
@@ -45,8 +45,7 @@ struct AppSectionItemView: View {
                 .opacity(0.3)
         }.padding(.all)
             .frame(maxWidth: .infinity)
-            .background(RoundedRectangle(cornerRadius: 10)
-                .fill(Color(red: 0.2, green: 0.2, blue: 0.2)))
+            .background(Color(red: 0.08, green: 0.08, blue: 0.08))
             .opacity(isSelected ? 1 : 0.3)
             .onTapGesture {
                 select()
@@ -91,7 +90,7 @@ struct AppSectionItemView: View {
             }.padding(.all, 10)
                 .frame(width: 60, height: 50)
                 .background(RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(red: isDangerous ? 0.4 : 0.2, green: 0.2, blue: 0.2))
+                    .fill(Color(red: isDangerous ? 0.4 : 0.05, green: 0.05, blue: 0.05))
                 ).opacity(0.7)
         }.buttonStyle(.plain)
     }

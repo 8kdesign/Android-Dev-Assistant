@@ -34,19 +34,27 @@ struct ScreenshotEditView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            HeaderView()
-            if let holdImage {
-                ImageEditArea(image: holdImage)
-                FooterView(image: holdImage)
-            }
-        }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .background(Color(red: 0.05, green: 0.05, blue: 0.05))
+        VStack {
+            VStack(spacing: 0) {
+                HeaderView()
+                if let holdImage {
+                    ImageEditArea(image: holdImage)
+                    FooterView(image: holdImage)
+                }
+            }.frame(maxWidth: 600, maxHeight: 600, alignment: .top)
+                .background(RoundedRectangle(cornerRadius: 30).fill(Color(red: 0.05, green: 0.05, blue: 0.05)))
+                .padding(.all, 50)
+        }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(.black.opacity(0.7))
             .onAppear {
                 holdImage = image
             }.onDisappear {
                 holdImage = nil
-            }
+            }.background(
+                EscapeKeyCatcher {
+                    image = nil
+                }
+            )
     }
     
     private func HeaderView() -> some View {

@@ -75,7 +75,7 @@ struct DeviceSection: View {
                     .frame(width: 12, height: 12)
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
-                    .opacity(0.3)
+                    .opacity(input.isEmpty ? 0.3 : 0.7)
                     .onTapGesture {
                         input = ""
                         focusState = false
