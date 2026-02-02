@@ -25,7 +25,7 @@ class AdbHelper: ObservableObject {
     @Published var logs: [String] = []
     @Published var screenshotImage: NSImage? = nil
 
-    func initialize() {
+    init() {
         runOnLogicThread {
             guard let path = locateADBViaSDK() else { return }
             await MainActor.run {
@@ -60,7 +60,7 @@ class AdbHelper: ObservableObject {
     }
     
     @LogicActor private func getName(forDeviceId id: String) async {
-        guard let data = try? await runAdbCommand(adbPath: await adbPath, arguments: ["-s", id, "shell", "settings", "get", "secure", "bluetooth_name"]) else { return }
+        guard let data = try? await runCommand(path: await adbPath, arguments: ["-s", id, "shell", "settings", "get", "secure", "bluetooth_name"]) else { return }
         let name = String(data: data, encoding: .utf8)
         if let name, !name.isEmpty {
             Task { @MainActor in
@@ -76,7 +76,7 @@ class AdbHelper: ObservableObject {
         objectWillChange.send()
         runOnLogicThread {
             do {
-                let result = try await runAdbCommand(adbPath: adbPath, arguments: ["-s", selectedDevice, "install", item.path])
+                let result = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "install", item.path])
                 let message = String(data: result, encoding: .utf8)
                 Task { @MainActor in
                     self.insertLog(string: message ?? "Result parse error")
@@ -102,7 +102,7 @@ class AdbHelper: ObservableObject {
         guard let adbPath, let selectedDevice else { return }
         runOnLogicThread {
             do {
-                let result = try await runAdbCommand(adbPath: adbPath, arguments: ["-s", selectedDevice, "exec-out", "screencap", "-p"])
+                let result = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "exec-out", "screencap", "-p"])
                 let image = NSImage(data: result)
                 if let image {
                     Task { @MainActor in
@@ -129,7 +129,7 @@ class AdbHelper: ObservableObject {
         guard let adbPath, let selectedDevice else { return }
         runOnLogicThread {
             do {
-                let _ = try await runAdbCommand(adbPath: adbPath, arguments: ["-s", selectedDevice, "shell", "input", "text", "'\(input)'"])
+                let _ = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "input", "text", "'\(input)'"])
                 Task { @MainActor in
                     self.insertLog(string: "Paste success")
                 }

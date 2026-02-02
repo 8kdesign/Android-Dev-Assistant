@@ -9,8 +9,6 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @EnvironmentObject var adbHelper: AdbHelper
-    
     var body: some View {
         ZStack {
             HStack(spacing: 0) {
@@ -25,8 +23,5 @@ struct ContentView: View {
             ToastView()
         }.frame(minWidth: 900, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
             .background(Color(red: 0.05, green: 0.05, blue: 0.05))
-            .onAppear {
-                adbHelper.initialize()
-            }
     }
 }

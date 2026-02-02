@@ -12,10 +12,10 @@ enum CommonError: Error {
     case adbNotFound
 }
 
-@LogicActor func runAdbCommand(adbPath: String?, arguments: [String]) async throws -> Data {
-    guard let adbPath else { throw CommonError.adbNotFound }
+@LogicActor func runCommand(path: String?, arguments: [String]) async throws -> Data {
+    guard let path else { throw CommonError.adbNotFound }
     let process = Process()
-    process.executableURL = URL(fileURLWithPath: adbPath)
+    process.executableURL = URL(fileURLWithPath: path)
     process.arguments = arguments
     let pipe = Pipe()
     process.standardOutput = pipe
