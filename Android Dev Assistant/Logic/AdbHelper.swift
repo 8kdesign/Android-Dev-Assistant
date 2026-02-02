@@ -22,7 +22,7 @@ class AdbHelper: ObservableObject {
     @Published var selectedDevice: String? = nil
 
     var isInstalling: String? = nil
-    var logs: [String] = []
+    @Published var logs: [String] = []
     @Published var screenshotImage: NSImage? = nil
 
     func initialize() {
@@ -60,7 +60,7 @@ class AdbHelper: ObservableObject {
     }
     
     @LogicActor private func getName(forDeviceId id: String) async {
-        guard let data = try? await runAdbCommand(adbPath: await adbPath, arguments: ["-s", id, "shell", "getprop", "ro.product.model"]) else { return }
+        guard let data = try? await runAdbCommand(adbPath: await adbPath, arguments: ["-s", id, "shell", "settings", "get", "secure", "bluetooth_name"]) else { return }
         let name = String(data: data, encoding: .utf8)
         if let name, !name.isEmpty {
             Task { @MainActor in
@@ -139,9 +139,10 @@ class AdbHelper: ObservableObject {
     private func insertLog(string: String) {
         let date = Date().formatted(date: .omitted, time: .shortened)
         string.split(whereSeparator: \.isNewline).forEach { line in
-            logs.append("\(date): \(line)")
+            logs.insert("\(date): \(line)", at: 0
+            )
             if (logs.count > 10) {
-                logs.removeFirst()
+                logs.removeLast()
             }
         }
         objectWillChange.send()

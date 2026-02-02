@@ -36,7 +36,7 @@ struct ScreenshotEditView: View {
                     )
                     FooterView(image: holdImage)
                 }
-            }.frame(maxWidth: 600, maxHeight: 600, alignment: .top)
+            }.frame(maxWidth: 800, maxHeight: 800, alignment: .top)
                 .background(RoundedRectangle(cornerRadius: 30).fill(Color(red: 0.05, green: 0.05, blue: 0.05)))
                 .onTapGesture {}
                 .padding(.all, 50)
@@ -72,6 +72,7 @@ struct ScreenshotEditView: View {
             }.buttonStyle(.plain)
             Spacer()
             Text("Screenshot")
+                .font(.title3)
                 .foregroundStyle(.white)
                 .foregroundColor(.white)
             Spacer()

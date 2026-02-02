@@ -42,6 +42,8 @@ struct ScreenshotEditImageView: View {
                         Color.clear
                            .onAppear {
                                imageSize = reader.size
+                           }.onChange(of: reader.size) { size in
+                               imageSize = reader.size
                            }
                     }
                 )
