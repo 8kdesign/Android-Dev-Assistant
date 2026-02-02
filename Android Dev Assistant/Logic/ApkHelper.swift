@@ -13,6 +13,7 @@ class ApkHelper: ObservableObject {
     
     let objectWillChange = ObservableObjectPublisher()
     
+    var aaptPath: String? = nil
     var apks: [ApkItem] = [] {
         didSet {
             if (selectedIndex >= apks.count) {
@@ -24,6 +25,11 @@ class ApkHelper: ObservableObject {
     
     init() {
         runOnLogicThread {
+            if let path = await locateAaptViaSDK() {
+                Task { @MainActor in
+                    self.aaptPath = path
+                }
+            }
             let items = StorageHelper.shared.getApkItems()
             Task { @MainActor in
                 self.apks = items

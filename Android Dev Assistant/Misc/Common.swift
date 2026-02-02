@@ -26,6 +26,25 @@ enum CommonError: Error {
     return data
 }
 
+@LogicActor func runLS(path: String) -> [String]? {
+    let process = Process()
+    process.executableURL = URL(fileURLWithPath: "/bin/ls")
+    process.arguments = [path]
+    let pipe = Pipe()
+    process.standardOutput = pipe
+    do {
+        try process.run()
+        process.waitUntilExit()
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        if let output = String(data: data, encoding: .utf8) {
+            return output.components(separatedBy: "\n").filter { !$0.isEmpty }
+        }
+    } catch {
+        print("Error running ls: \(error)")
+    }
+    return nil
+}
+
 @LogicActor func startADBDeviceListener(adbPath: String, callback: @escaping (String) -> ()) {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: adbPath)
@@ -51,6 +70,14 @@ enum CommonError: Error {
     let home = ProcessInfo.processInfo.environment["HOME"] ?? ""
     let adb = "\(home)/Library/Android/sdk/platform-tools/adb"
     return FileManager.default.isExecutableFile(atPath: adb) ? adb : nil
+}
+
+@LogicActor func locateAaptViaSDK() async -> String? {
+    let home = ProcessInfo.processInfo.environment["HOME"] ?? ""
+    guard let result = runLS(path: "\(home)/Library/Android/sdk/build-tools/"),
+            let version = result.last else { return nil }
+    let aapt = "\(home)/Library/Android/sdk/build-tools/\(version)/aapt"
+    return FileManager.default.isExecutableFile(atPath: aapt) ? aapt : nil
 }
 
 func openFolder(_ item: ApkItem) {
