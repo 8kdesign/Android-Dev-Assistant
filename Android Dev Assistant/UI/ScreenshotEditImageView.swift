@@ -15,6 +15,7 @@ struct ScreenshotEditImageView: View {
     @Binding var rightCrop: CGFloat
     @Binding var topCrop: CGFloat
     @Binding var bottomCrop: CGFloat
+    @Binding var isHighlight: Bool
     @State var imageSize: CGSize = .zero
     @State var dragCorner: DragCorner? = nil
 
@@ -87,37 +88,40 @@ struct ScreenshotEditImageView: View {
                 width: (rightCrop - leftCrop) * imageWidth,
                 height: (bottomCrop - topCrop) * imageHeight
             )
-            context.fill(Path(CGRect(
-                x: PADDING + horizontalPadding,
-                y: PADDING + verticalPadding,
-                width: imageWidth,
-                height: imageHeight
-            )), with: .color(.black.opacity(0.7)))
-            context.blendMode = .destinationOut
-            context.fill(Path(cropRect), with: .color(.black))
-            context.blendMode = .normal
-            context.stroke(Path(cropRect), with: .color(.white))
+            let strokeColor: Color = isHighlight ? .red : .white
+            if !isHighlight {
+                context.fill(Path(CGRect(
+                    x: PADDING + horizontalPadding,
+                    y: PADDING + verticalPadding,
+                    width: imageWidth,
+                    height: imageHeight
+                )), with: .color(.black.opacity(0.7)))
+                context.blendMode = .destinationOut
+                context.fill(Path(cropRect), with: .color(.black))
+                context.blendMode = .normal
+            }
+            context.stroke(Path(cropRect), with: .color(strokeColor))
             // Draw crop handles
             let topLeftHandlePath = Path(ellipseIn: CGRect(
                 origin: CGPoint(x: cropRect.minX - HANDLE_RADIUS / 2, y: cropRect.minY - HANDLE_RADIUS / 2),
                 size: CGSize(width: HANDLE_RADIUS, height: HANDLE_RADIUS)
             ))
-            context.fill(topLeftHandlePath, with: .color(.white))
+            context.fill(topLeftHandlePath, with: .color(strokeColor))
             let topRightHandlePath = Path(ellipseIn: CGRect(
                 origin: CGPoint(x: cropRect.maxX - HANDLE_RADIUS / 2, y: cropRect.minY - HANDLE_RADIUS / 2),
                 size: CGSize(width: HANDLE_RADIUS, height: HANDLE_RADIUS)
             ))
-            context.fill(topRightHandlePath, with: .color(.white))
+            context.fill(topRightHandlePath, with: .color(strokeColor))
             let bottomLeftHandlePath = Path(ellipseIn: CGRect(
                 origin: CGPoint(x: cropRect.minX - HANDLE_RADIUS / 2, y: cropRect.maxY - HANDLE_RADIUS / 2),
                 size: CGSize(width: HANDLE_RADIUS, height: HANDLE_RADIUS)
             ))
-            context.fill(bottomLeftHandlePath, with: .color(.white))
+            context.fill(bottomLeftHandlePath, with: .color(strokeColor))
             let bottomRightHandlePath = Path(ellipseIn: CGRect(
                 origin: CGPoint(x: cropRect.maxX - HANDLE_RADIUS / 2, y: cropRect.maxY - HANDLE_RADIUS / 2),
                 size: CGSize(width: HANDLE_RADIUS, height: HANDLE_RADIUS)
             ))
-            context.fill(bottomRightHandlePath, with: .color(.white))
+            context.fill(bottomRightHandlePath, with: .color(strokeColor))
         }
     }
     

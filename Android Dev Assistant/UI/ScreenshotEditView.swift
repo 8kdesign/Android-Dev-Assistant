@@ -19,6 +19,7 @@ struct ScreenshotEditView: View {
     @State var rightCrop: CGFloat = 1
     @State var topCrop: CGFloat = 0
     @State var bottomCrop: CGFloat = 1
+    @State var isHighlight: Bool = UserDefaultsHelper.getScreenshotEditIsHighlight()
     
     var body: some View {
         VStack {
@@ -30,7 +31,8 @@ struct ScreenshotEditView: View {
                         leftCrop: $leftCrop,
                         rightCrop: $rightCrop,
                         topCrop: $topCrop,
-                        bottomCrop: $bottomCrop
+                        bottomCrop: $bottomCrop,
+                        isHighlight: $isHighlight
                     )
                     FooterView(image: holdImage)
                 }
@@ -50,7 +52,9 @@ struct ScreenshotEditView: View {
                 EscapeKeyCatcher {
                     image = nil
                 }
-            )
+            ).onChange(of: isHighlight) { value in
+                UserDefaultsHelper.setScreenshotEditIsHighlight(value)
+            }
     }
     
     private func HeaderView() -> some View {
@@ -81,21 +85,24 @@ struct ScreenshotEditView: View {
         HStack {
             Spacer()
             FooterItemView(name: "Copy", icon: "list.clipboard") {
-                copyToClipboard(cropImage(image))
+                copyToClipboard(processImage(image))
                 toastHelper.addToast("Copied to clipboard", icon: "list.bullet.clipboard")
             }
             FooterItemView(name: "Save", icon: "square.and.arrow.up") {
-                ScreenshotHelper.save(image: cropImage(image))
+                ScreenshotHelper.save(image: processImage(image))
             }
             Spacer()
-        }.frame(maxWidth: .infinity)
+            ModeSwitchView()
+            Spacer()
+        }.padding(.all)
+            .frame(maxWidth: .infinity)
     }
     
     private func FooterItemView(name: LocalizedStringResource, icon: String, action: @escaping () -> ()) -> some View {
         Button {
             action()
         } label: {
-            VStack {
+            VStack(spacing: 5) {
                 Image(systemName: icon)
                     .resizable()
                     .scaledToFit()
@@ -110,14 +117,43 @@ struct ScreenshotEditView: View {
                     .truncationMode(.tail)
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
+                    .opacity(0.7)
             }.frame(width: 80)
-                .padding(.all)
         }.buttonStyle(.plain)
+    }
+    
+    private func ModeSwitchView() -> some View {
+        HStack(spacing: 5) {
+            Image(systemName: "crop")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
+                .foregroundStyle(.white)
+                .foregroundColor(.white)
+                .opacity(isHighlight ? 0.5 : 1)
+            Toggle(isOn: $isHighlight, label: {})
+                .toggleStyle(.switch)
+            Image(systemName: "highlighter")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
+                .foregroundStyle(.white)
+                .foregroundColor(.white)
+                .opacity(isHighlight ? 1 : 0.5)
+        }
     }
     
 }
 
 extension ScreenshotEditView {
+    
+    private func processImage(_ image: NSImage) -> NSImage {
+        if isHighlight {
+            return highlightImage(image)
+        } else {
+            return cropImage(image)
+        }
+    }
     
     private func cropImage(_ image: NSImage) -> NSImage {
         guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return image }
@@ -129,6 +165,23 @@ extension ScreenshotEditView {
         let croppedHeight = originalHeight * (bottomCrop - topCrop)
         guard let croppedImage = cgImage.cropping(to: CGRect(x: cropX, y: cropY, width: croppedWidth, height: croppedHeight)) else { return image }
         return NSImage(cgImage: croppedImage, size: CGSize(width: croppedWidth, height: croppedHeight))
+    }
+    
+    private func highlightImage(_ image: NSImage) -> NSImage {
+        return NSImage(size: image.size, flipped: false) { rect in
+            image.draw(in: rect)
+            NSColor.red.setStroke()
+            let originalWidth = image.size.width
+            let originalHeight = image.size.height
+            let cropX = originalWidth * leftCrop
+            let cropY = originalHeight * (1 - bottomCrop)
+            let croppedWidth = originalWidth * (rightCrop - leftCrop)
+            let croppedHeight = originalHeight * (bottomCrop - topCrop)
+            let path = NSBezierPath(rect: NSRect(x: cropX, y: cropY, width: croppedWidth, height: croppedHeight))
+            path.lineWidth = 5
+            path.stroke()
+            return true
+        }
     }
     
 }
