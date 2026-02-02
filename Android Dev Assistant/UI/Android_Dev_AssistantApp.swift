@@ -12,12 +12,14 @@ struct Android_Dev_AssistantApp: App {
     
     @StateObject var apkHelper: ApkHelper = ApkHelper()
     @StateObject var adbHelper: AdbHelper = AdbHelper.shared
+    @StateObject var toastHelper: ToastHelper = ToastHelper.shared
     
     var body: some Scene {
         Window("Android Dev Assistant", id: "main") {
             ContentView()
                 .environmentObject(apkHelper)
                 .environmentObject(adbHelper)
+                .environmentObject(toastHelper)
         }
     }
 }

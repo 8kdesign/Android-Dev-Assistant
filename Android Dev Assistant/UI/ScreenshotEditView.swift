@@ -11,6 +11,8 @@ import UniformTypeIdentifiers
 
 struct ScreenshotEditView: View {
     
+    @EnvironmentObject var toastHelper: ToastHelper
+    
     @Binding var image: NSImage?
     @State var holdImage: NSImage?
     @State var leftCrop: CGFloat = 0
@@ -80,6 +82,7 @@ struct ScreenshotEditView: View {
             Spacer()
             FooterItemView(name: "Copy", icon: "list.clipboard") {
                 copyToClipboard(cropImage(image))
+                toastHelper.addToast("Copied to clipboard", icon: "list.bullet.clipboard")
             }
             FooterItemView(name: "Save", icon: "square.and.arrow.up") {
                 ScreenshotHelper.save(image: cropImage(image))

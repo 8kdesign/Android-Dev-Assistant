@@ -108,6 +108,9 @@ class AdbHelper: ObservableObject {
                 }
                 Task { @MainActor in
                     self.insertLog(string: image != nil ? "Screenshot copied to clipboard" : "Screenshot failed")
+                    if image != nil {
+                        ToastHelper.shared.addToast("Copied to clipboard", icon: "list.bullet.clipboard")
+                    }
                 }
             } catch {
                 Task { @MainActor in
