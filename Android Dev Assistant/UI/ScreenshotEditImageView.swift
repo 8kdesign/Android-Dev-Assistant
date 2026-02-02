@@ -102,7 +102,7 @@ struct ScreenshotEditImageView: View {
                 context.fill(Path(cropRect), with: .color(.black))
                 context.blendMode = .normal
             }
-            context.stroke(Path(cropRect), with: .color(strokeColor))
+            context.stroke(Path(cropRect), with: .color(strokeColor), style: StrokeStyle(lineWidth: 3))
             // Draw crop handles
             let topLeftHandlePath = Path(ellipseIn: CGRect(
                 origin: CGPoint(x: cropRect.minX - HANDLE_RADIUS / 2, y: cropRect.minY - HANDLE_RADIUS / 2),

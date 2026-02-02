@@ -113,7 +113,7 @@ struct ScreenshotEditView: View {
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
                 Text(name)
-                    .font(.caption)
+                    .font(.callout)
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .foregroundStyle(.white)
@@ -172,12 +172,13 @@ extension ScreenshotEditView {
         return NSImage(size: image.size, flipped: false) { rect in
             image.draw(in: rect)
             NSColor.red.setStroke()
+            let lineWidth: CGFloat = 5
             let originalWidth = image.size.width
             let originalHeight = image.size.height
-            let cropX = originalWidth * leftCrop
-            let cropY = originalHeight * (1 - bottomCrop)
-            let croppedWidth = originalWidth * (rightCrop - leftCrop)
-            let croppedHeight = originalHeight * (bottomCrop - topCrop)
+            let cropX = originalWidth * leftCrop + lineWidth / 2
+            let cropY = originalHeight * (1 - bottomCrop) + lineWidth / 2
+            let croppedWidth = originalWidth * (rightCrop - leftCrop) - lineWidth
+            let croppedHeight = originalHeight * (bottomCrop - topCrop) - lineWidth
             let path = NSBezierPath(rect: NSRect(x: cropX, y: cropY, width: croppedWidth, height: croppedHeight))
             path.lineWidth = 5
             path.stroke()

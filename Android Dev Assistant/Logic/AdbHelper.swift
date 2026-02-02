@@ -80,6 +80,11 @@ class AdbHelper: ObservableObject {
                 let message = String(data: result, encoding: .utf8)
                 Task { @MainActor in
                     self.insertLog(string: message ?? "Result parse error")
+                    if message?.split(whereSeparator: \.isNewline).last == "Success" {
+                        ToastHelper.shared.addToast("Install success", icon: "arrow.down.circle.dotted")
+                    } else {
+                        ToastHelper.shared.addToast("Install failed", icon: "exclamationmark.triangle")
+                    }
                 }
             } catch {
                 Task { @MainActor in

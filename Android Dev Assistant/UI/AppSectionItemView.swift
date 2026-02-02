@@ -54,10 +54,10 @@ struct AppSectionItemView: View {
     private func TogglesView() -> some View {
         ScrollView(.horizontal) {
             HStack(spacing: 5) {
-                ToggleItemView(icon: "arrow.down.app", label: "Install", isLoading: adbHelper.isInstalling == item.path) { adbHelper.install(item: item) }
+                ToggleItemView(icon: "arrow.down.app.fill", label: "Install", isLoading: adbHelper.isInstalling == item.path) { adbHelper.install(item: item) }
                     .disabled(adbHelper.isInstalling != nil || adbHelper.selectedDevice == nil)
-                ToggleItemView(icon: "folder", label: "Folder") { openFolder(item) }
-                ToggleItemView(icon: "trash", label: "Remove", isDangerous: true) { apkHelper.removeApk(item.path) }
+                ToggleItemView(icon: "folder.fill", label: "Folder") { openFolder(item) }
+                ToggleItemView(icon: "trash.fill", label: "Remove", isDangerous: true) { apkHelper.removeApk(item.path) }
             }.padding(.all, 10)
         }.frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -78,6 +78,7 @@ struct AppSectionItemView: View {
                         .frame(width: 16, height: 16)
                         .foregroundStyle(.white)
                         .foregroundColor(.white)
+                        .opacity(0.9)
                     Text(label)
                         .font(.caption)
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -85,6 +86,7 @@ struct AppSectionItemView: View {
                         .truncationMode(.tail)
                         .foregroundStyle(.white)
                         .foregroundColor(.white)
+                        .opacity(0.9)
                 }
             }.frame(width: 60, height: 50)
                 .background(RoundedRectangle(cornerRadius: 10)
