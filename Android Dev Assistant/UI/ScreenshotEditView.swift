@@ -25,19 +25,35 @@ struct ScreenshotEditView: View {
         VStack {
             VStack(spacing: 0) {
                 HeaderView()
+                Divider().opacity(0.7)
                 if let holdImage {
-                    ScreenshotEditImageView(
-                        image: holdImage,
-                        leftCrop: $leftCrop,
-                        rightCrop: $rightCrop,
-                        topCrop: $topCrop,
-                        bottomCrop: $bottomCrop,
-                        isHighlight: $isHighlight
-                    )
-                    FooterView(image: holdImage)
+                    if holdImage.size.width < holdImage.size.height {
+                        HStack (spacing: 0) {
+                            ScreenshotEditImageView(
+                                image: holdImage,
+                                leftCrop: $leftCrop,
+                                rightCrop: $rightCrop,
+                                topCrop: $topCrop,
+                                bottomCrop: $bottomCrop,
+                                isHighlight: $isHighlight
+                            )
+                            SideControlsView(image: holdImage)
+                        }
+                    } else {
+                        ScreenshotEditImageView(
+                            image: holdImage,
+                            leftCrop: $leftCrop,
+                            rightCrop: $rightCrop,
+                            topCrop: $topCrop,
+                            bottomCrop: $bottomCrop,
+                            isHighlight: $isHighlight
+                        )
+                        BottomControlsView(image: holdImage)
+                    }
                 }
             }.frame(maxWidth: 800, maxHeight: 800, alignment: .top)
-                .background(RoundedRectangle(cornerRadius: 30).fill(Color(red: 0.05, green: 0.05, blue: 0.05)))
+                .background(Color(red: 0.05, green: 0.05, blue: 0.05))
+                .clipShape(RoundedRectangle(cornerRadius: 30))
                 .onTapGesture {}
                 .padding(.all, 50)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -80,9 +96,29 @@ struct ScreenshotEditView: View {
                 .fill(.clear)
                 .frame(width: 50, height: 50)
         }.frame(maxWidth: .infinity)
+            .background(Color(red: 0.07, green: 0.07, blue: 0.07))
     }
     
-    private func FooterView(image: NSImage) -> some View {
+    private func SideControlsView(image: NSImage) -> some View {
+        VStack(spacing: 20) {
+            HStack {
+                Spacer()
+                FooterItemView(name: "Copy", icon: "list.clipboard") {
+                    copyToClipboard(processImage(image))
+                    toastHelper.addToast("Copied to clipboard", icon: "list.bullet.clipboard")
+                }
+                FooterItemView(name: "Save", icon: "square.and.arrow.up") {
+                    ScreenshotHelper.save(image: processImage(image))
+                }
+                Spacer()
+            }.frame(maxWidth: .infinity)
+            ModeSwitchView()
+        }.padding(.all)
+            .frame(maxWidth: 300, maxHeight: .infinity)
+            .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+    }
+    
+    private func BottomControlsView(image: NSImage) -> some View {
         HStack {
             Spacer()
             FooterItemView(name: "Copy", icon: "list.clipboard") {
@@ -97,6 +133,7 @@ struct ScreenshotEditView: View {
             Spacer()
         }.padding(.all)
             .frame(maxWidth: .infinity)
+            .background(Color(red: 0.1, green: 0.1, blue: 0.1))
     }
     
     private func FooterItemView(name: LocalizedStringResource, icon: String, action: @escaping () -> ()) -> some View {
@@ -124,7 +161,7 @@ struct ScreenshotEditView: View {
     }
     
     private func ModeSwitchView() -> some View {
-        HStack(spacing: 5) {
+        HStack(spacing: 10) {
             Image(systemName: "crop")
                 .resizable()
                 .scaledToFit()
