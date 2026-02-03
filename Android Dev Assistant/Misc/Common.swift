@@ -7,6 +7,7 @@
 
 import Foundation
 import AppKit
+import CryptoKit
 
 @LogicActor let ROOT_PATH: String = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
@@ -115,4 +116,10 @@ func copyToClipboard(_ item: any NSPasteboardWriting) {
     let pasteboard = NSPasteboard.general
     pasteboard.clearContents()
     pasteboard.writeObjects([item])
+}
+
+func sha256(_ string: String) -> String {
+    let data = Data(string.utf8)
+    let hash = SHA256.hash(data: data)
+    return hash.map { String(format: "%02x", $0) }.joined()
 }

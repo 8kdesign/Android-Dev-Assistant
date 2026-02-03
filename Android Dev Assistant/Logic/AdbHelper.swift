@@ -72,7 +72,7 @@ class AdbHelper: ObservableObject {
     
     func install(item: ApkItem) {
         guard let adbPath, let selectedDevice, isInstalling == nil else { return }
-        isInstalling = item.path
+        isInstalling = item.id
         objectWillChange.send()
         insertLog(string: "Installing app")
         runOnLogicThread {

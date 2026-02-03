@@ -26,7 +26,7 @@ class ApkItem: Identifiable {
     }
     
     init(path: String, name: String, lastModified: Date?) {
-        self.id = path
+        self.id = sha256(path)
         self.path = path
         self.name = name
         self.lastModified = lastModified

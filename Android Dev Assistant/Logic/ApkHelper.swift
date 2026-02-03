@@ -55,7 +55,7 @@ class ApkHelper: ObservableObject {
     // List
 
     @MainActor func addApk(_ item: ApkItem) {
-        if apks.contains(where: { $0.path == item.path }) { return }
+        if apks.contains(where: { $0.id == item.id }) { return }
         apks.append(item)
         apks.sort(by: { ($0.lastModified ?? Date(timeIntervalSince1970: 0)) > ($1.lastModified ?? Date(timeIntervalSince1970: 0)) })
         runOnLogicThread {
@@ -72,10 +72,10 @@ class ApkHelper: ObservableObject {
         }
     }
     
-    @MainActor func removeApk(_ path: String) {
-        apks.removeAll(where: { $0.path == path })
+    @MainActor func removeApk(_ item: ApkItem) {
+        apks.removeAll(where: { $0.id == item.id })
         runOnLogicThread {
-            StorageHelper.shared.removeLink(path)
+            StorageHelper.shared.removeLink(item.path)
         }
         objectWillChange.send()
     }
