@@ -74,13 +74,21 @@ class AdbHelper: ObservableObject {
         guard let adbPath, let selectedDevice, isInstalling == nil else { return }
         isInstalling = item.path
         objectWillChange.send()
+        insertLog(string: "Installing app")
         runOnLogicThread {
             do {
                 let result = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "install", item.path])
                 let message = String(data: result, encoding: .utf8)
+                let isSuccess = message?.split(whereSeparator: \.isNewline).last == "Success"
+                if isSuccess, let packageName = await item.packageName {
+                    let _ = try? await runCommand(
+                        path: adbPath,
+                        arguments: ["-s", selectedDevice, "shell", "monkey", "-p", packageName, "-c", "android.intent.category.LAUNCHER", "1"]
+                    )
+                }
                 Task { @MainActor in
                     self.insertLog(string: message ?? "Result parse error")
-                    if message?.split(whereSeparator: \.isNewline).last == "Success" {
+                    if isSuccess {
                         ToastHelper.shared.addToast("Install success", icon: "arrow.down.circle.dotted")
                     } else {
                         ToastHelper.shared.addToast("Install failed", icon: "exclamationmark.triangle")

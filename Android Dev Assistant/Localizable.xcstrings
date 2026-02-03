@@ -69,7 +69,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "安装成功"
+            "value" : "安装失败"
           }
         }
       }
@@ -79,7 +79,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "安装失败"
+            "value" : "安装成功"
           }
         }
       }

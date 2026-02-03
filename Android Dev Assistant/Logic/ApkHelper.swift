@@ -98,6 +98,8 @@ class ApkHelper: ObservableObject {
         return (name, packageName, versionName)
     }
     
+    // Misc
+    
     @LogicActor private func normalize(_ input: String?) -> String {
         guard let input else { return "" }
         if input.hasPrefix("Optional(\"") && input.hasSuffix("\")") {

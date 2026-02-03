@@ -21,11 +21,14 @@ struct LogsSection: View {
                         .multilineTextAlignment(.leading)
                         .foregroundStyle(.white)
                         .foregroundColor(.white)
+                        .rotationEffect(.degrees(180))
                 }
             }.padding(.all)
-        }.frame(maxWidth: .infinity, alignment: .topLeading)
+        }.frame(maxWidth: .infinity)
             .frame(height: 100)
+            .rotationEffect(.degrees(180))
             .background(.black)
+            .scrollIndicators(.never)
     }
     
 }
