@@ -66,7 +66,7 @@ struct ScreenshotEditView: View {
                     toastHelper.addToast("Copied to clipboard", icon: "list.bullet.clipboard")
                 }
                 FooterItemView(name: "Save", icon: "square.and.arrow.up") {
-                    ScreenshotHelper.save(image: processImage(image))
+                    save(image: processImage(image))
                 }
                 Spacer()
             }.frame(maxWidth: .infinity)
@@ -84,7 +84,7 @@ struct ScreenshotEditView: View {
                 toastHelper.addToast("Copied to clipboard", icon: "list.bullet.clipboard")
             }
             FooterItemView(name: "Save", icon: "square.and.arrow.up") {
-                ScreenshotHelper.save(image: processImage(image))
+                save(image: processImage(image))
             }
             Spacer()
             ModeSwitchView()
@@ -178,6 +178,19 @@ extension ScreenshotEditView {
             path.lineWidth = 5
             path.stroke()
             return true
+        }
+    }
+    
+    private func save(image: NSImage) {
+        guard let data = image.pngData else { return }
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = "screenshot.png"
+        panel.allowedContentTypes = [.png]
+        panel.canCreateDirectories = true
+        panel.begin { response in
+            if response == .OK, let url = panel.url {
+                try? data.write(to: url)
+            }
         }
     }
     

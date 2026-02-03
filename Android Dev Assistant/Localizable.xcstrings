@@ -114,6 +114,9 @@
         }
       }
     },
+    "Scrcpy" : {
+      "shouldTranslate" : false
+    },
     "Screenshot" : {
       "localizations" : {
         "zh-Hans" : {

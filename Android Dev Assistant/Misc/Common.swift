@@ -8,15 +8,20 @@
 import Foundation
 import AppKit
 
+@LogicActor let ROOT_PATH: String = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
 enum CommonError: Error {
     case adbNotFound
 }
 
-@LogicActor func runCommand(path: String?, arguments: [String]) async throws -> Data {
+@LogicActor func runCommand(path: String?, arguments: [String], environment: [String: String]? = nil) async throws -> Data {
     guard let path else { throw CommonError.adbNotFound }
     let process = Process()
     process.executableURL = URL(fileURLWithPath: path)
     process.arguments = arguments
+    if let environment {
+        process.environment = environment
+    }
     let pipe = Pipe()
     process.standardOutput = pipe
     process.standardError = pipe
@@ -41,6 +46,27 @@ enum CommonError: Error {
         }
     } catch {
         print("Error running ls: \(error)")
+    }
+    return nil
+}
+
+@LogicActor func runWhich(command: String) -> String? {
+    let process = Process()
+    process.executableURL = URL(fileURLWithPath: "/usr/bin/which")
+    process.arguments = [command]
+    process.environment = ["PATH": ROOT_PATH]
+    let pipe = Pipe()
+    process.standardOutput = pipe
+    do {
+        try process.run()
+        process.waitUntilExit()
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let output = String(decoding: data, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
+        if !output.isEmpty {
+            return output
+        }
+    } catch {
+        print("Error running which: \(error)")
     }
     return nil
 }

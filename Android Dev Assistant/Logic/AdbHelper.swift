@@ -44,7 +44,7 @@ class AdbHelper: ObservableObject {
                         }
                         self.objectWillChange.send()
                         runOnLogicThread {
-                            await self.getName(forDeviceId: id)
+                            await self.getName(id: id)
                         }
                     case "offline":
                         self.currentDevices.remove(id)
@@ -59,7 +59,7 @@ class AdbHelper: ObservableObject {
         }
     }
     
-    @LogicActor private func getName(forDeviceId id: String) async {
+    @LogicActor private func getName(id: String) async {
         guard let data = try? await runCommand(path: await adbPath, arguments: ["-s", id, "shell", "settings", "get", "secure", "bluetooth_name"]) else { return }
         let name = String(data: data, encoding: .utf8)
         if let name, !name.isEmpty {
