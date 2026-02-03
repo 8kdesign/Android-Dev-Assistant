@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     
+    @EnvironmentObject var externalTool: ExternalToolsHelper
     @State var showSettings: Bool = false
     
     var body: some View {
@@ -33,5 +34,7 @@ struct ContentView: View {
             ToastView()
         }.frame(minWidth: 900, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
             .background(Color(red: 0.07, green: 0.07, blue: 0.07))
+            .opacity(externalTool.isExternalToolAdbBlocking ? 0.3 : 1)
+            .allowsHitTesting(!externalTool.isExternalToolAdbBlocking)
     }
 }
