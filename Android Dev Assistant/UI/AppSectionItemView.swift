@@ -22,19 +22,26 @@ struct AppSectionItemView: View {
             if (isSelected) {
                 TogglesView()
             }
-        }.background(Color(red: 0.1, green: 0.1, blue: 0.1))
+        }.background(Color(red: 0.12, green: 0.12, blue: 0.12))
             .clipShape(RoundedRectangle(cornerRadius: 15))
     }
     
     private func ContentView() -> some View {
-        VStack(spacing: 7) {
+        VStack(spacing: 5) {
             Text(item.name)
                 .lineLimit(1)
                 .truncationMode(.tail)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .foregroundStyle(.white)
                 .foregroundColor(.white)
-            Text(item.path)
+            Text(item.versionName ?? "-")
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .foregroundStyle(.white)
+                .foregroundColor(.white)
+                .opacity(0.2)
+            Text(item.packageName ?? item.path)
                 .lineLimit(1)
                 .truncationMode(.head)
                 .font(.callout)
@@ -44,7 +51,7 @@ struct AppSectionItemView: View {
                 .opacity(0.3)
         }.padding(.all)
             .frame(maxWidth: .infinity)
-            .background(Color(red: 0.08, green: 0.08, blue: 0.08))
+            .background(Color(red: 0.1, green: 0.1, blue: 0.1))
             .opacity(isSelected ? 1 : 0.3)
             .onTapGesture {
                 select()
@@ -90,7 +97,7 @@ struct AppSectionItemView: View {
                 }
             }.frame(width: 60, height: 50)
                 .background(RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(red: isDangerous ? 0.4 : 0.05, green: 0.05, blue: 0.05))
+                    .fill(Color(red: isDangerous ? 0.4 : 0.07, green: 0.07, blue: 0.07))
                 ).opacity(0.7)
         }.buttonStyle(.plain)
     }

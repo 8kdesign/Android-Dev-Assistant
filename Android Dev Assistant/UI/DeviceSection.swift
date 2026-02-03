@@ -82,7 +82,7 @@ struct DeviceSection: View {
                     }
             }.padding(.horizontal, 20)
                 .frame(height: 40)
-                .background(Capsule().fill(Color(red: 0.1, green: 0.1, blue: 0.1)))
+                .background(Capsule().fill(Color(red: 0.13, green: 0.13, blue: 0.13)))
                 .frame(maxWidth: 200, alignment: .leading)
             Button {
                 sendText()

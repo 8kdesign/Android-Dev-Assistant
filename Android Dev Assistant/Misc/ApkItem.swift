@@ -14,6 +14,9 @@ class ApkItem: Identifiable {
     var name: String
     var lastModified: Date?
     
+    var packageName: String? = nil
+    var versionName: String? = nil
+    
     static func fromPath(_ url: URL) -> ApkItem? {
         guard url.pathExtension == "apk" else { return nil }
         let name = url.lastPathComponent

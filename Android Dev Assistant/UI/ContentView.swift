@@ -13,9 +13,10 @@ struct ContentView: View {
         ZStack {
             HStack(spacing: 0) {
                 AppSection()
+                Divider().opacity(0.7)
                 VStack(spacing: 0) {
                     DeviceSection()
-                    Divider()
+                    Divider().opacity(0.7)
                     LogsSection()
                 }
             }

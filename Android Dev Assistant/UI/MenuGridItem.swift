@@ -40,7 +40,7 @@ struct MenuGridItem: View {
                 }.frame(maxWidth: .infinity, alignment: .trailing)
             }.padding(.all)
                 .frame(maxWidth: .infinity, maxHeight: 80, alignment: .leading)
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.1, green: 0.1, blue: 0.1)))
+                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.13, green: 0.13, blue: 0.13)))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         }.buttonStyle(.plain)
     }
