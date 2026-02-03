@@ -26,9 +26,8 @@ struct AppSection: View {
                         }
                     }
                 }.padding(.all)
-            }
-        }.frame(maxWidth: 300, maxHeight: .infinity)
-            .background(Color(red: 0.03, green: 0.03, blue: 0.03))
+            }.scrollIndicators(.never)
+        }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .onDrop(of: [.fileURL], delegate: self)
             .onReceive(apkHelper.$selectedIndex) { selectedIndex in
                 withAnimation(.linear(duration: 0.2)) {

@@ -22,24 +22,10 @@ struct ScreenshotEditView: View {
     @State var isHighlight: Bool = UserDefaultsHelper.getScreenshotEditIsHighlight()
     
     var body: some View {
-        VStack {
-            VStack(spacing: 0) {
-                HeaderView()
-                Divider().opacity(0.7)
-                if let holdImage {
-                    if holdImage.size.width < holdImage.size.height {
-                        HStack (spacing: 0) {
-                            ScreenshotEditImageView(
-                                image: holdImage,
-                                leftCrop: $leftCrop,
-                                rightCrop: $rightCrop,
-                                topCrop: $topCrop,
-                                bottomCrop: $bottomCrop,
-                                isHighlight: $isHighlight
-                            )
-                            SideControlsView(image: holdImage)
-                        }
-                    } else {
+        PopupView(title: "Screenshot", exit: { image = nil }) {
+            if let holdImage {
+                if holdImage.size.width < holdImage.size.height {
+                    HStack (spacing: 0) {
                         ScreenshotEditImageView(
                             image: holdImage,
                             leftCrop: $leftCrop,
@@ -48,55 +34,27 @@ struct ScreenshotEditView: View {
                             bottomCrop: $bottomCrop,
                             isHighlight: $isHighlight
                         )
-                        BottomControlsView(image: holdImage)
+                        SideControlsView(image: holdImage)
                     }
+                } else {
+                    ScreenshotEditImageView(
+                        image: holdImage,
+                        leftCrop: $leftCrop,
+                        rightCrop: $rightCrop,
+                        topCrop: $topCrop,
+                        bottomCrop: $bottomCrop,
+                        isHighlight: $isHighlight
+                    )
+                    BottomControlsView(image: holdImage)
                 }
-            }.frame(maxWidth: 800, maxHeight: 800, alignment: .top)
-                .background(Color(red: 0.05, green: 0.05, blue: 0.05))
-                .clipShape(RoundedRectangle(cornerRadius: 30))
-                .onTapGesture {}
-                .padding(.all, 50)
-        }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(red: 0.2, green: 0.2, blue: 0.2).opacity(0.7))
-            .onTapGesture {
-                image = nil
-            }.onAppear {
-                holdImage = image
-            }.onDisappear {
-                holdImage = nil
-            }.background(
-                EscapeKeyCatcher {
-                    image = nil
-                }
-            ).onChange(of: isHighlight) { value in
-                UserDefaultsHelper.setScreenshotEditIsHighlight(value)
             }
-    }
-    
-    private func HeaderView() -> some View {
-        HStack {
-            Button {
-                image = nil
-            } label: {
-                Image(systemName: "chevron.left")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 16, height: 16)
-                    .padding(.all, 17)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
-            }.buttonStyle(.plain)
-            Spacer()
-            Text("Screenshot")
-                .font(.title3)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
-            Spacer()
-            Rectangle()
-                .fill(.clear)
-                .frame(width: 50, height: 50)
-        }.frame(maxWidth: .infinity)
-            .background(Color(red: 0.07, green: 0.07, blue: 0.07))
+        }.onAppear {
+            holdImage = image
+        }.onDisappear {
+            holdImage = nil
+        }.onChange(of: isHighlight) { value in
+            UserDefaultsHelper.setScreenshotEditIsHighlight(value)
+        }
     }
     
     private func SideControlsView(image: NSImage) -> some View {
