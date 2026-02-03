@@ -51,7 +51,7 @@ struct AppSectionItemView: View {
                 .opacity(0.3)
         }.padding(.all)
             .frame(maxWidth: .infinity)
-            .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+            .background(Color(red: 0.09, green: 0.09, blue: 0.09))
             .opacity(isSelected ? 1 : 0.3)
             .onTapGesture {
                 select()

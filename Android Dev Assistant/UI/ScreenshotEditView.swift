@@ -41,7 +41,7 @@ struct ScreenshotEditView: View {
                 .onTapGesture {}
                 .padding(.all, 50)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(.black.opacity(0.7))
+            .background(Color(red: 0.2, green: 0.2, blue: 0.2).opacity(0.7))
             .onTapGesture {
                 image = nil
             }.onAppear {

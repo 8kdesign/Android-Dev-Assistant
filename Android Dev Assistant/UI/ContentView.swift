@@ -23,6 +23,6 @@ struct ContentView: View {
             ScreenshotOverlayView()
             ToastView()
         }.frame(minWidth: 900, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
-            .background(Color(red: 0.05, green: 0.05, blue: 0.05))
+            .background(Color(red: 0.07, green: 0.07, blue: 0.07))
     }
 }
