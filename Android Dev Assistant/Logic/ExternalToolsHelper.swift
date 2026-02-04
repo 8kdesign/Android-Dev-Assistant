@@ -28,12 +28,20 @@ class ExternalToolsHelper: ObservableObject {
         }
     }
     
-    func launchScrcpy(deviceId: String, adbPath: String?) {
+    func launchScrcpy(deviceId: String, adbPath: String?, isRetry: Bool = false) {
         guard let adbPath else { return }
         guard let scrcpyPath else {
-            recheck(command: "scrcpy") { self.scrcpyPath = $0 }
+            recheck(command: "scrcpy") {
+                self.scrcpyPath = $0
+                if (isRetry) {
+                    self.objectWillChange.send()
+                } else {
+                    self.launchScrcpy(deviceId: deviceId, adbPath: adbPath, isRetry: true)
+                }
+            }
             return
         }
+        LogHelper.shared.insertLog(string: "Starting scrcpy")
         isExternalToolAdbBlocking = true
         objectWillChange.send()
         runOnLogicThread {
@@ -56,7 +64,6 @@ class ExternalToolsHelper: ObservableObject {
             if let path = runWhich(command: command) {
                 Task { @MainActor in
                     set(path)
-                    self.objectWillChange.send()
                 }
             } else {
                 Task { @MainActor in
