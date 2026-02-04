@@ -78,6 +78,8 @@ struct AppSectionItemView: View {
                     ProgressView()
                         .progressViewStyle(.circular)
                         .controlSize(.small)
+                        .frame(width: 20, height: 20)
+                        .tint(.white)
                 } else {
                     Image(systemName: icon)
                         .resizable()
