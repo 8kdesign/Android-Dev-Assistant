@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import SwiftUI
 import Combine
 
 class ExternalToolsHelper: ObservableObject {
     
     let objectWillChange = ObservableObjectPublisher()
 
+    var requestInstall: String? = nil
     var scrcpyPath: String? = nil
     
     var isExternalToolAdbBlocking: Bool = false
@@ -27,7 +29,11 @@ class ExternalToolsHelper: ObservableObject {
     }
     
     func launchScrcpy(deviceId: String, adbPath: String?) {
-        guard let scrcpyPath, let adbPath else { return }
+        guard let adbPath else { return }
+        guard let scrcpyPath else {
+            recheck(command: "scrcpy") { self.scrcpyPath = $0 }
+            return
+        }
         isExternalToolAdbBlocking = true
         objectWillChange.send()
         runOnLogicThread {
@@ -41,6 +47,23 @@ class ExternalToolsHelper: ObservableObject {
             Task { @MainActor in
                 self.isExternalToolAdbBlocking = false
                 self.objectWillChange.send()
+            }
+        }
+    }
+    
+    private func recheck(command: String, set: @escaping (String) -> ()) {
+        runOnLogicThread {
+            if let path = runWhich(command: command) {
+                Task { @MainActor in
+                    set(path)
+                    self.objectWillChange.send()
+                }
+            } else {
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: "Not found. Please install using \"brew install \(command)\".")
+                    self.requestInstall = command
+                    self.objectWillChange.send()
+                }
             }
         }
     }

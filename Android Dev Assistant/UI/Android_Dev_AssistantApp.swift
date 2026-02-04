@@ -13,6 +13,7 @@ struct Android_Dev_AssistantApp: App {
     @StateObject var apkHelper: ApkHelper = ApkHelper()
     @StateObject var adbHelper: AdbHelper = AdbHelper.shared
     @StateObject var toastHelper: ToastHelper = ToastHelper.shared
+    @StateObject var logHelper: LogHelper = LogHelper.shared
     @StateObject var externalToolsHelper: ExternalToolsHelper = ExternalToolsHelper()
     
     var body: some Scene {
@@ -21,6 +22,7 @@ struct Android_Dev_AssistantApp: App {
                 .environmentObject(apkHelper)
                 .environmentObject(adbHelper)
                 .environmentObject(toastHelper)
+                .environmentObject(logHelper)
                 .environmentObject(externalToolsHelper)
         }
     }

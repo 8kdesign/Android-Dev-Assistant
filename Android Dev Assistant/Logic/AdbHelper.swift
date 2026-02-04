@@ -22,7 +22,6 @@ class AdbHelper: ObservableObject {
     @Published var selectedDevice: String? = nil
 
     var isInstalling: String? = nil
-    @Published var logs: [String] = []
     @Published var screenshotImage: NSImage? = nil
 
     init() {
@@ -74,7 +73,7 @@ class AdbHelper: ObservableObject {
         guard let adbPath, let selectedDevice, isInstalling == nil else { return }
         isInstalling = item.id
         objectWillChange.send()
-        insertLog(string: "Installing app")
+        LogHelper.shared.insertLog(string: "Installing app")
         runOnLogicThread {
             do {
                 let result = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "install", item.path])
@@ -87,7 +86,7 @@ class AdbHelper: ObservableObject {
                     )
                 }
                 Task { @MainActor in
-                    self.insertLog(string: message ?? "Result parse error")
+                    LogHelper.shared.insertLog(string: message ?? "Result parse error")
                     if isSuccess {
                         ToastHelper.shared.addToast("Install success", icon: "arrow.down.circle.dotted")
                     } else {
@@ -96,7 +95,7 @@ class AdbHelper: ObservableObject {
                 }
             } catch {
                 Task { @MainActor in
-                    self.insertLog(string: error.localizedDescription)
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
                 }
             }
             Task { @MainActor in
@@ -120,14 +119,14 @@ class AdbHelper: ObservableObject {
                     }
                 }
                 Task { @MainActor in
-                    self.insertLog(string: image != nil ? "Screenshot copied to clipboard" : "Screenshot failed")
+                    LogHelper.shared.insertLog(string: image != nil ? "Screenshot copied to clipboard" : "Screenshot failed")
                     if image != nil {
                         ToastHelper.shared.addToast("Copied to clipboard", icon: "list.bullet.clipboard")
                     }
                 }
             } catch {
                 Task { @MainActor in
-                    self.insertLog(string: error.localizedDescription)
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
                 }
             }
         }
@@ -139,26 +138,15 @@ class AdbHelper: ObservableObject {
             do {
                 let _ = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "input", "text", "'\(input)'"])
                 Task { @MainActor in
-                    self.insertLog(string: "Paste success")
+                    LogHelper.shared.insertLog(string: "Paste success")
                 }
             } catch {
                 Task { @MainActor in
-                    self.insertLog(string: error.localizedDescription)
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
                 }
             }
         }
     }
-    
-    private func insertLog(string: String) {
-        let date = Date().formatted(date: .omitted, time: .shortened)
-        string.split(whereSeparator: \.isNewline).forEach { line in
-            logs.insert("\(date): \(line)", at: 0
-            )
-            if (logs.count > 10) {
-                logs.removeLast()
-            }
-        }
-        objectWillChange.send()
-    }
+
     
 }

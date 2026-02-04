@@ -9,12 +9,12 @@ import SwiftUI
 
 struct LogsSection: View {
     
-    @EnvironmentObject var adbHelper: AdbHelper
+    @EnvironmentObject var logHelper: LogHelper
     
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 5) {
-                ForEach(Array(adbHelper.logs.enumerated()), id: \.offset) { index, item in
+                ForEach(Array(logHelper.logs.enumerated()), id: \.offset) { index, item in
                     Text(item)
                         .font(.caption)
                         .frame(maxWidth: .infinity, alignment: .leading)

@@ -105,10 +105,8 @@ struct DeviceSection: View {
         ScrollView {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 110), spacing: 5)], spacing: 5) {
                 MenuGridItem(deviceId: deviceId, name: "Screenshot", icon: "camera.viewfinder") { adbHelper.screenshot() }
-                if externalToolsHelper.scrcpyPath != nil {
-                    MenuGridItem(deviceId: deviceId, name: "Scrcpy", icon: "smartphone") {
-                        externalToolsHelper.launchScrcpy(deviceId: deviceId, adbPath: adbHelper.adbPath)
-                    }
+                MenuGridItem(deviceId: deviceId, name: "Scrcpy", icon: "smartphone") {
+                    externalToolsHelper.launchScrcpy(deviceId: deviceId, adbPath: adbHelper.adbPath)
                 }
             }.padding([.horizontal, .bottom])
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
