@@ -4,6 +4,9 @@
     "" : {
       "shouldTranslate" : false
     },
+    "ADB" : {
+      "shouldTranslate" : false
+    },
     "Android Dev Assistant" : {
       "localizations" : {
         "zh-Hans" : {
@@ -90,6 +93,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "安装成功"
+          }
+        }
+      }
+    },
+    "Not found" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未能找到文件"
           }
         }
       }

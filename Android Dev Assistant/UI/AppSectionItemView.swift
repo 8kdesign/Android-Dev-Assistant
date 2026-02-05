@@ -63,7 +63,7 @@ struct AppSectionItemView: View {
             HStack(spacing: 5) {
                 ToggleItemView(icon: "arrow.down.app.fill", label: "Install", isLoading: adbHelper.isInstalling == item.id) { adbHelper.install(item: item) }
                     .disabled(adbHelper.isInstalling != nil || adbHelper.selectedDevice == nil)
-                ToggleItemView(icon: "folder.fill", label: "Folder") { openFolder(item) }
+                ToggleItemView(icon: "folder.fill", label: "Folder") { openFolder(item.path) }
                 ToggleItemView(icon: "trash.fill", label: "Remove", isDangerous: true) { apkHelper.removeApk(item) }
             }.padding(.all, 10)
         }.frame(maxWidth: .infinity, alignment: .leading)

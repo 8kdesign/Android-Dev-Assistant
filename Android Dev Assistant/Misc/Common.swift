@@ -107,8 +107,8 @@ enum CommonError: Error {
     return FileManager.default.isExecutableFile(atPath: aapt) ? aapt : nil
 }
 
-func openFolder(_ item: ApkItem) {
-    let url = URL(fileURLWithPath: item.path).deletingLastPathComponent()
+func openFolder(_ path: String) {
+    let url = URL(fileURLWithPath: path).deletingLastPathComponent()
     NSWorkspace.shared.open(url)
 }
 

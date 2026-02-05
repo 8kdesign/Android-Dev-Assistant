@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SettingsView: View {
     
+    @EnvironmentObject var adbHelper: AdbHelper
+    
     @Binding var isPresented: Bool
     let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "X"
     
@@ -22,36 +24,79 @@ struct SettingsView: View {
     }
     
     private func InfoView() -> some View {
-        VStack(spacing: 15) {
+        VStack(spacing: 10) {
             Text("Android Dev Assistant")
                 .font(.title2)
                 .foregroundStyle(.white)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
+            Text("v\(appVersion)")
+                .font(.body)
+                .foregroundStyle(.white)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .multilineTextAlignment(.leading)
+                .opacity(0.7)
+            Spacer()
             Text("by 8K")
                 .foregroundStyle(.white)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
                 .opacity(0.3)
-            Text("v\(appVersion)")
-                .font(.callout)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .multilineTextAlignment(.leading)
-                .opacity(0.7)
         }.padding(.all, 30)
             .frame(maxWidth: 200, maxHeight: .infinity, alignment: .top)
             .background(Color(red: 0.08, green: 0.08, blue: 0.08))
     }
     
     private func TogglesView() -> some View {
-        VStack {
-            
-        }.padding(.all)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        ScrollView {
+            LazyVStack(spacing: 15) {
+                FolderItemView(title: "ADB", path: adbHelper.adbPath)
+            }.padding(.all, 20)
+        }.frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    private func FolderItemView(title: LocalizedStringResource, path: String?) -> some View {
+        VStack(spacing: 10) {
+            Text(title)
+                .font(.title3.bold())
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .foregroundStyle(.white)
+                .foregroundColor(.white)
+                .padding(.horizontal, 10)
+            HStack(spacing: 0) {
+                Text(path ?? String(localized: "Not found"))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                    .opacity(0.7)
+                    .padding(.all)
+                Divider()
+                Button {
+                    if let path {
+                        openFolder(path)
+                    }
+                } label: {
+                    Image(systemName: "folder")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .foregroundStyle(.white)
+                        .foregroundColor(.white)
+                        .opacity(0.7)
+                        .padding(.all, 16)
+                        .background(.white.opacity(0.05))
+                }.buttonStyle(.plain)
+            }.frame(maxWidth: .infinity)
+                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
     }
     
 }
