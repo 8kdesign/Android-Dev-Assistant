@@ -10,6 +10,10 @@ import AppKit
 import CryptoKit
 
 @LogicActor let ROOT_PATH: String = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+@LogicActor let appSupportURL = FileManager.default
+    .urls(for: .applicationSupportDirectory, in: .userDomainMask)
+    .first!
+    .appendingPathComponent("AndroidDevAssistant", isDirectory: true)
 
 enum CommonError: Error {
     case adbNotFound
@@ -20,6 +24,7 @@ enum CommonError: Error {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: path)
     process.arguments = arguments
+    process.currentDirectoryURL = appSupportURL
     if let environment {
         process.environment = environment
     }

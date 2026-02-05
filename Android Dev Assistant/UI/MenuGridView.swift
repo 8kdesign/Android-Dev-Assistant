@@ -22,6 +22,9 @@ struct MenuGridView: View {
                 MenuGridItem(deviceId: deviceId, name: "Scrcpy", icon: "smartphone") {
                     externalToolsHelper.launchScrcpy(deviceId: deviceId, adbPath: adbHelper.adbPath)
                 }
+                MenuGridItem(deviceId: deviceId, name: "Perfetto", icon: "tachometer") {
+                    externalToolsHelper.launchPerfetto()
+                }
             }.padding([.horizontal, .bottom])
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }

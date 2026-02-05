@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import UniformTypeIdentifiers
 
 class ExternalToolsHelper: ObservableObject {
     
@@ -20,6 +21,7 @@ class ExternalToolsHelper: ObservableObject {
     
     init() {
         runOnLogicThread {
+            try? FileManager.default.createDirectory(at: appSupportURL, withIntermediateDirectories: true)
             let scrcpyPath = runWhich(command: "scrcpy")
             Task { @MainActor in
                 self.scrcpyPath = scrcpyPath
@@ -55,6 +57,36 @@ class ExternalToolsHelper: ObservableObject {
             Task { @MainActor in
                 self.isExternalToolAdbBlocking = false
                 self.objectWillChange.send()
+            }
+        }
+    }
+    
+    func launchPerfetto() {
+        runOnLogicThread {
+            let perfettoPath = appSupportURL.appendingPathComponent("trace_processor").path(percentEncoded: false)
+            if !FileManager.default.fileExists(atPath: perfettoPath) {
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: "Downloading Perfetto")
+                }
+                _ = try await runCommand(path: "/usr/bin/curl", arguments: ["-LO", "https://get.perfetto.dev/trace_processor"])
+                _ = try await runCommand(path: "/bin/chmod", arguments: ["+x", "./trace_processor"])
+            }
+            Task { @MainActor in
+                let panel = NSOpenPanel()
+                panel.allowsMultipleSelection = false
+                panel.canChooseFiles = true
+                panel.canChooseDirectories = false
+                if panel.runModal() == .OK, let url = panel.url {
+                    LogHelper.shared.insertLog(string: "Starting Perfetto")
+                    runOnLogicThread {
+                        let result = try await runCommand(path: perfettoPath, arguments: ["--httpd", url.path(percentEncoded: false)])
+                        if let stringResult = String(data: result, encoding: .utf8) {
+                            Task { @MainActor in
+                                LogHelper.shared.insertLog(string: stringResult)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

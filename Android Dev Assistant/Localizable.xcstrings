@@ -107,6 +107,9 @@
         }
       }
     },
+    "Perfetto" : {
+      "shouldTranslate" : false
+    },
     "Remove" : {
       "localizations" : {
         "zh-Hans" : {
