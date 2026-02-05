@@ -9,9 +9,7 @@ import SwiftUI
 
 struct DeviceSection: View {
     
-    @EnvironmentObject var apkHelper: ApkHelper
     @EnvironmentObject var adbHelper: AdbHelper
-    @EnvironmentObject var externalToolsHelper: ExternalToolsHelper
     @State var input: String = ""
     @FocusState var focusState
 
@@ -99,17 +97,6 @@ struct DeviceSection: View {
             }.buttonStyle(.plain)
         }.padding([.horizontal, .bottom])
             
-    }
-    
-    private func MenuGridView(deviceId: String) -> some View {
-        ScrollView {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 110), spacing: 5)], spacing: 5) {
-                MenuGridItem(deviceId: deviceId, name: "Screenshot", icon: "camera.viewfinder") { adbHelper.screenshot() }
-                MenuGridItem(deviceId: deviceId, name: "Scrcpy", icon: "smartphone") {
-                    externalToolsHelper.launchScrcpy(deviceId: deviceId, adbPath: adbHelper.adbPath)
-                }
-            }.padding([.horizontal, .bottom])
-        }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
 }

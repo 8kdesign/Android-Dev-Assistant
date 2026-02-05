@@ -77,8 +77,7 @@ struct AppSectionItemView: View {
                 if isLoading {
                     ProgressView()
                         .progressViewStyle(.circular)
-                        .controlSize(.small)
-                        .frame(width: 20, height: 20)
+                        .scaleEffect(x: 0.7, y: 0.7)
                         .tint(.white)
                 } else {
                     Image(systemName: icon)

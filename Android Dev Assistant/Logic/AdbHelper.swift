@@ -59,7 +59,7 @@ class AdbHelper: ObservableObject {
     }
     
     @LogicActor private func getName(id: String) async {
-        guard let data = try? await runCommand(path: await adbPath, arguments: ["-s", id, "shell", "settings", "get", "secure", "bluetooth_name"]) else { return }
+        guard let data = try? await runCommand(path: await adbPath, arguments: ["-s", id, "shell", "settings", "get", "global", "device_name"]) else { return }
         let name = String(data: data, encoding: .utf8)
         if let name, !name.isEmpty {
             Task { @MainActor in
