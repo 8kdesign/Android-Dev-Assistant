@@ -62,6 +62,7 @@ class AdbHelper: ObservableObject {
         guard let data = try? await runCommand(path: await adbPath, arguments: ["-s", id, "shell", "settings", "get", "global", "device_name"]) else { return }
         let name = String(data: data, encoding: .utf8)
         if let name, !name.isEmpty {
+            if name.starts(with: "cmd:") == true { return }
             Task { @MainActor in
                 deviceNameMap[id] = name.trimmingCharacters(in: .whitespacesAndNewlines)
                 self.objectWillChange.send()

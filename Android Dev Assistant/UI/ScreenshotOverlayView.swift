@@ -57,13 +57,13 @@ struct ScreenshotOverlayView: View {
             Image(nsImage: image)
                 .resizable()
                 .scaledToFit()
-                .frame(maxHeight: 80)
+                .frame(maxHeight: 100)
                 .clipShape(RoundedRectangle(cornerRadius: 5))
         } else {
             Image(nsImage: image)
                 .resizable()
                 .scaledToFit()
-                .frame(maxWidth: 80)
+                .frame(maxWidth: 100)
                 .clipShape(RoundedRectangle(cornerRadius: 5))
         }
     }

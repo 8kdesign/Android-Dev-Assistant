@@ -18,8 +18,9 @@ struct MenuGridItem: View {
         Button {
             action()
         } label: {
-            VStack(spacing: 0) {
+            ZStack(alignment: .top) {
                 Text(name)
+                    .font(.title3)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
@@ -27,19 +28,19 @@ struct MenuGridItem: View {
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
                     .opacity(0.7)
-                HStack {
+                    .padding(.all, 10)
+                VStack {
                     Image(systemName: icon)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 40, height: 40)
+                        .frame(width: 50, height: 50)
                         .rotationEffect(.degrees(-30))
                         .foregroundStyle(.white)
                         .foregroundColor(.white)
-                        .opacity(0.2)
-                        .offset(x: 20, y: 20)
-                }.frame(maxWidth: .infinity, alignment: .trailing)
-            }.padding(.all)
-                .frame(maxWidth: .infinity, maxHeight: 80, alignment: .leading)
+                        .opacity(0.1)
+                        .offset(x: 10, y: 10)
+                }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+            }.frame(height: 80)
                 .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.13, green: 0.13, blue: 0.13)))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         }.buttonStyle(.plain)
