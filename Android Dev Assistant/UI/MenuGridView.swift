@@ -12,17 +12,17 @@ struct MenuGridView: View {
     @EnvironmentObject var apkHelper: ApkHelper
     @EnvironmentObject var adbHelper: AdbHelper
     @EnvironmentObject var externalToolsHelper: ExternalToolsHelper
-
-    var deviceId: String
     
     var body: some View {
         ScrollView {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 110), spacing: 10)], spacing: 10) {
-                MenuGridItem(deviceId: deviceId, name: "Screenshot", icon: "camera.viewfinder") { adbHelper.screenshot() }
-                MenuGridItem(deviceId: deviceId, name: "Scrcpy", icon: "smartphone") {
-                    externalToolsHelper.launchScrcpy(deviceId: deviceId, adbPath: adbHelper.adbPath)
+                MenuGridItem(name: "Screenshot", icon: "camera.viewfinder", requireSelectedDevice: true) { adbHelper.screenshot() }
+                MenuGridItem(name: "Scrcpy", icon: "smartphone", requireSelectedDevice: true) {
+                    if let deviceId = adbHelper.selectedDevice {
+                        externalToolsHelper.launchScrcpy(deviceId: deviceId, adbPath: adbHelper.adbPath)
+                    }
                 }
-                MenuGridItem(deviceId: deviceId, name: "Perfetto", icon: "chart.bar.fill") {
+                MenuGridItem(name: "Perfetto", icon: "chart.bar.fill", requireSelectedDevice: false) {
                     externalToolsHelper.launchPerfetto()
                 }
             }.padding([.horizontal, .bottom])

@@ -16,10 +16,8 @@ struct DeviceSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             CurrentDeviceSelector()
-            if let deviceId = adbHelper.selectedDevice {
-                InputView(deviceId: deviceId)
-                MenuGridView(deviceId: deviceId)
-            }
+            InputView()
+            MenuGridView()
         }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
     
@@ -52,7 +50,7 @@ struct DeviceSection: View {
             .frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    private func InputView(deviceId: String) -> some View {
+    private func InputView() -> some View {
         HStack {
             Image(systemName: "keyboard")
                 .resizable()
@@ -96,7 +94,8 @@ struct DeviceSection: View {
                     .foregroundColor(.white)
             }.buttonStyle(.plain)
         }.padding([.horizontal, .bottom])
-            
+            .disabled(adbHelper.selectedDevice == nil)
+            .opacity(adbHelper.selectedDevice == nil ? 0.3 : 1)
     }
     
 }

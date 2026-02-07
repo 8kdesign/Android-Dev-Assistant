@@ -159,7 +159,7 @@ class AdbHelper: ObservableObject {
                     arguments: ["-s", selectedDevice, "shell", "monkey", "-p", packageName, "-c", "android.intent.category.LAUNCHER", "1"]
                 )
                 Task { @MainActor in
-                    LogHelper.shared.insertLog(string: "Force closed")
+                    LogHelper.shared.insertLog(string: "Force restarted")
                 }
             } catch {
                 Task { @MainActor in
