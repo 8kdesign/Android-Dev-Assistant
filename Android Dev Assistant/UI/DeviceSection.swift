@@ -37,7 +37,7 @@ struct DeviceSection: View {
         } label: {
             HStack {
                 Text(getName(adbHelper.selectedDevice) ?? "No device connected")
-                    .font(.title3)
+                    .font(.title2)
                     .lineLimit(1)
                     .foregroundStyle(.white)
                     .foregroundColor(.white)

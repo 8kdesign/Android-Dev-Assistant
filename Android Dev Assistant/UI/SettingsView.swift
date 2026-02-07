@@ -68,6 +68,7 @@ struct SettingsView: View {
                 .foregroundStyle(.white)
                 .foregroundColor(.white)
                 .padding(.horizontal, 10)
+                .opacity(0.7)
             HStack(spacing: 0) {
                 Text(path ?? String(localized: "Not found"))
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -91,10 +92,10 @@ struct SettingsView: View {
                         .foregroundColor(.white)
                         .opacity(0.7)
                         .padding(.all, 16)
-                        .background(.white.opacity(0.05))
+                        .background(Color(red: 0.15, green: 0.15, blue: 0.15))
                 }.buttonStyle(.plain)
             }.frame(maxWidth: .infinity)
-                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .background(Color(red: 0.12, green: 0.12, blue: 0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         }
     }

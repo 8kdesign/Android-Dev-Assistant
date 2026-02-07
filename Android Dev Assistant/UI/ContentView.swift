@@ -19,7 +19,7 @@ struct ContentView: View {
                     AppSection()
                     BottomTogglesSection(showSettings: $showSettings)
                 }.frame(maxWidth: 300, maxHeight: .infinity)
-                    .background(Color(red: 0.03, green: 0.03, blue: 0.03))
+                    .background(Color(red: 0.07, green: 0.07, blue: 0.07))
                 Divider().opacity(0.7)
                 VStack(spacing: 0) {
                     DeviceSection()
@@ -34,7 +34,8 @@ struct ContentView: View {
             ToastView()
         }.frame(minWidth: 900, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
             .opacity(externalTool.isExternalToolAdbBlocking ? 0.3 : 1)
-            .background(Color(red: 0.07, green: 0.07, blue: 0.07))
+            .background(Color(red: 0.09, green: 0.09, blue: 0.09))
             .allowsHitTesting(!externalTool.isExternalToolAdbBlocking)
+            .preferredColorScheme(.dark)
     }
 }

@@ -22,7 +22,7 @@ struct AppSectionItemView: View {
             if (isSelected) {
                 TogglesView()
             }
-        }.background(Color(red: 0.12, green: 0.12, blue: 0.12))
+        }.background(Color(red: 0.15, green: 0.15, blue: 0.15))
             .clipShape(RoundedRectangle(cornerRadius: 15))
     }
     
@@ -51,7 +51,7 @@ struct AppSectionItemView: View {
                 .opacity(0.5)
         }.padding(.all)
             .frame(maxWidth: .infinity)
-            .background(Color(red: 0.09, green: 0.09, blue: 0.09))
+            .background(Color(red: 0.12, green: 0.12, blue: 0.12))
             .opacity(isSelected ? 1 : 0.3)
             .onTapGesture {
                 select()
@@ -78,6 +78,7 @@ struct AppSectionItemView: View {
                     ProgressView()
                         .progressViewStyle(.circular)
                         .scaleEffect(x: 0.7, y: 0.7)
+                        .accentColor(.white)
                         .tint(.white)
                 } else {
                     Image(systemName: icon)
@@ -98,7 +99,7 @@ struct AppSectionItemView: View {
                 }
             }.frame(width: 60, height: 50)
                 .background(RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(red: isDangerous ? 0.4 : 0.07, green: 0.07, blue: 0.07))
+                    .fill(Color(red: isDangerous ? 0.4 : 0.1, green: 0.1, blue: 0.1))
                 ).opacity(0.7)
         }.buttonStyle(.plain)
     }
