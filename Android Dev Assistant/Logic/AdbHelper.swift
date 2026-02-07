@@ -149,5 +149,24 @@ class AdbHelper: ObservableObject {
         }
     }
 
+    func forceRestart(item: ApkItem) {
+        guard let adbPath, let selectedDevice,let packageName = item.packageName else { return }
+        runOnLogicThread {
+            do {
+                let _ = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "am", "force-stop", packageName])
+                let _ = try? await runCommand(
+                    path: adbPath,
+                    arguments: ["-s", selectedDevice, "shell", "monkey", "-p", packageName, "-c", "android.intent.category.LAUNCHER", "1"]
+                )
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: "Force closed")
+                }
+            } catch {
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
+                }
+            }
+        }
+    }
     
 }

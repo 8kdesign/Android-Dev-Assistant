@@ -64,6 +64,7 @@ struct AppSectionItemView: View {
                 ToggleItemView(icon: "arrow.down.app.fill", label: "Install", isLoading: adbHelper.isInstalling == item.id) { adbHelper.install(item: item) }
                     .disabled(adbHelper.isInstalling != nil || adbHelper.selectedDevice == nil)
                 ToggleItemView(icon: "folder.fill", label: "Folder") { openFolder(item.path) }
+                ToggleItemView(icon: "exclamationmark.arrow.triangle.2.circlepath", label: "Restart") { adbHelper.forceRestart(item: item) }
                 ToggleItemView(icon: "trash.fill", label: "Remove", isDangerous: true) { apkHelper.removeApk(item) }
             }.padding(.all, 10)
         }.frame(maxWidth: .infinity, alignment: .leading)
@@ -89,7 +90,7 @@ struct AppSectionItemView: View {
                         .foregroundColor(.white)
                         .opacity(0.9)
                     Text(label)
-                        .font(.caption)
+                        .font(.caption2)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .lineLimit(1)
                         .truncationMode(.tail)

@@ -18,7 +18,7 @@ struct ContentView: View {
                 VStack(spacing: 0) {
                     AppSection()
                     BottomTogglesSection(showSettings: $showSettings)
-                }.frame(maxWidth: 300, maxHeight: .infinity)
+                }.frame(maxWidth: 250, maxHeight: .infinity)
                     .background(Color(red: 0.07, green: 0.07, blue: 0.07))
                 Divider().opacity(0.7)
                 VStack(spacing: 0) {

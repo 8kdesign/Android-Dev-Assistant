@@ -16,11 +16,11 @@ import CryptoKit
     .appendingPathComponent("AndroidDevAssistant", isDirectory: true)
 
 enum CommonError: Error {
-    case adbNotFound
+    case notFound
 }
 
 @LogicActor func runCommand(path: String?, arguments: [String], environment: [String: String]? = nil) async throws -> Data {
-    guard let path else { throw CommonError.adbNotFound }
+    guard let path else { throw CommonError.notFound }
     let process = Process()
     process.executableURL = URL(fileURLWithPath: path)
     process.arguments = arguments
