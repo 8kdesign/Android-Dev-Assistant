@@ -14,6 +14,7 @@ class ExternalToolsHelper: ObservableObject {
     
     let objectWillChange = ObservableObjectPublisher()
 
+    var toolsUrl: URL? = nil
     var requestInstall: String? = nil
     var scrcpyPath: String? = nil
     
@@ -21,9 +22,12 @@ class ExternalToolsHelper: ObservableObject {
     
     init() {
         runOnLogicThread {
-            try? FileManager.default.createDirectory(at: appSupportURL, withIntermediateDirectories: true)
+            guard let appSupportURL else { return }
+            let toolsUrl = appSupportURL.appendingPathComponent("tools", isDirectory: true)
+            try? FileManager.default.createDirectory(at: toolsUrl, withIntermediateDirectories: true)
             let scrcpyPath = runWhich(command: "scrcpy")
             Task { @MainActor in
+                self.toolsUrl = toolsUrl
                 self.scrcpyPath = scrcpyPath
                 self.objectWillChange.send()
             }
@@ -62,14 +66,15 @@ class ExternalToolsHelper: ObservableObject {
     }
     
     func launchPerfetto() {
+        guard let toolsUrl else { return }
         runOnLogicThread {
-            let perfettoPath = appSupportURL.appendingPathComponent("trace_processor").path(percentEncoded: false)
+            let perfettoPath = toolsUrl.appendingPathComponent("trace_processor").path(percentEncoded: false)
             if !FileManager.default.fileExists(atPath: perfettoPath) {
                 Task { @MainActor in
                     LogHelper.shared.insertLog(string: "Downloading Perfetto")
                 }
-                _ = try await runCommand(path: "/usr/bin/curl", arguments: ["-LO", "https://get.perfetto.dev/trace_processor"])
-                _ = try await runCommand(path: "/bin/chmod", arguments: ["+x", "./trace_processor"])
+                _ = try await runCommand(path: "/usr/bin/curl", arguments: ["-LO", "https://get.perfetto.dev/trace_processor"], directory: toolsUrl)
+                _ = try await runCommand(path: "/bin/chmod", arguments: ["+x", "./trace_processor"], directory: toolsUrl)
             }
             Task { @MainActor in
                 let panel = NSOpenPanel()
@@ -79,7 +84,7 @@ class ExternalToolsHelper: ObservableObject {
                 if panel.runModal() == .OK, let url = panel.url {
                     LogHelper.shared.insertLog(string: "Starting Perfetto")
                     runOnLogicThread {
-                        let result = try await runCommand(path: perfettoPath, arguments: ["--httpd", url.path(percentEncoded: false)])
+                        let result = try await runCommand(path: perfettoPath, arguments: ["--httpd", url.path(percentEncoded: false)], directory: toolsUrl)
                         if let stringResult = String(data: result, encoding: .utf8) {
                             Task { @MainActor in
                                 LogHelper.shared.insertLog(string: stringResult)

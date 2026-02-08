@@ -17,6 +17,7 @@ class AdbHelper: ObservableObject {
     let objectWillChange = ObservableObjectPublisher()
     
     var adbPath: String? = nil
+    var screenshotUrl: URL? = nil
     var currentDevices: Set<String> = []
     var deviceNameMap: [String: String] = [:]
     @Published var selectedDevice: String? = nil
@@ -54,6 +55,14 @@ class AdbHelper: ObservableObject {
                     default: ()
                     }
                 }
+            }
+        }
+        runOnLogicThread {
+            guard let appSupportURL else { return }
+            let screenshotUrl = appSupportURL.appendingPathComponent("screenshots", isDirectory: true)
+            try? FileManager.default.createDirectory(at: screenshotUrl, withIntermediateDirectories: true)
+            Task { @MainActor in
+                self.screenshotUrl = screenshotUrl
             }
         }
     }
@@ -114,6 +123,9 @@ class AdbHelper: ObservableObject {
                 let image = NSImage(data: result)
                 if let image {
                     Task { @MainActor in
+                        if let savePath = self.screenshotUrl?.appendingPathComponent("\(Date().timeIntervalSince1970).png") {
+                            FileManager.default.createFile(atPath: savePath.path, contents: result)
+                        }
                         copyToClipboard(image)
                         self.screenshotImage = image
                         self.objectWillChange.send()

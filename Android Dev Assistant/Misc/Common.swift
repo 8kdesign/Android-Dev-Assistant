@@ -12,19 +12,19 @@ import CryptoKit
 @LogicActor let ROOT_PATH: String = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 @LogicActor let appSupportURL = FileManager.default
     .urls(for: .applicationSupportDirectory, in: .userDomainMask)
-    .first!
+    .first?
     .appendingPathComponent("AndroidDevAssistant", isDirectory: true)
 
 enum CommonError: Error {
     case notFound
 }
 
-@LogicActor func runCommand(path: String?, arguments: [String], environment: [String: String]? = nil) async throws -> Data {
+@LogicActor func runCommand(path: String?, arguments: [String], environment: [String: String]? = nil, directory: URL? = nil) async throws -> Data {
     guard let path else { throw CommonError.notFound }
     let process = Process()
     process.executableURL = URL(fileURLWithPath: path)
     process.arguments = arguments
-    process.currentDirectoryURL = appSupportURL
+    process.currentDirectoryURL = directory ?? appSupportURL
     if let environment {
         process.environment = environment
     }
@@ -113,8 +113,16 @@ enum CommonError: Error {
 }
 
 func openFolder(_ path: String) {
-    let url = URL(fileURLWithPath: path).deletingLastPathComponent()
-    NSWorkspace.shared.open(url)
+    var isDir: ObjCBool = false
+    if FileManager.default.fileExists(atPath: path, isDirectory: &isDir) {
+        if isDir.boolValue {
+            let url = URL(fileURLWithPath: path)
+            NSWorkspace.shared.open(url)
+        } else {
+            let url = URL(fileURLWithPath: path).deletingLastPathComponent()
+            NSWorkspace.shared.open(url)
+        }
+    }
 }
 
 func copyToClipboard(_ item: any NSPasteboardWriting) {
