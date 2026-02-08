@@ -11,7 +11,8 @@ struct AppSectionItemView: View {
     
     @EnvironmentObject var apkHelper: ApkHelper
     @EnvironmentObject var adbHelper: AdbHelper
-    
+    @EnvironmentObject var externalToolsHelper: ExternalToolsHelper
+
     var item: ApkItem
     var isSelected: Bool
     var select: () -> ()
@@ -62,7 +63,7 @@ struct AppSectionItemView: View {
         ScrollView(.horizontal) {
             HStack(spacing: 5) {
                 ToggleItemView(icon: "arrow.down.app.fill", label: "Install", isLoading: adbHelper.isInstalling == item.id) { adbHelper.install(item: item) }
-                    .disabled(adbHelper.isInstalling != nil || adbHelper.selectedDevice == nil)
+                    .disabled(adbHelper.isInstalling != nil || adbHelper.selectedDevice == nil || externalToolsHelper.isExternalToolAdbBlocking)
                 ToggleItemView(icon: "folder.fill", label: "Folder") { openFolder(item.path) }
                 ToggleItemView(icon: "exclamationmark.arrow.triangle.2.circlepath", label: "Restart") { adbHelper.forceRestart(item: item) }
                 ToggleItemView(icon: "trash.fill", label: "Remove", isDangerous: true) { apkHelper.removeApk(item) }

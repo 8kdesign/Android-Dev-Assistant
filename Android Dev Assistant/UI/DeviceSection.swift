@@ -10,6 +10,7 @@ import SwiftUI
 struct DeviceSection: View {
     
     @EnvironmentObject var adbHelper: AdbHelper
+    @EnvironmentObject var externalToolsHelper: ExternalToolsHelper
     @State var input: String = ""
     @FocusState var focusState
 
@@ -59,6 +60,7 @@ struct DeviceSection: View {
                 .padding(.all, 10)
                 .foregroundStyle(.white)
                 .foregroundColor(.white)
+                .opacity(0.7)
             HStack {
                 TextField("", text: $input)
                     .textFieldStyle(.plain)
@@ -94,13 +96,17 @@ struct DeviceSection: View {
                     .foregroundColor(.white)
             }.buttonStyle(.plain)
         }.padding([.horizontal, .bottom])
-            .disabled(adbHelper.selectedDevice == nil)
-            .opacity(adbHelper.selectedDevice == nil ? 0.3 : 1)
+            .disabled(isAdbDisabled())
+            .opacity(isAdbDisabled() ? 0.3 : 1)
     }
     
 }
 
 extension DeviceSection {
+    
+    private func isAdbDisabled() -> Bool {
+        return adbHelper.isInstalling != nil || adbHelper.selectedDevice == nil || externalToolsHelper.isExternalToolAdbBlocking
+    }
     
     private func getName(_ id: String?) -> String? {
         guard let id else { return nil }

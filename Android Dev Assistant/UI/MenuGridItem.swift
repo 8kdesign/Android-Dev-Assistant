@@ -10,9 +10,10 @@ import SwiftUI
 struct MenuGridItem: View {
     
     @EnvironmentObject var adbHelper: AdbHelper
+    @EnvironmentObject var externalToolsHelper: ExternalToolsHelper
     var name: LocalizedStringResource
     var icon: String
-    var requireSelectedDevice: Bool
+    var requireAdb: Bool
     var action: () -> ()
     
     var body: some View {
@@ -45,8 +46,16 @@ struct MenuGridItem: View {
                 .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.13, green: 0.13, blue: 0.13)))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         }.buttonStyle(.plain)
-            .disabled(requireSelectedDevice && adbHelper.selectedDevice == nil)
-            .opacity(requireSelectedDevice && adbHelper.selectedDevice == nil ? 0.3 : 1)
+            .disabled(requireAdb && isAdbDisabled())
+            .opacity(requireAdb && isAdbDisabled() ? 0.3 : 1)
+    }
+    
+}
+
+extension MenuGridItem {
+    
+    private func isAdbDisabled() -> Bool {
+        return adbHelper.isInstalling != nil || adbHelper.selectedDevice == nil || externalToolsHelper.isExternalToolAdbBlocking
     }
     
 }

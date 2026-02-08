@@ -33,9 +33,7 @@ struct ContentView: View {
             }
             ToastView()
         }.frame(minWidth: 900, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
-            .opacity(externalTool.isExternalToolAdbBlocking ? 0.3 : 1)
             .background(Color(red: 0.09, green: 0.09, blue: 0.09))
-            .allowsHitTesting(!externalTool.isExternalToolAdbBlocking)
             .preferredColorScheme(.dark)
     }
 }
