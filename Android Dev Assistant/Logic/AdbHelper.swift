@@ -162,7 +162,7 @@ class AdbHelper: ObservableObject {
     }
 
     func forceRestart(item: ApkItem) {
-        guard let adbPath, let selectedDevice,let packageName = item.packageName else { return }
+        guard let adbPath, let selectedDevice, let packageName = item.packageName else { return }
         runOnLogicThread {
             do {
                 let _ = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "am", "force-stop", packageName])
@@ -172,6 +172,60 @@ class AdbHelper: ObservableObject {
                 )
                 Task { @MainActor in
                     LogHelper.shared.insertLog(string: "Force restarted")
+                }
+            } catch {
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func getScreenSize(callback: @escaping @LogicActor (ScreenSize, ScreenSize) -> ()) {
+        guard let adbPath, let selectedDevice else { return }
+        runOnLogicThread {
+            do {
+                let result = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "wm", "size"])
+                var physical: ScreenSize? = nil
+                var overrideSize: ScreenSize? = nil
+                String(data: result, encoding: .utf8)?.split(separator: "\n").forEach { line in
+                    let parts = line.split(separator: ":")
+                    guard parts.count == 2 else { return }
+                    let size = parts[1].trimmingCharacters(in: .whitespaces)
+                    let dims = size.split(separator: "x").compactMap { Int($0) }
+                    guard dims.count == 2 else { return }
+                    if line.contains("Physical") {
+                        physical = ScreenSize(width: dims[0], height: dims[1])
+                    } else if line.contains("Override") {
+                        overrideSize = ScreenSize(width: dims[0], height: dims[1])
+                    }
+                }
+                if let physical {
+                    callback(physical, overrideSize ?? physical)
+                }
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: "Get screen size")
+                }
+            } catch {
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func setScreenSize(type: MockScreenType, originalSize: ScreenSize) {
+        guard let adbPath, let selectedDevice else { return }
+        runOnLogicThread {
+            do {
+                if case .NORMAL = type {
+                    let _ = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "wm", "size", "reset"])
+                } else {
+                    guard let size = type.getScreenSize(originalSize: originalSize) else { return }
+                    let _ = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "wm", "size", "\(size.width)x\(size.height)"])
+                }
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: "Set screen size")
                 }
             } catch {
                 Task { @MainActor in
