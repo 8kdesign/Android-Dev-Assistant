@@ -97,6 +97,16 @@
         }
       }
     },
+    "Mock Screen" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模拟屏幕"
+          }
+        }
+      }
+    },
     "Not found" : {
       "localizations" : {
         "zh-Hans" : {

@@ -10,8 +10,8 @@ import SwiftUI
 
 struct BottomTogglesSection: View {
     
-    @Binding var showSettings: Bool
-
+    @EnvironmentObject var uiController: UIController
+    
     var body: some View {
         HStack {
             SettingsToggle()
@@ -23,7 +23,7 @@ struct BottomTogglesSection: View {
     
     private func SettingsToggle() -> some View {
         Button {
-            showSettings = true
+            uiController.showingPopup = .settings
         } label: {
             Image(systemName: "gearshape.fill")
                 .resizable()

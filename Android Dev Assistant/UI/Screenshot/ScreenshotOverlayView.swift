@@ -9,10 +9,10 @@ import SwiftUI
 
 struct ScreenshotOverlayView: View {
     
+    @EnvironmentObject var uiController: UIController
     @EnvironmentObject var adbHelper: AdbHelper
     @State var isShowing: Bool = false
     @State var image: NSImage? = nil
-    @State var editingImage: NSImage? = nil
     @State var timer: Timer? = nil
     
     var body: some View {
@@ -20,7 +20,7 @@ struct ScreenshotOverlayView: View {
             VStack {
                 if let image {
                     Button {
-                        editingImage = image
+                        uiController.showingPopup = .screenshot(image: image)
                         hideCurrentImage {}
                     } label: {
                         ImageView(image: image)
@@ -32,9 +32,6 @@ struct ScreenshotOverlayView: View {
                         .offset(x: isShowing ? 0 : 100)
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-            if editingImage != nil {
-                ScreenshotEditView(image: $editingImage)
-            }
         }.onReceive(adbHelper.$screenshotImage) { image in
             if let image {
                 adbHelper.screenshotImage = nil
@@ -47,7 +44,6 @@ struct ScreenshotOverlayView: View {
             timer = nil
             isShowing = false
             image = nil
-            editingImage = nil
         }
     }
     

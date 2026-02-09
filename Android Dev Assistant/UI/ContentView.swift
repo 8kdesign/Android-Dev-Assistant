@@ -9,15 +9,15 @@ import SwiftUI
 
 struct ContentView: View {
     
+    @EnvironmentObject var uiController: UIController
     @EnvironmentObject var externalTool: ExternalToolsHelper
-    @State var showSettings: Bool = false
     
     var body: some View {
         ZStack {
             HStack(spacing: 0) {
                 VStack(spacing: 0) {
                     AppSection()
-                    BottomTogglesSection(showSettings: $showSettings)
+                    BottomTogglesSection()
                 }.frame(maxWidth: 250, maxHeight: .infinity)
                     .background(Color(red: 0.07, green: 0.07, blue: 0.07))
                 Divider().opacity(0.7)
@@ -28,8 +28,14 @@ struct ContentView: View {
                 }
             }
             ScreenshotOverlayView()
-            if showSettings {
-                SettingsView(isPresented: $showSettings)
+            switch uiController.showingPopup {
+            case .settings: SettingsView()
+            case .screenshot(let image): ScreenshotEditView(image: Binding(
+                get: { return image },
+                set: { if $0 == nil { uiController.showingPopup = nil } })
+            )
+            case .mockScreenSize: ResizeScreenView()
+            default: EmptyView()
             }
             ToastView()
         }.frame(minWidth: 900, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)

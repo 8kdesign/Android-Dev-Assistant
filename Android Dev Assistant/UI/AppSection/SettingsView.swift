@@ -9,13 +9,13 @@ import SwiftUI
 
 struct SettingsView: View {
     
+    @EnvironmentObject var uiController: UIController
     @EnvironmentObject var adbHelper: AdbHelper
     
-    @Binding var isPresented: Bool
     let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "X"
     
     var body: some View {
-        PopupView(title: "Settings", exit: { isPresented = false }) {
+        PopupView(title: "Settings", exit: { uiController.showingPopup = nil }) {
             HStack(spacing: 0) {
                 InfoView()
                 TogglesView()

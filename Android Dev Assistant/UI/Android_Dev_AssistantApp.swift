@@ -10,6 +10,7 @@ import SwiftUI
 @main
 struct Android_Dev_AssistantApp: App {
     
+    @StateObject var uiController: UIController = UIController()
     @StateObject var apkHelper: ApkHelper = ApkHelper()
     @StateObject var adbHelper: AdbHelper = AdbHelper.shared
     @StateObject var toastHelper: ToastHelper = ToastHelper.shared
@@ -19,6 +20,7 @@ struct Android_Dev_AssistantApp: App {
     var body: some Scene {
         Window("Android Dev Assistant", id: "main") {
             ContentView()
+                .environmentObject(uiController)
                 .environmentObject(apkHelper)
                 .environmentObject(adbHelper)
                 .environmentObject(toastHelper)
