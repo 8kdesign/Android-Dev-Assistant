@@ -58,12 +58,33 @@ class AdbHelper: ObservableObject {
             }
         }
         runOnLogicThread {
-            guard let appSupportURL else { return }
-            let screenshotUrl = appSupportURL.appendingPathComponent("screenshots", isDirectory: true)
-            try? FileManager.default.createDirectory(at: screenshotUrl, withIntermediateDirectories: true)
-            Task { @MainActor in
-                self.screenshotUrl = screenshotUrl
-            }
+            await self.setupScreenshotFolder()
+        }
+    }
+    
+    @LogicActor func setupScreenshotFolder() async {
+        guard let appSupportURL else { return }
+        let screenshotUrl = appSupportURL.appendingPathComponent("screenshots", isDirectory: true)
+        try? FileManager.default.createDirectory(at: screenshotUrl, withIntermediateDirectories: true)
+        Task { @MainActor in
+            self.screenshotUrl = screenshotUrl
+        }
+        if await UserDefaultsHelper.getScreenshotCleanerEnabled() {
+            do {
+                let content = try FileManager.default.contentsOfDirectory(atPath: screenshotUrl.path(percentEncoded: false))
+                guard let cutoffDate = Calendar.current.date(byAdding: .month, value: -1, to: Date()) else { return }
+                try content.forEach { item in
+                    if (item.hasSuffix(".png")) {
+                        let url = screenshotUrl.appending(path: item)
+                        let attrs = try FileManager.default.attributesOfItem(atPath: url.path(percentEncoded: false))
+                        if let creationDate = attrs[.creationDate] as? Date {
+                            if creationDate < cutoffDate {
+                                try FileManager.default.removeItem(at: url)
+                            }
+                        }
+                    }
+                }
+            } catch {}
         }
     }
     

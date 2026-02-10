@@ -13,6 +13,7 @@ struct SettingsView: View {
     @EnvironmentObject var adbHelper: AdbHelper
     
     let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "X"
+    @State var enableCleanScreenshot: Bool = UserDefaultsHelper.getScreenshotCleanerEnabled()
     
     var body: some View {
         PopupView(title: "Settings", exit: { uiController.showingPopup = nil }) {
@@ -20,6 +21,8 @@ struct SettingsView: View {
                 InfoView()
                 TogglesView()
             }
+        }.onChange(of: enableCleanScreenshot) { value in
+            UserDefaultsHelper.setScreenshotCleanerEnabled(value)
         }
     }
     
@@ -53,15 +56,44 @@ struct SettingsView: View {
     private func TogglesView() -> some View {
         ScrollView {
             LazyVStack(spacing: 15) {
+                HeaderItemView(title: "Screenshots")
+                SwitchItemView(title: "Auto cleanup screenshots", isEnabled: $enableCleanScreenshot)
+                HeaderItemView(title: "Folders")
                 FolderItemView(title: "ADB", path: adbHelper.adbPath)
             }.padding(.all, 20)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
+    private func HeaderItemView(title: LocalizedStringResource) -> some View {
+        Text(title)
+            .font(.headline)
+            .foregroundStyle(.black)
+            .foregroundColor(.black)
+            .lineLimit(1)
+            .truncationMode(.tail)
+            .padding(.all, 10)
+            .background(RoundedRectangle(cornerRadius: 10).fill(.white.opacity(0.8)))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 10)
+    }
+    
+    private func SwitchItemView(title: LocalizedStringResource, isEnabled: Binding<Bool>) -> some View {
+        HStack {
+            Text(title)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .foregroundStyle(.white)
+                .foregroundColor(.white)
+            Spacer()
+            Toggle(isOn: isEnabled, label: {})
+                .toggleStyle(.switch)
+        }.frame(maxWidth: .infinity)
+    }
+    
     private func FolderItemView(title: LocalizedStringResource, path: String?) -> some View {
         VStack(spacing: 10) {
             Text(title)
-                .font(.title3.bold())
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .lineLimit(1)
                 .truncationMode(.tail)

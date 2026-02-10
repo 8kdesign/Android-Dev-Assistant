@@ -17,6 +17,16 @@
         }
       }
     },
+    "Auto cleanup screenshots" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "截图文件自动清理"
+          }
+        }
+      }
+    },
     "by 8K" : {
       "localizations" : {
         "zh-Hans" : {
@@ -113,6 +123,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开"
+          }
+        }
+      }
+    },
+    "Folders" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件夹"
           }
         }
       }
@@ -261,6 +281,16 @@
       "shouldTranslate" : false
     },
     "Screenshot" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "截图"
+          }
+        }
+      }
+    },
+    "Screenshots" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
