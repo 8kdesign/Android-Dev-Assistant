@@ -21,7 +21,7 @@ class LogHelper: ObservableObject {
         string.split(whereSeparator: \.isNewline).forEach { line in
             logs.insert("\(date): \(line)", at: 0
             )
-            if (logs.count > 10) {
+            if (logs.count > 100) {
                 logs.removeLast()
             }
         }

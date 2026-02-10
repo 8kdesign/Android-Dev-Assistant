@@ -269,14 +269,24 @@ class AdbHelper: ObservableObject {
         guard let adbPath, let selectedDevice else { return }
         runOnLogicThread {
             do {
-                if case .NORMAL = type {
-                    let _ = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "wm", "size", "reset"])
-                } else {
-                    guard let size = type.getScreenSize(originalSize: originalSize) else { return }
-                    let _ = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "wm", "size", "\(size.width)x\(size.height)"])
-                }
                 Task { @MainActor in
                     LogHelper.shared.insertLog(string: "Set screen size")
+                }
+                if case .NORMAL = type {
+                    let result = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "wm", "size", "reset"])
+                    if let message = String(data: result, encoding: .utf8) {
+                        Task { @MainActor in
+                            LogHelper.shared.insertLog(string: message)
+                        }
+                    }
+                } else {
+                    guard let size = type.getScreenSize(originalSize: originalSize) else { return }
+                    let result = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "wm", "size", "\(size.width)x\(size.height)"])
+                    if let message = String(data: result, encoding: .utf8) {
+                        Task { @MainActor in
+                            LogHelper.shared.insertLog(string: message)
+                        }
+                    }
                 }
             } catch {
                 Task { @MainActor in
