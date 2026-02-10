@@ -47,12 +47,32 @@
         }
       }
     },
+    "Custom" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "特定"
+          }
+        }
+      }
+    },
     "Drag and drop APK files here to add them." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "将 APK 文件拖放到此处即可导入"
+          }
+        }
+      }
+    },
+    "Fold 1:1" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "折叠屏1:1"
           }
         }
       }
@@ -127,8 +147,58 @@
         }
       }
     },
+    "Original" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还原"
+          }
+        }
+      }
+    },
     "Perfetto" : {
       "shouldTranslate" : false
+    },
+    "Phone 16:9" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手机16:9"
+          }
+        }
+      }
+    },
+    "Phone 18:9" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手机18:9"
+          }
+        }
+      }
+    },
+    "Phone 23:9" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手机23:9"
+          }
+        }
+      }
+    },
+    "Phone Small" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "小屏手机"
+          }
+        }
+      }
     },
     "Remove" : {
       "localizations" : {
@@ -179,6 +249,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设置"
+          }
+        }
+      }
+    },
+    "Tablet 4:3" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平板4:3"
+          }
+        }
+      }
+    },
+    "Tablet 16:10" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平板16:10"
           }
         }
       }

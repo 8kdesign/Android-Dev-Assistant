@@ -13,6 +13,8 @@ enum MockScreenType: Equatable {
     case MOCK_PHONE_23_9
     case MOCK_PHONE_18_9
     case MOCK_PHONE_16_9
+    case MOCK_PHONE_SMALL
+    case MOCK_FOLD_1_1
     case MOCK_TABLET_16_10
     case MOCK_TABLET_4_3
     case CUSTOM
@@ -24,6 +26,8 @@ enum MockScreenType: Equatable {
         case .MOCK_PHONE_23_9: ratio = 23.0 / 9.0
         case .MOCK_PHONE_18_9: ratio = 18.0 / 9.0
         case .MOCK_PHONE_16_9: ratio = 16.0 / 9.0
+        case .MOCK_PHONE_SMALL: return ScreenSize(width: 1080, height: 1920)
+        case .MOCK_FOLD_1_1: ratio = 1.0
         case .MOCK_TABLET_16_10: return ScreenSize(width: 3000, height: 4800)
         case .MOCK_TABLET_4_3: return ScreenSize(width: 3000, height: 4000)
         case .CUSTOM: return nil
@@ -42,12 +46,14 @@ enum MockScreenType: Equatable {
         }
     }
     
-    @MainActor func getLabel() -> String {
+    @MainActor func getLabel() -> LocalizedStringResource {
         switch self {
         case .NORMAL: return "Original"
         case .MOCK_PHONE_23_9: return "Phone 23:9"
         case .MOCK_PHONE_18_9: return "Phone 18:9"
         case .MOCK_PHONE_16_9: return "Phone 16:9"
+        case .MOCK_PHONE_SMALL: return "Phone Small"
+        case .MOCK_FOLD_1_1: return "Fold 1:1"
         case .MOCK_TABLET_16_10: return "Tablet 16:10"
         case .MOCK_TABLET_4_3: return "Tablet 4:3"
         case .CUSTOM: return "Custom"
@@ -60,8 +66,10 @@ enum MockScreenType: Equatable {
         .CUSTOM,
         .MOCK_PHONE_23_9,
         .MOCK_PHONE_18_9,
-        .MOCK_PHONE_16_9: return false
+        .MOCK_PHONE_16_9,
+        .MOCK_PHONE_SMALL: return false
         case .MOCK_TABLET_16_10,
+        .MOCK_FOLD_1_1,
         .MOCK_TABLET_4_3: return true
         }
     }

@@ -22,11 +22,13 @@ struct ResizeScreenView: View {
                     ResizeScreenItemView(type: .NORMAL)
                     ResizeScreenItemView(type: .MOCK_PHONE_23_9)
                     ResizeScreenItemView(type: .MOCK_PHONE_18_9)
+                    ResizeScreenItemView(type: .MOCK_PHONE_16_9)
                     Spacer()
                 }
                 HStack {
                     Spacer()
-                    ResizeScreenItemView(type: .MOCK_PHONE_16_9)
+                    ResizeScreenItemView(type: .MOCK_PHONE_SMALL)
+                    ResizeScreenItemView(type: .MOCK_FOLD_1_1)
                     ResizeScreenItemView(type: .MOCK_TABLET_16_10)
                     ResizeScreenItemView(type: .MOCK_TABLET_4_3)
                     Spacer()
@@ -70,7 +72,8 @@ extension ResizeScreenView {
     func getCurrentMockType() {
         adbHelper.getScreenSize { original, current in
             let type = [MockScreenType.NORMAL, MockScreenType.MOCK_PHONE_16_9, MockScreenType.MOCK_PHONE_18_9,
-                        MockScreenType.MOCK_PHONE_23_9, MockScreenType.MOCK_TABLET_4_3, MockScreenType.MOCK_TABLET_16_10].first {
+                        MockScreenType.MOCK_PHONE_23_9, MockScreenType.MOCK_PHONE_SMALL, MockScreenType.MOCK_FOLD_1_1,
+                        MockScreenType.MOCK_TABLET_4_3, MockScreenType.MOCK_TABLET_16_10].first {
                 let expectedSize = $0.getScreenSize(originalSize: original)
                 return expectedSize == current
             }
