@@ -115,6 +115,24 @@ class AdbHelper: ObservableObject {
         }
     }
     
+    func uninstall(item: ApkItem) {
+        guard let adbPath, let selectedDevice, let packageName = item.packageName, isInstalling == nil else { return }
+        LogHelper.shared.insertLog(string: "Installing app")
+        runOnLogicThread {
+            do {
+                let result = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "uninstall", packageName])
+                let message = String(data: result, encoding: .utf8)
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: message ?? "Result parse error")
+                }
+            } catch {
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
     func screenshot() {
         guard let adbPath, let selectedDevice else { return }
         runOnLogicThread {

@@ -17,6 +17,8 @@ struct AppSectionItemView: View {
     var isSelected: Bool
     var select: () -> ()
     
+    @State var confirmUninstall: Bool = false
+
     var body: some View {
         VStack(spacing: 0) {
             ContentView()
@@ -25,6 +27,12 @@ struct AppSectionItemView: View {
             }
         }.background(Color(red: 0.15, green: 0.15, blue: 0.15))
             .clipShape(RoundedRectangle(cornerRadius: 15))
+            .alert("Confirm uninstall?", isPresented: $confirmUninstall) {
+                Button("Cancel", role: .cancel) {}
+                Button("Confirm", role: .destructive) {
+                    adbHelper.uninstall(item: item)
+                }
+            }
     }
     
     private func ContentView() -> some View {
@@ -66,7 +74,8 @@ struct AppSectionItemView: View {
                     .disabled(adbHelper.isInstalling != nil || adbHelper.selectedDevice == nil || externalToolsHelper.isExternalToolAdbBlocking)
                 ToggleItemView(icon: "folder.fill", label: "Folder") { openFolder(item.path) }
                 ToggleItemView(icon: "exclamationmark.arrow.triangle.2.circlepath", label: "Restart") { adbHelper.forceRestart(item: item) }
-                ToggleItemView(icon: "trash.fill", label: "Remove", isDangerous: true) { apkHelper.removeApk(item) }
+                ToggleItemView(icon: "xmark.circle.fill", label: "Uninstall", isDangerous: true) { confirmUninstall = true }
+                ToggleItemView(icon: "trash.fill", label: "Remove") { apkHelper.removeApk(item) }
             }.padding(.all, 10)
         }.frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -101,7 +110,7 @@ struct AppSectionItemView: View {
                 }
             }.frame(width: 60, height: 50)
                 .background(RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(red: isDangerous ? 0.4 : 0.1, green: 0.1, blue: 0.1))
+                    .fill(Color(red: isDangerous ? 0.3 : 0.1, green: 0.1, blue: 0.1))
                 ).opacity(0.7)
         }.buttonStyle(.plain)
             .hoverOpacity()
