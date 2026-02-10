@@ -33,6 +33,7 @@ struct BottomTogglesSection: View {
                 .foregroundColor(.white)
                 .opacity(0.9)
                 .frame(width: 36, height: 36)
+                .background(.white.opacity(0.00001))
         }.buttonStyle(.plain)
             .hoverOpacity()
     }
@@ -55,6 +56,7 @@ struct BottomTogglesSection: View {
                 .foregroundColor(.white)
                 .opacity(0.9)
                 .frame(width: 36, height: 36)
+                .background(.white.opacity(0.00001))
         }.buttonStyle(.plain)
             .hoverOpacity()
     }
