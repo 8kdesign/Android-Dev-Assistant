@@ -30,11 +30,9 @@ struct ContentView: View {
             ScreenshotOverlayView()
             switch uiController.showingPopup {
             case .settings: SettingsView()
-            case .screenshot(let image): ScreenshotEditView(image: Binding(
-                get: { return image },
-                set: { if $0 == nil { uiController.showingPopup = nil } })
-            )
+            case .screenshot(let image): ScreenshotEditView(image: image)
             case .mockScreenSize: ResizeScreenView()
+            case .lastCrashLogs(let logs): LastCrashLogsView(logs: logs)
             default: EmptyView()
             }
             ToastView()

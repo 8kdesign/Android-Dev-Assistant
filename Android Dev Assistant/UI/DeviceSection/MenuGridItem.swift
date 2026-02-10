@@ -13,6 +13,7 @@ struct MenuGridItem: View {
     @EnvironmentObject var externalToolsHelper: ExternalToolsHelper
     var name: LocalizedStringResource
     var icon: String
+    var iconColor: Color
     var requireAdb: Bool
     var action: () -> ()
     
@@ -37,9 +38,9 @@ struct MenuGridItem: View {
                         .scaledToFit()
                         .frame(width: 50, height: 50)
                         .rotationEffect(.degrees(-30))
-                        .foregroundStyle(.white)
-                        .foregroundColor(.white)
-                        .opacity(0.1)
+                        .foregroundStyle(iconColor)
+                        .foregroundColor(iconColor)
+                        .opacity(0.5)
                         .offset(x: 10, y: 10)
                 }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
             }.frame(height: 80)

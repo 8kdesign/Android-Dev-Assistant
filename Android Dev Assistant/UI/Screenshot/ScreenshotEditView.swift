@@ -11,9 +11,10 @@ import UniformTypeIdentifiers
 
 struct ScreenshotEditView: View {
     
+    @EnvironmentObject var uiController: UIController
     @EnvironmentObject var toastHelper: ToastHelper
     
-    @Binding var image: NSImage?
+    var image: NSImage?
     @State var holdImage: NSImage?
     @State var leftCrop: CGFloat = 0
     @State var rightCrop: CGFloat = 1
@@ -22,7 +23,7 @@ struct ScreenshotEditView: View {
     @State var isHighlight: Bool = UserDefaultsHelper.getScreenshotEditIsHighlight()
     
     var body: some View {
-        PopupView(title: "Screenshot", exit: { image = nil }) {
+        PopupView(title: "Screenshot", exit: { uiController.showingPopup = nil }) {
             if let holdImage {
                 if holdImage.size.width < holdImage.size.height {
                     HStack (spacing: 0) {

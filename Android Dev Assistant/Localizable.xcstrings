@@ -97,6 +97,16 @@
         }
       }
     },
+    "Last Crash" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "闪退目录"
+          }
+        }
+      }
+    },
     "Mock Screen" : {
       "localizations" : {
         "zh-Hans" : {

@@ -235,4 +235,23 @@ class AdbHelper: ObservableObject {
         }
     }
     
+    func getLastCrashLogs(callback: @escaping @MainActor (String) -> ()) {
+        guard let adbPath, let selectedDevice else { return }
+        runOnLogicThread {
+            do {
+                let result = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "logcat", "-d", "*:E"])
+                Task { @MainActor in
+                    if let string = String(data: result, encoding: .utf8) {
+                        callback(string)
+                    }
+                    LogHelper.shared.insertLog(string: "Get crash logs")
+                }
+            } catch {
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
 }
