@@ -123,7 +123,11 @@ class AdbHelper: ObservableObject {
                 let image = NSImage(data: result)
                 if let image {
                     Task { @MainActor in
-                        if let savePath = self.screenshotUrl?.appendingPathComponent("\(Date().timeIntervalSince1970).png") {
+                        if let screenshotUrl = self.screenshotUrl  {
+                            if !FileManager.default.fileExists(atPath: screenshotUrl.path(percentEncoded: false)) {
+                                try? FileManager.default.createDirectory(at: screenshotUrl, withIntermediateDirectories: true)
+                            }
+                            let savePath = screenshotUrl.appendingPathComponent("\(Date().timeIntervalSince1970).png")
                             FileManager.default.createFile(atPath: savePath.path, contents: result)
                         }
                         copyToClipboard(image)

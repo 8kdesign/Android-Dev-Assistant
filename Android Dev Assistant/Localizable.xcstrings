@@ -157,9 +157,6 @@
         }
       }
     },
-    "Perfetto" : {
-      "shouldTranslate" : false
-    },
     "Phone 16:9" : {
       "localizations" : {
         "zh-Hans" : {
