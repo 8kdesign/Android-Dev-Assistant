@@ -11,23 +11,18 @@ struct LastCrashLogsView: View {
     
     @EnvironmentObject var uiController: UIController
     var logs: String
-    @State var lines: [String] = []
     
     var body: some View {
         PopupView(title: "Last Crash", exit: { uiController.showingPopup = nil }) {
             ScrollView {
-                LazyVStack {
-                    ForEach(Array(lines.enumerated()), id: \.offset) { index, line in
-                        Text(String(line))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .multilineTextAlignment(.leading)
-                            .foregroundStyle(.white)
-                            .foregroundColor(.white)
-                    }
-                }.padding(.all, 20)
+                Text(String(logs.prefix(50000)))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(.leading)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                    .textSelection(.enabled)
+                    .padding(.all)
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
-        }.onAppear {
-            lines = logs.split(separator: "\n").map { String($0.suffix(200)) }
         }
     }
     
