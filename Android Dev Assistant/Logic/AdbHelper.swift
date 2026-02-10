@@ -20,7 +20,11 @@ class AdbHelper: ObservableObject {
     var screenshotUrl: URL? = nil
     var currentDevices: Set<String> = []
     var deviceNameMap: [String: String] = [:]
-    @Published var selectedDevice: String? = nil
+    @Published var selectedDevice: String? = nil {
+        didSet {
+            objectWillChange.send()
+        }
+    }
 
     var isInstalling: String? = nil
     @Published var screenshotImage: NSImage? = nil
@@ -32,29 +36,33 @@ class AdbHelper: ObservableObject {
                 self.adbPath = path
             }
             startADBDeviceListener(adbPath: path) { status in
-                let splitStatus = status.split(separator: "\t")
-                if (splitStatus.count < 2) { return }
-                Task { @MainActor in
-                    let id = String(splitStatus[0].trimmingCharacters(in: .whitespacesAndNewlines).dropFirst(4))
-                    switch splitStatus[1].trimmingCharacters(in: .whitespacesAndNewlines) {
-                    case "device":
-                        self.currentDevices.insert(id)
-                        if self.selectedDevice == nil {
-                            self.selectedDevice = id
+                let lines = status.split(whereSeparator: \.isNewline)
+                lines.forEach { line in
+                    let splitStatus = line.split(separator: "\t")
+                    if (splitStatus.count < 2) { return }
+                    Task { @MainActor in
+                        let id = String(splitStatus[0].trimmingCharacters(in: .whitespacesAndNewlines).suffix(8))
+                        switch splitStatus[1].trimmingCharacters(in: .whitespacesAndNewlines) {
+                        case "device":
+                            self.currentDevices.insert(id)
+                            if self.selectedDevice == nil {
+                                self.selectedDevice = id
+                            }
+                            self.objectWillChange.send()
+                            runOnLogicThread {
+                                await self.getName(id: id)
+                            }
+                        case "offline":
+                            self.currentDevices.remove(id)
+                            if self.selectedDevice == id {
+                                self.selectedDevice = self.currentDevices.first
+                            }
+                            self.objectWillChange.send()
+                        default: ()
                         }
-                        self.objectWillChange.send()
-                        runOnLogicThread {
-                            await self.getName(id: id)
-                        }
-                    case "offline":
-                        self.currentDevices.remove(id)
-                        if self.selectedDevice == id {
-                            self.selectedDevice = self.currentDevices.first
-                        }
-                        self.objectWillChange.send()
-                    default: ()
                     }
                 }
+                
             }
         }
         runOnLogicThread {
