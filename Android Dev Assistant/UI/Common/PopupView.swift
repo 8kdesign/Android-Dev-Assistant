@@ -54,6 +54,7 @@ struct PopupView<Content: View>: View {
                     .padding(.all, 17)
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
+                    .background(.white.opacity(0.00001))
             }.buttonStyle(.plain)
                 .hoverOpacity()
             Spacer()
