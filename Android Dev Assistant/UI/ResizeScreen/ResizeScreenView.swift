@@ -62,7 +62,7 @@ struct ResizeScreenView: View {
             .opacity(mockScreenType == type ? 1 : 0.3)
             .onTapGesture {
                 setCurrentMockType(type)
-            }
+            }.hoverOpacity()
     }
     
 }

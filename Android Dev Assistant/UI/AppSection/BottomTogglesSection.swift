@@ -34,6 +34,7 @@ struct BottomTogglesSection: View {
                 .opacity(0.9)
                 .frame(width: 36, height: 36)
         }.buttonStyle(.plain)
+            .hoverOpacity()
     }
     
     private func FolderToggle() -> some View {
@@ -55,6 +56,7 @@ struct BottomTogglesSection: View {
                 .opacity(0.9)
                 .frame(width: 36, height: 36)
         }.buttonStyle(.plain)
+            .hoverOpacity()
     }
     
 }

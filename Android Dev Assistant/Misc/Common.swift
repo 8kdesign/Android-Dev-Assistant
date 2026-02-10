@@ -14,6 +14,7 @@ import CryptoKit
     .urls(for: .applicationSupportDirectory, in: .userDomainMask)
     .first?
     .appendingPathComponent("AndroidDevAssistant", isDirectory: true)
+let HOVER_OPACITY = 0.8
 
 enum CommonError: Error {
     case notFound

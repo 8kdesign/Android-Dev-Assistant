@@ -78,6 +78,7 @@ struct SettingsView: View {
                     .foregroundColor(.white)
                     .opacity(0.7)
                     .padding(.all)
+                    .textSelection(path == nil ? .disabled : .disabled)
                 Divider()
                 Button {
                     if let path {
@@ -94,6 +95,7 @@ struct SettingsView: View {
                         .padding(.all, 16)
                         .background(Color(red: 0.15, green: 0.15, blue: 0.15))
                 }.buttonStyle(.plain)
+                    .hoverOpacity()
             }.frame(maxWidth: .infinity)
                 .background(Color(red: 0.12, green: 0.12, blue: 0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 10))

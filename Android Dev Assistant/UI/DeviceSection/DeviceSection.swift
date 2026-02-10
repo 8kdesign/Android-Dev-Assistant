@@ -47,6 +47,7 @@ struct DeviceSection: View {
                 }
             }
         }.buttonStyle(.plain)
+            .hoverOpacity()
             .padding(.all)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -78,7 +79,7 @@ struct DeviceSection: View {
                     .onTapGesture {
                         input = ""
                         focusState = false
-                    }
+                    }.hoverOpacity(input.isEmpty ? 1 : HOVER_OPACITY)
             }.padding(.horizontal, 20)
                 .frame(height: 40)
                 .background(Capsule().fill(Color(red: 0.13, green: 0.13, blue: 0.13)))
@@ -95,6 +96,7 @@ struct DeviceSection: View {
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
             }.buttonStyle(.plain)
+                .hoverOpacity()
         }.padding([.horizontal, .bottom])
             .disabled(isAdbDisabled())
             .opacity(isAdbDisabled() ? 0.3 : 1)

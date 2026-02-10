@@ -104,6 +104,7 @@ struct AppSectionItemView: View {
                     .fill(Color(red: isDangerous ? 0.4 : 0.1, green: 0.1, blue: 0.1))
                 ).opacity(0.7)
         }.buttonStyle(.plain)
+            .hoverOpacity()
     }
     
 }

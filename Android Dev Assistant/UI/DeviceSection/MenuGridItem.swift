@@ -49,6 +49,7 @@ struct MenuGridItem: View {
         }.buttonStyle(.plain)
             .disabled(requireAdb && isAdbDisabled())
             .opacity(requireAdb && isAdbDisabled() ? 0.3 : 1)
+            .hoverOpacity(requireAdb && isAdbDisabled() ? 1 : HOVER_OPACITY)
     }
     
 }

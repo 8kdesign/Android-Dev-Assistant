@@ -27,7 +27,8 @@ struct ScreenshotOverlayView: View {
                             .padding(.all, 5)
                             .background(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }.padding(.all, 20)
+                    }.hoverOpacity()
+                        .padding(.all, 20)
                         .buttonStyle(.plain)
                         .offset(x: isShowing ? 0 : 100)
                 }

@@ -117,6 +117,7 @@ struct ScreenshotEditView: View {
                     .opacity(0.7)
             }.frame(width: 80)
         }.buttonStyle(.plain)
+            .hoverOpacity()
     }
     
     private func ModeSwitchView() -> some View {
@@ -130,6 +131,7 @@ struct ScreenshotEditView: View {
                 .opacity(isHighlight ? 0.5 : 1)
             Toggle(isOn: $isHighlight, label: {})
                 .toggleStyle(.switch)
+                .hoverOpacity()
             Image(systemName: "highlighter")
                 .resizable()
                 .scaledToFit()
