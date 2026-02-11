@@ -11,6 +11,7 @@ import AppKit
 struct LastCrashLogsView: View {
     
     @EnvironmentObject var uiController: UIController
+    @EnvironmentObject var toastHelper: ToastHelper
     var logs: String
     @State var parsedLogs: [(Date, String)] = []
     
@@ -20,13 +21,27 @@ struct LastCrashLogsView: View {
                 LazyVStack {
                     ForEach(Array(parsedLogs.enumerated()), id: \.offset) { index, item in
                         VStack(spacing: 10) {
-                            Text(item.0.formatted(date: .numeric, time: .complete))
-                                .font(.title3)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                                .foregroundStyle(.green)
-                                .foregroundColor(.green)
+                            HStack {
+                                Text(item.0.formatted(date: .numeric, time: .complete))
+                                    .font(.title3)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                                    .foregroundStyle(.green)
+                                    .foregroundColor(.green)
+                                Button {
+                                    copyToClipboard(item.1 as NSString)
+                                    toastHelper.addToast("Copied to clipboard", style: .clipboard)
+                                } label: {
+                                    Image(systemName: "list.clipboard")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 16, height: 16)
+                                        .foregroundStyle(.green)
+                                        .foregroundColor(.green)
+                                }.buttonStyle(.plain)
+                                    .hoverOpacity()
+                            }.frame(maxWidth: .infinity)
                             Text(item.1)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .multilineTextAlignment(.leading)
@@ -37,6 +52,7 @@ struct LastCrashLogsView: View {
                     }
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                .scrollIndicators(.never)
         }.onAppear {
             parseLogs()
         }

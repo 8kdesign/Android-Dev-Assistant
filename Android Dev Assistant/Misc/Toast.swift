@@ -40,7 +40,7 @@ class Toast: Identifiable {
             switch self {
             case .success: return Color(red: 0, green: 0.7, blue: 0)
             case .error: return Color(red: 0.7, green: 0, blue: 0)
-            default: return Color(red: 0.2, green: 0.2, blue: 0.2)
+            default: return Color(red: 0.15, green: 0.15, blue: 0.15)
             }
         }
         
