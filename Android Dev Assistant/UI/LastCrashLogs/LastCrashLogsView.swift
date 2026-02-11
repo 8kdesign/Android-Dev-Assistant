@@ -12,18 +12,30 @@ struct LastCrashLogsView: View {
     
     @EnvironmentObject var uiController: UIController
     var logs: String
-    @State var parsedLogs: AttributedString = ""
+    @State var parsedLogs: [(Date, String)] = []
     
     var body: some View {
         PopupView(title: "Last Crash", exit: { uiController.showingPopup = nil }) {
             ScrollView {
-                Text(parsedLogs)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .multilineTextAlignment(.leading)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
-                    .textSelection(.enabled)
-                    .padding(.all)
+                LazyVStack {
+                    ForEach(Array(parsedLogs.enumerated()), id: \.offset) { index, item in
+                        VStack(spacing: 10) {
+                            Text(item.0.formatted(date: .numeric, time: .complete))
+                                .font(.title3)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .foregroundStyle(.green)
+                                .foregroundColor(.green)
+                            Text(item.1)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .multilineTextAlignment(.leading)
+                                .foregroundStyle(.white)
+                                .foregroundColor(.white)
+                                .textSelection(.enabled)
+                        }.padding(.all)
+                    }
+                }
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
         }.onAppear {
             parseLogs()
@@ -39,7 +51,7 @@ extension LastCrashLogsView {
             var logSets: [(Date, String)] = []
             var lastDate = Date(timeIntervalSince1970: 0)
             var lastMessage = ""
-            logs.prefix(50000).split(separator: "\n").forEach { line in
+            logs.split(separator: "\n").forEach { line in
                 if !line.isEmpty {
                     let pattern = #"^(\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}).*?: (.*)$"#
                     if let regex = try? NSRegularExpression(pattern: pattern, options: []),
@@ -60,17 +72,10 @@ extension LastCrashLogsView {
                 }
             }
             if !lastMessage.isEmpty {
-                logSets.append((lastDate, lastMessage))
+                logSets.append((lastDate, String(lastMessage.trimmingCharacters(in: .whitespacesAndNewlines).prefix(50000))))
             }
             logSets.sort(by: { $0.0 > $1.0 })
-            var result = AttributedString()
-            logSets.forEach { date, message in
-                var formattedDate = AttributedString(date.formatted(date: .abbreviated, time: .complete))
-                formattedDate.foregroundColor = .green
-                result += formattedDate + "\n"
-                result += AttributedString(message) + "\n\n"
-            }
-            let finalResult = result
+            let finalResult = logSets
             Task { @MainActor in
                 parsedLogs = finalResult
             }
