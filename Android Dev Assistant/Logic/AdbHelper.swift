@@ -127,9 +127,9 @@ class AdbHelper: ObservableObject {
                 Task { @MainActor in
                     LogHelper.shared.insertLog(string: message ?? "Result parse error")
                     if isSuccess {
-                        ToastHelper.shared.addToast("Install success", icon: "arrow.down.circle.dotted")
+                        ToastHelper.shared.addToast("Install success", style: .success)
                     } else {
-                        ToastHelper.shared.addToast("Install failed", icon: "exclamationmark.triangle")
+                        ToastHelper.shared.addToast("Install failed", style: .error)
                     }
                 }
             } catch {
@@ -185,7 +185,7 @@ class AdbHelper: ObservableObject {
                 Task { @MainActor in
                     LogHelper.shared.insertLog(string: image != nil ? "Screenshot copied to clipboard" : "Screenshot failed")
                     if image != nil {
-                        ToastHelper.shared.addToast("Copied to clipboard", icon: "list.bullet.clipboard")
+                        ToastHelper.shared.addToast("Copied to clipboard", style: .clipboard)
                     }
                 }
             } catch {
@@ -265,12 +265,24 @@ class AdbHelper: ObservableObject {
         }
     }
     
-    func setScreenSize(type: MockScreenType, originalSize: ScreenSize) {
+    func setScreenSize(type: MockScreenType, originalSize: ScreenSize, onSuccess: @escaping @MainActor () -> ()) {
         guard let adbPath, let selectedDevice else { return }
         runOnLogicThread {
             do {
+                let secureSettingsError = try await runCommand(
+                    path: adbPath,
+                    arguments: ["-s", selectedDevice, "shell", "settings", "put", "global", "adb_enabled", "1"]
+                )
+                if secureSettingsError.count > 0 {
+                    Task { @MainActor in
+                        LogHelper.shared.insertLog(string: "WRITE_SECURE_SETTINGS not enabled. Please enable it in developer options")
+                        ToastHelper.shared.addToast("WRITE_SECURE_SETTINGS disabled", style: .error)
+                    }
+                    return
+                }
                 Task { @MainActor in
                     LogHelper.shared.insertLog(string: "Set screen size")
+                    onSuccess()
                 }
                 if case .NORMAL = type {
                     let result = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "wm", "size", "reset"])

@@ -19,9 +19,9 @@ class ToastHelper: ObservableObject {
     private var toastExpiryDates: [Date] = []
     private var timer: Timer? = nil
     
-    @MainActor func addToast(_ message: LocalizedStringResource, icon: String = "info.circle") {
+    @MainActor func addToast(_ message: LocalizedStringResource, style: Toast.ToastStyle) {
         let expiryDate = Date() + 2
-        let newToast = Toast(message: message, icon: icon, expiryDate: expiryDate)
+        let newToast = Toast(message: message, expiryDate: expiryDate, style: style)
         toastExpiryDates.append(expiryDate)
         toasts.append(newToast)
         objectWillChange.send()

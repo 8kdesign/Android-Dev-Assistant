@@ -64,7 +64,7 @@ struct ScreenshotEditView: View {
                 Spacer()
                 FooterItemView(name: "Copy", icon: "list.clipboard") {
                     copyToClipboard(processImage(image))
-                    toastHelper.addToast("Copied to clipboard", icon: "list.bullet.clipboard")
+                    toastHelper.addToast("Copied to clipboard", style: .clipboard)
                 }
                 FooterItemView(name: "Save", icon: "square.and.arrow.up") {
                     save(image: processImage(image))
@@ -82,7 +82,7 @@ struct ScreenshotEditView: View {
             Spacer()
             FooterItemView(name: "Copy", icon: "list.clipboard") {
                 copyToClipboard(processImage(image))
-                toastHelper.addToast("Copied to clipboard", icon: "list.bullet.clipboard")
+                toastHelper.addToast("Copied to clipboard", style: .clipboard)
             }
             FooterItemView(name: "Save", icon: "square.and.arrow.up") {
                 save(image: processImage(image))

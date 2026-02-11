@@ -33,7 +33,7 @@ struct ToastView: View {
     private func ToastItemView(toast: Toast) -> some View {
         VStack {
             HStack(spacing: 10) {
-                Image(systemName: toast.icon)
+                Image(systemName: toast.style.getIcon())
                     .resizable()
                     .scaledToFit()
                     .frame(width: 14, height: 14)
@@ -45,7 +45,7 @@ struct ToastView: View {
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
             }.padding(.all)
-                .background(Capsule().fill(Color(red: 0.1, green: 0.1, blue: 0.1)))
+                .background(Capsule().fill(toast.style.getColor()))
         }.frame(maxWidth: .infinity, alignment: .trailing)
     }
     

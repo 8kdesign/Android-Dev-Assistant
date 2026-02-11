@@ -342,6 +342,16 @@
     },
     "v%@" : {
       "shouldTranslate" : false
+    },
+    "WRITE_SECURE_SETTINGS disabled" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WRITE_SECURE_SETTINGS未开启"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

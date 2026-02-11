@@ -66,7 +66,7 @@ struct SettingsView: View {
     
     private func HeaderItemView(title: LocalizedStringResource) -> some View {
         Text(title)
-            .font(.headline)
+            .font(.body)
             .foregroundStyle(.black)
             .foregroundColor(.black)
             .lineLimit(1)

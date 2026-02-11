@@ -90,8 +90,9 @@ extension ResizeScreenView {
     
     func setCurrentMockType(_ type: MockScreenType) {
         guard let originalSize else { return }
-        adbHelper.setScreenSize(type: type, originalSize: originalSize)
-        mockScreenType = type
+        adbHelper.setScreenSize(type: type, originalSize: originalSize) {
+            mockScreenType = type
+        }
     }
     
 }
