@@ -34,3 +34,12 @@ extension View {
         modifier(HoverOpacity(hoverOpacity: value))
     }
 }
+
+extension Collection where Indices.Iterator.Element == Index {
+    subscript (safe index: Index?) -> Iterator.Element? {
+        if let nonNullIndex = index {
+            return indices.contains(nonNullIndex) ? self[nonNullIndex] : nil
+        }
+        return nil
+    }
+}

@@ -36,27 +36,61 @@ extension LastCrashLogsView {
     
     private func parseLogs() {
         runOnLogicThread {
-            var result = AttributedString()
+            var logSets: [(Date, String)] = []
+            var lastDate = Date(timeIntervalSince1970: 0)
+            var lastMessage = ""
             logs.prefix(50000).split(separator: "\n").forEach { line in
                 if !line.isEmpty {
                     let pattern = #"^(\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}).*?: (.*)$"#
                     if let regex = try? NSRegularExpression(pattern: pattern, options: []),
                        let match = regex.firstMatch(in: String(line), options: [], range: NSRange(line.startIndex..., in: line)),
                        let timestampRange = Range(match.range(at: 1), in: line),
+                       let time = parseLogcatTimestampSafely(String(line[timestampRange])),
                        let messageRange = Range(match.range(at: 2), in: line) {
-                        let timestampString = String(line[timestampRange])
-                        var coloredTimeStampString = AttributedString(timestampString)
-                        coloredTimeStampString.foregroundColor = .green
-                        result += coloredTimeStampString
-                        result += AttributedString(" \(String(line[messageRange]))\n")
+                        let message = String(line[messageRange])
+                        if time.timeIntervalSince1970 - lastDate.timeIntervalSince1970 > 2 {
+                            if lastDate.timeIntervalSince1970 > 0 {
+                                logSets.append((lastDate, lastMessage))
+                            }
+                            lastDate = time
+                            lastMessage = ""
+                        }
+                        lastMessage += message + "\n"
                     }
                 }
             }
-            let fixedResult = result
+            if !lastMessage.isEmpty {
+                logSets.append((lastDate, lastMessage))
+            }
+            logSets.sort(by: { $0.0 > $1.0 })
+            var result = AttributedString()
+            logSets.forEach { date, message in
+                var formattedDate = AttributedString(date.formatted(date: .abbreviated, time: .complete))
+                formattedDate.foregroundColor = .green
+                result += formattedDate + "\n"
+                result += AttributedString(message) + "\n\n"
+            }
+            let finalResult = result
             Task { @MainActor in
-                parsedLogs = fixedResult
+                parsedLogs = finalResult
             }
         }
+    }
+    
+    @LogicActor func parseLogcatTimestampSafely(_ ts: String) -> Date? {
+        let now = Date()
+        let calendar = Calendar.current
+        let year = calendar.component(.year, from: now)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = .current
+        // Try current year
+        if let date = formatter.date(from: "\(year)-\(ts)"), date <= now {
+            return date
+        }
+        // Otherwise, assume previous year
+        return formatter.date(from: "\(year - 1)-\(ts)")
     }
     
 }
