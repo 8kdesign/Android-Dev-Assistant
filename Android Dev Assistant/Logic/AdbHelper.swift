@@ -36,12 +36,12 @@ class AdbHelper: ObservableObject {
                 self.adbPath = path
             }
             startADBDeviceListener(adbPath: path) { status in
-                let lines = status.split(whereSeparator: \.isNewline)
+                let lines = status.dropFirst(4).split(whereSeparator: \.isNewline)
                 lines.forEach { line in
                     let splitStatus = line.split(separator: "\t")
                     if (splitStatus.count < 2) { return }
                     Task { @MainActor in
-                        let id = String(splitStatus[0].trimmingCharacters(in: .whitespacesAndNewlines).suffix(8))
+                        let id = String(splitStatus[0].trimmingCharacters(in: .whitespacesAndNewlines))
                         switch splitStatus[1].trimmingCharacters(in: .whitespacesAndNewlines) {
                         case "device":
                             self.currentDevices.insert(id)
