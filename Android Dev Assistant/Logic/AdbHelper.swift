@@ -300,7 +300,10 @@ class AdbHelper: ObservableObject {
         guard let adbPath, let selectedDevice else { return }
         runOnLogicThread {
             do {
-                let result = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "logcat", "-d", "*:E"])
+                let result = try await runCommand(
+                    path: adbPath,
+                    arguments: ["-s", selectedDevice, "logcat", "-b", "crash", "-d", "-v", "threadtime"]
+                )
                 Task { @MainActor in
                     if let string = String(data: result, encoding: .utf8) {
                         callback(string)
