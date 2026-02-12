@@ -107,6 +107,16 @@
         }
       }
     },
+    "Drag and drop repo folders to add them." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将项目根文件夹拖放到此处即可导入"
+          }
+        }
+      }
+    },
     "Fold 1:1" : {
       "localizations" : {
         "zh-Hans" : {

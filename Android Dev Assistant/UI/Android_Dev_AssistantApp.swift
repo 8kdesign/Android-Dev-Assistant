@@ -16,6 +16,7 @@ struct Android_Dev_AssistantApp: App {
     @StateObject var toastHelper: ToastHelper = ToastHelper.shared
     @StateObject var logHelper: LogHelper = LogHelper.shared
     @StateObject var externalToolsHelper: ExternalToolsHelper = ExternalToolsHelper()
+    @StateObject var repoHelper: RepoHelper = RepoHelper()
     
     var body: some Scene {
         Window("Android Dev Assistant", id: "main") {
@@ -26,6 +27,7 @@ struct Android_Dev_AssistantApp: App {
                 .environmentObject(toastHelper)
                 .environmentObject(logHelper)
                 .environmentObject(externalToolsHelper)
+                .environmentObject(repoHelper)
         }
     }
 }

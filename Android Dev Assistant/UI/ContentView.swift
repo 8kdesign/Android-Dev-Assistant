@@ -11,21 +11,29 @@ struct ContentView: View {
     
     @EnvironmentObject var uiController: UIController
     @EnvironmentObject var externalTool: ExternalToolsHelper
+    @State var isDeviceTab = true
     
     var body: some View {
         ZStack {
             HStack(spacing: 0) {
                 VStack(spacing: 0) {
-                    AppSection()
+                    HeaderTabView(isDeviceTab: $isDeviceTab)
+                    if (isDeviceTab) {
+                        AppSection()
+                    } else {
+                        RepoSection()
+                    }
                     BottomTogglesSection()
                 }.frame(maxWidth: 250, maxHeight: .infinity)
                     .background(Color(red: 0.07, green: 0.07, blue: 0.07))
                 Divider().opacity(0.7)
                 VStack(spacing: 0) {
-                    DeviceSection()
-                    Divider().opacity(0.7)
-                    LogsSection()
-                }
+                    if (isDeviceTab) {
+                        DeviceSection()
+                    } else {
+                        Spacer()
+                    }
+                }.frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             ScreenshotOverlayView()
             switch uiController.showingPopup {
