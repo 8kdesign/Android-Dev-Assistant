@@ -23,7 +23,9 @@ class StorageHelper {
         return container
     }()
     
-    @LogicActor func addLink(_ path: String) {
+    // Apk
+    
+    @LogicActor func addApkItem(_ path: String) {
         let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
         context.persistentStoreCoordinator = persistantContainer.persistentStoreCoordinator
         return context.performAndWait {
@@ -41,7 +43,7 @@ class StorageHelper {
         }
     }
     
-    @LogicActor func removeLink(_ path: String) {
+    @LogicActor func removeApkItem(_ path: String) {
         let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
         context.persistentStoreCoordinator = persistantContainer.persistentStoreCoordinator
         return context.performAndWait {
@@ -70,6 +72,62 @@ class StorageHelper {
                        let url = URL(string: path),
                        let apkItem = ApkItem.fromPath(url) {
                         items.append(apkItem)
+                    }
+                }
+            } catch {}
+            return items
+        }
+    }
+    
+    // Repo
+    
+    @LogicActor func addRepoItem(_ path: String) {
+        let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        context.persistentStoreCoordinator = persistantContainer.persistentStoreCoordinator
+        return context.performAndWait {
+            do {
+                let fetchRequest = StoredRepoItem.fetchRequest()
+                fetchRequest.predicate = NSPredicate(format: "path == %@", path as CVarArg)
+                let result = try context.fetch(fetchRequest)
+                result.forEach { item in
+                    context.delete(item)
+                }
+                let newItem = StoredRepoItem(context: context)
+                newItem.path = path
+                try context.save()
+            } catch {}
+        }
+    }
+    
+    @LogicActor func removeRepoItem(_ path: String) {
+        let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        context.persistentStoreCoordinator = persistantContainer.persistentStoreCoordinator
+        return context.performAndWait {
+            do {
+                let fetchRequest = StoredRepoItem.fetchRequest()
+                fetchRequest.predicate = NSPredicate(format: "path == %@", path as CVarArg)
+                let result = try context.fetch(fetchRequest)
+                print(result, path)
+                result.forEach { item in
+                    context.delete(item)
+                }
+                try context.save()
+            } catch {}
+        }
+    }
+    
+    @LogicActor func getRepoItems() -> [RepoItem] {
+        let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        context.persistentStoreCoordinator = persistantContainer.persistentStoreCoordinator
+        return context.performAndWait {
+            var items: [RepoItem] = []
+            do {
+                let fetchRequest = StoredRepoItem.fetchRequest()
+                let result = try context.fetch(fetchRequest)
+                result.forEach { item in
+                    if let path = item.path,
+                       let url = URL(string: path) {
+                        items.append(RepoItem(url: url))
                     }
                 }
             } catch {}

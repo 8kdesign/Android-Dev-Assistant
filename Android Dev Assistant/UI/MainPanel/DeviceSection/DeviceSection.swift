@@ -19,8 +19,6 @@ struct DeviceSection: View {
             CurrentDeviceSelector()
             InputView()
             MenuGridView()
-            Divider().opacity(0.7)
-            LogsSection()
         }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
     

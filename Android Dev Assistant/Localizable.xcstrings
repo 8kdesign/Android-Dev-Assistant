@@ -4,6 +4,9 @@
     "" : {
       "shouldTranslate" : false
     },
+    "@%@" : {
+      "shouldTranslate" : false
+    },
     "ADB" : {
       "shouldTranslate" : false
     },
@@ -23,6 +26,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "截图文件自动清理"
+          }
+        }
+      }
+    },
+    "Branch" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分支"
           }
         }
       }

@@ -12,11 +12,12 @@ struct Android_Dev_AssistantApp: App {
     
     @StateObject var uiController: UIController = UIController()
     @StateObject var apkHelper: ApkHelper = ApkHelper()
-    @StateObject var adbHelper: AdbHelper = AdbHelper.shared
+    @StateObject var adbHelper: AdbHelper = AdbHelper()
     @StateObject var toastHelper: ToastHelper = ToastHelper.shared
     @StateObject var logHelper: LogHelper = LogHelper.shared
     @StateObject var externalToolsHelper: ExternalToolsHelper = ExternalToolsHelper()
     @StateObject var repoHelper: RepoHelper = RepoHelper()
+    @StateObject var gitHelper: GitHelper = GitHelper()
     
     var body: some Scene {
         Window("Android Dev Assistant", id: "main") {
@@ -28,6 +29,7 @@ struct Android_Dev_AssistantApp: App {
                 .environmentObject(logHelper)
                 .environmentObject(externalToolsHelper)
                 .environmentObject(repoHelper)
+                .environmentObject(gitHelper)
         }
     }
 }

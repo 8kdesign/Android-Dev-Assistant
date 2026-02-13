@@ -3,4 +3,7 @@
     <entity name="StoredAppItem" representedClassName="StoredAppItem" syncable="YES" codeGenerationType="class">
         <attribute name="path" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="StoredRepoItem" representedClassName="StoredRepoItem" syncable="YES" codeGenerationType="class">
+        <attribute name="path" optional="YES" attributeType="String"/>
+    </entity>
 </model>

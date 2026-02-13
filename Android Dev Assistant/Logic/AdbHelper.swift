@@ -11,8 +11,6 @@ import Combine
 import AppKit
 
 class AdbHelper: ObservableObject {
-    
-    static let shared = AdbHelper()
 
     let objectWillChange = ObservableObjectPublisher()
     

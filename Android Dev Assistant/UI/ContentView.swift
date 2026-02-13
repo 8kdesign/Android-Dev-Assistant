@@ -31,8 +31,10 @@ struct ContentView: View {
                     if (isDeviceTab) {
                         DeviceSection()
                     } else {
-                        Spacer()
+                        GitSection()
                     }
+                    Divider().opacity(0.7)
+                    LogsSection()
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             ScreenshotOverlayView()

@@ -20,9 +20,9 @@ class ApkItem: Identifiable {
     static func fromPath(_ url: URL) -> ApkItem? {
         guard url.pathExtension == "apk" else { return nil }
         let name = url.lastPathComponent
-        let attributes = try? FileManager.default.attributesOfItem(atPath: url.path())
+        let attributes = try? FileManager.default.attributesOfItem(atPath: url.path(percentEncoded: false))
         let lastModified = attributes?[.modificationDate] as? Date
-        return ApkItem(path: url.path(), name: name, lastModified: lastModified)
+        return ApkItem(path: url.path(percentEncoded: false), name: name, lastModified: lastModified)
     }
     
     init(path: String, name: String, lastModified: Date?) {
