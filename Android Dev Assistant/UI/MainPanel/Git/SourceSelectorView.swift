@@ -39,7 +39,7 @@ struct SourceSelectorView: View {
             .frame(width: 200)
             .background(Color(red: 0.12, green: 0.12, blue: 0.12))
             .clipShape(RoundedRectangle(cornerRadius: 15))
-            .padding(.all)
+            .padding([.vertical, .leading])
             .onReceive(repoHelper.$selectedRepo) { repo in
                 fetchRepoBranches(repo)
             }.onChange(of: selectedBranch) { branch in

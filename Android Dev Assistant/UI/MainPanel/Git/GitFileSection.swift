@@ -18,7 +18,7 @@ struct GitFileSection: View {
     @State var files: [GitFileItem] = []
     @State var searchResults: [GitFileItem] = []
     @State var selectedFile: GitFileItem? = nil
-    @State var content: [String]? = nil
+    @State var content: (list: [String], error: LocalizedStringResource?)? = nil
     @State var job: Task<(), Never>? = nil
     
     var body: some View {
@@ -86,36 +86,62 @@ struct GitFileSection: View {
     private func BrowseFileView(file: GitFileItem) -> some View {
         VStack(spacing: 0) {
             FileItemView(file: file)
-                .padding(.vertical, 10)
-            ScrollView {
-                if let content {
-                    LazyVStack(spacing: 2) {
-                        ForEach(Array(content.enumerated()), id: \.offset) { index, item in
-                            HStack(alignment: .top) {
-                                Text("\(index)")
-                                    .frame(width: 50, alignment: .trailing)
-                                    .foregroundStyle(.white)
-                                    .foregroundColor(.white)
-                                    .opacity(0.5)
-                                Divider()
-                                    .opacity(0.5)
-                                Text(item)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .multilineTextAlignment(.leading)
-                                    .foregroundStyle(.white)
-                                    .foregroundColor(.white)
-                            }
-                        }
+                .padding(.top)
+            if let content {
+                if let error = content.error {
+                    VStack(spacing: 15) {
+                        Image(systemName: "externaldrive.badge.xmark")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(.white)
+                            .foregroundColor(.white)
+                        Text(error)
+                            .font(.title3)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .multilineTextAlignment(.center)
+                            .foregroundStyle(.white)
+                            .foregroundColor(.white)
                     }.padding(.all)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 2) {
+                            ForEach(Array(content.list.enumerated()), id: \.offset) { index, item in
+                                HStack(alignment: .top) {
+                                    Text("\(index)")
+                                        .frame(width: 50, alignment: .trailing)
+                                        .foregroundStyle(.white)
+                                        .foregroundColor(.white)
+                                        .opacity(0.5)
+                                    Divider()
+                                        .opacity(0.5)
+                                    Text(item)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .multilineTextAlignment(.leading)
+                                        .foregroundStyle(.white)
+                                        .foregroundColor(.white)
+                                }
+                            }
+                        }.padding(.all)
+                    }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-            }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                VStack {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .accentColor(.white)
+                        .tint(.white)
+                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private func FileItemView(file: GitFileItem) -> some View {
         HStack(spacing: 15) {
             if selectedFile != nil {
-                Image(systemName: "xmark.circle.fill")
+                Image(systemName: "xmark.circle")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 16, height: 16)
@@ -182,9 +208,9 @@ extension GitFileSection {
         if let repo = repoHelper.selectedRepo, let hash = selectedCommit?.longHash, let file = selectedFile {
             job = gitHelper.getFileData(repo: repo, hash: hash, file: file.path) { result in
                 if let result {
-                    content = result.split(separator: "\n").map { String($0) }
+                    content = (result.split(separator: "\n").map { String($0) }, nil)
                 } else {
-                    content = nil
+                    content = ([], "File not found")
                 }
             }
         }
