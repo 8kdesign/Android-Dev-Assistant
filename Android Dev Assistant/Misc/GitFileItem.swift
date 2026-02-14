@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct GitFileItem: Identifiable {
+struct GitFileItem: Identifiable, Equatable {
     
     var id: String
     var name: String
@@ -17,6 +17,10 @@ struct GitFileItem: Identifiable {
         self.id = sha256(path)
         self.path = path
         self.name = String(path.split(separator: "/").last ?? "")
+    }
+    
+    static func == (lhs: GitFileItem, rhs: GitFileItem) -> Bool {
+        return lhs.id == rhs.id
     }
     
 }

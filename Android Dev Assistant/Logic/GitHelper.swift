@@ -161,4 +161,37 @@ class GitHelper: ObservableObject {
         }
     }
     
+    func getFileData(repo: RepoItem, hash: String, file: String, callback: @escaping @MainActor (String?) -> ()) -> Task<(), Never>? {
+        guard let gitPath else {
+            callback(nil)
+            return nil
+        }
+        return runOnLogicThread {
+            do {
+                let result = try await runCommand(path: gitPath, arguments: ["-C", repo.path, "show", "\(hash):\(file)"])
+                let string = String(data: result, encoding: .utf8)
+                if string?.starts(with: "fatal") == true {
+                    if !Task.isCancelled {
+                        Task { @MainActor in
+                            callback(nil)
+                        }
+                    }
+                    return
+                }
+                if !Task.isCancelled {
+                    Task { @MainActor in
+                        callback(string)
+                    }
+                }
+            } catch {
+                if !Task.isCancelled {
+                    Task { @MainActor in
+                        callback(nil)
+                        LogHelper.shared.insertLog(string: error.localizedDescription)
+                    }
+                }
+            }
+        }
+    }
+    
 }
