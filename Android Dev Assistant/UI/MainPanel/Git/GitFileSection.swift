@@ -14,8 +14,8 @@ struct GitFileSection: View {
     @FocusState var focus: Bool
     
     @State var searchTerm: String = ""
-    @State var files: [GitFileItem] = []
-    @State var searchResults: [GitFileItem] = []
+    @State var files: [GitFileItem]? = nil
+    @State var searchResults: [GitFileItem]? = nil
     @State var selectedFile: GitFileItem? = nil
     @State var content: (list: [String], error: LocalizedStringResource?)? = nil
     @State var job: Task<(), Never>? = nil
@@ -74,17 +74,26 @@ struct GitFileSection: View {
                 .background(Capsule().fill(Color(red: 0.13, green: 0.13, blue: 0.13)))
                 .frame(maxWidth: 300, alignment: .leading)
                 .padding(.all)
-            ScrollView {
-                LazyVStack(spacing: 10) {
-                    ForEach(searchResults) { file in
-                        FileItemView(file: file)
-                            .onTapGesture {
-                                selectedFile = file
-                            }.hoverOpacity()
+            if let searchResults {
+                ScrollView {
+                    LazyVStack(spacing: 10) {
+                        ForEach(searchResults) { file in
+                            FileItemView(file: file)
+                                .onTapGesture {
+                                    selectedFile = file
+                                }.hoverOpacity()
+                        }
                     }
-                }
-            }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                .scrollIndicators(.hidden)
+                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .scrollIndicators(.hidden)
+            } else {
+                VStack {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .accentColor(.white)
+                        .tint(.white)
+                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
@@ -120,7 +129,7 @@ struct GitFileSection: View {
         }.padding(.horizontal, 15)
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity)
-            .background(RoundedRectangle(cornerRadius: 5).fill(Color(red: 0.15, green: 0.15, blue: 0.15)))
+            .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.15, green: 0.15, blue: 0.15)))
             .padding(.horizontal, 15)
     }
     
@@ -200,8 +209,8 @@ struct GitFileSection: View {
 extension GitFileSection {
     
     private func getFiles() {
-        files = []
-        searchResults = []
+        files = nil
+        searchResults = nil
         if let repo = repoHelper.selectedRepo, let hash = gitHelper.selectedCommit?.longHash {
             gitHelper.getFiles(repo: repo, hash: hash) { list in
                 files = list
@@ -215,7 +224,7 @@ extension GitFileSection {
         let existingFiles = files
         let lowercaseSearchTerm = searchTerm.lowercased()
         job = runOnLogicThread {
-            let results = existingFiles.filter { $0.name.lowercased().contains(lowercaseSearchTerm) }
+            let results = existingFiles?.filter { $0.name.lowercased().contains(lowercaseSearchTerm) }
             if !Task.isCancelled {
                 Task { @MainActor in
                     self.searchResults = results
