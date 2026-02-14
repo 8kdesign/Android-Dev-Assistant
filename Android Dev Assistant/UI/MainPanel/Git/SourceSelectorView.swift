@@ -44,7 +44,7 @@ struct SourceSelectorView: View {
             }.onReceive(repoHelper.$selectedRepo) { repo in
                 isSelectingBranch = false
                 filteredBranches = []
-                gitHelper.fetchRepoBranches(repo)
+                gitHelper.selectedRepo = repo
             }
     }
     

@@ -13,6 +13,11 @@ class GitHelper: ObservableObject {
     let objectWillChange = ObservableObjectPublisher()
     
     var gitPath: String? = nil
+    var selectedRepo: RepoItem? = nil {
+        didSet {
+            fetchRepoBranches(selectedRepo)
+        }
+    }
     @Published var branches: [String] = []
     var currentBranch: String? = nil
     var selectedBranch: String? = nil
@@ -25,13 +30,14 @@ class GitHelper: ObservableObject {
             guard let path = runWhich(command: "git") else { return }
             Task { @MainActor in
                 self.gitPath = path
+                self.fetchRepoBranches(self.selectedRepo)
             }
         }
     }
 
     // Branch
     
-    func fetchRepoBranches(_ repo: RepoItem?) {
+    private func fetchRepoBranches(_ repo: RepoItem?) {
         gitJob?.cancel()
         branches = []
         commits = []
