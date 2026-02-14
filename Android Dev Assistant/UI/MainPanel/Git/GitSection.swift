@@ -15,7 +15,7 @@ struct GitSection: View {
     var body: some View {
         HStack(spacing: 0) {
             SourceSelectorView()
-            GitFileSection(selectedCommit: $gitHelper.selectedCommit)
+            GitFileSection()
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .opacity(gitHelper.selectedBranch == nil ? 0.3 : 1)
             .disabled(gitHelper.selectedBranch == nil)

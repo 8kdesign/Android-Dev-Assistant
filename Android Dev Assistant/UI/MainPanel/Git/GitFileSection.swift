@@ -13,13 +13,15 @@ struct GitFileSection: View {
     @EnvironmentObject var gitHelper: GitHelper
     @FocusState var focus: Bool
     
-    @Binding var selectedCommit: CommitItem?
     @State var searchTerm: String = ""
     @State var files: [GitFileItem] = []
     @State var searchResults: [GitFileItem] = []
     @State var selectedFile: GitFileItem? = nil
     @State var content: (list: [String], error: LocalizedStringResource?)? = nil
     @State var job: Task<(), Never>? = nil
+    @State var firstIndexSelection: Int? = nil
+    @State var secondIndexSelection: Int? = nil
+    @State var selectedRange: ClosedRange<Int>? = nil
     
     var body: some View {
         VStack {
@@ -33,7 +35,7 @@ struct GitFileSection: View {
                 getFiles()
             }.onTapGesture {
                 focus = false
-            }.onChange(of: selectedCommit) { _ in
+            }.onChange(of: gitHelper.selectedCommit) { _ in
                 focus = false
                 getFiles()
                 getFileContent()
@@ -41,6 +43,9 @@ struct GitFileSection: View {
                 search()
             }.onChange(of: selectedFile) { _ in
                 getFileContent()
+            }.onReceive(repoHelper.$selectedRepo) { _ in
+                searchTerm = ""
+                selectedFile = nil
             }
     }
     
@@ -83,61 +88,6 @@ struct GitFileSection: View {
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    private func BrowseFileView(file: GitFileItem) -> some View {
-        VStack(spacing: 0) {
-            FileItemView(file: file)
-                .padding(.top)
-            if let content {
-                if let error = content.error {
-                    VStack(spacing: 15) {
-                        Image(systemName: "externaldrive.badge.xmark")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                            .foregroundStyle(.white)
-                            .foregroundColor(.white)
-                        Text(error)
-                            .font(.title3)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .multilineTextAlignment(.center)
-                            .foregroundStyle(.white)
-                            .foregroundColor(.white)
-                    }.padding(.all)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    ScrollView {
-                        LazyVStack(spacing: 2) {
-                            ForEach(Array(content.list.enumerated()), id: \.offset) { index, item in
-                                HStack(alignment: .top) {
-                                    Text("\(index)")
-                                        .frame(width: 50, alignment: .trailing)
-                                        .foregroundStyle(.white)
-                                        .foregroundColor(.white)
-                                        .opacity(0.5)
-                                    Divider()
-                                        .opacity(0.5)
-                                    Text(item)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .multilineTextAlignment(.leading)
-                                        .foregroundStyle(.white)
-                                        .foregroundColor(.white)
-                                }
-                            }
-                        }.padding(.all)
-                    }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
-            } else {
-                VStack {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .accentColor(.white)
-                        .tint(.white)
-                }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-
-        }.frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-    
     private func FileItemView(file: GitFileItem) -> some View {
         HStack(spacing: 15) {
             if selectedFile != nil {
@@ -147,6 +97,7 @@ struct GitFileSection: View {
                     .frame(width: 16, height: 16)
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
+                    .opacity(0.7)
                     .onTapGesture {
                         selectedFile = nil
                     }.hoverOpacity()
@@ -173,6 +124,77 @@ struct GitFileSection: View {
             .padding(.horizontal, 15)
     }
     
+    private func BrowseFileView(file: GitFileItem) -> some View {
+        VStack(spacing: 0) {
+            FileItemView(file: file)
+                .padding(.top)
+            if let content {
+                if let error = content.error {
+                    VStack(spacing: 15) {
+                        Image(systemName: "externaldrive.badge.xmark")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(.white)
+                            .foregroundColor(.white)
+                        Text(error)
+                            .font(.title3)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .multilineTextAlignment(.center)
+                            .foregroundStyle(.white)
+                            .foregroundColor(.white)
+                    }.padding(.all)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(Array(content.list.enumerated()), id: \.offset) { index, item in
+                                FileLineView(index: index, line: item)
+                            }
+                        }.padding(.all)
+                    }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            } else {
+                VStack {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .accentColor(.white)
+                        .tint(.white)
+                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+
+        }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onTapGesture {
+                selectIndex(index: nil)
+            }.contextMenu {
+                Button("Copy") {
+                    copyLines()
+                }
+            }
+    }
+    
+    private func FileLineView(index: Int, line: String) -> some View {
+        return HStack(alignment: .top) {
+            Text("\(index + 1)")
+                .frame(width: 50, alignment: .trailing)
+                .foregroundStyle(.white)
+                .foregroundColor(.white)
+                .padding(.all, 5)
+                .opacity(0.5)
+            Divider()
+                .opacity(0.5)
+            Text(line)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .multilineTextAlignment(.leading)
+                .foregroundStyle(.white)
+                .foregroundColor(.white)
+                .padding(.all, 5)
+        }.background(selectedRange?.contains(index) == true || firstIndexSelection == index ? .red.opacity(0.1) : .white.opacity(0.000001))
+            .onTapGesture {
+                selectIndex(index: index)
+            }.hoverOpacity()
+    }
+    
 }
 
 extension GitFileSection {
@@ -180,7 +202,7 @@ extension GitFileSection {
     private func getFiles() {
         files = []
         searchResults = []
-        if let repo = repoHelper.selectedRepo, let hash = selectedCommit?.longHash {
+        if let repo = repoHelper.selectedRepo, let hash = gitHelper.selectedCommit?.longHash {
             gitHelper.getFiles(repo: repo, hash: hash) { list in
                 files = list
                 search()
@@ -205,13 +227,59 @@ extension GitFileSection {
     private func getFileContent() {
         job?.cancel()
         content = nil
-        if let repo = repoHelper.selectedRepo, let hash = selectedCommit?.longHash, let file = selectedFile {
+        selectIndex(index: nil)
+        if let repo = repoHelper.selectedRepo, let hash = gitHelper.selectedCommit?.longHash, let file = selectedFile {
             job = gitHelper.getFileData(repo: repo, hash: hash, file: file.path) { result in
                 if let result {
                     content = (result.split(separator: "\n").map { String($0) }, nil)
                 } else {
                     content = ([], "File not found")
                 }
+            }
+        }
+    }
+    
+    private func selectIndex(index: Int?) {
+        guard let index else {
+            firstIndexSelection = nil
+            secondIndexSelection = nil
+            selectedRange = nil
+            return
+        }
+        if let selectedRange, selectedRange.contains(index) {
+            firstIndexSelection = nil
+            secondIndexSelection = nil
+            self.selectedRange = nil
+            return
+        }
+        if firstIndexSelection == nil || secondIndexSelection != nil {
+            firstIndexSelection = index
+            secondIndexSelection = nil
+            selectedRange = nil
+        } else if secondIndexSelection == nil, let firstIndexSelection {
+            secondIndexSelection = index
+            let minValue = min(firstIndexSelection, index)
+            let maxValue = max(firstIndexSelection, index)
+            selectedRange = minValue...maxValue
+        }
+    }
+    
+    private func copyLines() {
+        if let list = content?.list {
+            if let selectedRange {
+                var lines = ""
+                for index in selectedRange {
+                    if let line = list[safe: index] {
+                        lines += line + "\n"
+                    }
+                }
+                if lines.last == "\n" {
+                    lines.removeLast()
+                }
+                copyToClipboard(lines as NSString)
+            } else {
+                let lines = list.joined(separator: "\n")
+                copyToClipboard(lines as NSString)
             }
         }
     }
