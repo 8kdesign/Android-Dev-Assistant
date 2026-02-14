@@ -72,7 +72,10 @@ class GitHelper: ObservableObject {
     }
     
     func getBranchCommits(repo: RepoItem, branch: String, callback: @escaping @MainActor ([CommitItem]) -> ()) -> Task<(), Never>? {
-        guard let gitPath else { return nil }
+        guard let gitPath else {
+            callback([])
+            return nil
+        }
         return runOnLogicThread {
             do {
                 let result = try await runCommand(
@@ -81,8 +84,10 @@ class GitHelper: ObservableObject {
                 )
                 let string = String(data: result, encoding: .utf8)
                 if string?.starts(with: "fatal") == true {
-                    Task { @MainActor in
-                        callback([])
+                    if !Task.isCancelled {
+                        Task { @MainActor in
+                            callback([])
+                        }
                     }
                     return
                 }
@@ -91,20 +96,66 @@ class GitHelper: ObservableObject {
                         let parts = line.split(separator: "|", maxSplits: 4, omittingEmptySubsequences: false)
                         guard parts.count == 5 else { return nil }
                         return CommitItem(
-                            longHash: String(parts[0]),
+                            longHash: String(parts[0].trimmingCharacters(in: CharacterSet(charactersIn: "\""))),
                             shortHash: String(parts[1]),
                             author: String(parts[2]),
                             date: String(parts[3]),
                             message: String(parts[4].trimmingCharacters(in: CharacterSet(charactersIn: "\"")))
                         )
                     } ?? []
-                Task { @MainActor in
-                    callback(commits)
+                if !Task.isCancelled {
+                    Task { @MainActor in
+                        callback(commits)
+                    }
                 }
             } catch {
-                Task { @MainActor in
-                    callback([])
-                    LogHelper.shared.insertLog(string: error.localizedDescription)
+                if !Task.isCancelled {
+                    Task { @MainActor in
+                        callback([])
+                        LogHelper.shared.insertLog(string: error.localizedDescription)
+                    }
+                }
+            }
+        }
+    }
+    
+    func getFiles(repo: RepoItem, hash: String, callback: @escaping @MainActor ([GitFileItem]) -> ()) {
+        guard let gitPath else {
+            callback([])
+            return
+        }
+        runOnLogicThread {
+            do {
+                let result = try await runCommand(
+                    path: gitPath,
+                    arguments: ["-C", repo.path, "ls-tree", "-r", hash, "--name-only"],
+                )
+                let string = String(data: result, encoding: .utf8)
+                if string?.starts(with: "fatal") == true {
+                    if !Task.isCancelled {
+                        Task { @MainActor in
+                            callback([])
+                        }
+                    }
+                    return
+                }
+                var fileList: [GitFileItem] = []
+                for path in string?.split(separator: "\n") ?? [] {
+                    let item = await GitFileItem(path: String(path))
+                    fileList.append(item)
+                }
+                let fixedFileList = fileList
+                if !Task.isCancelled {
+                    Task { @MainActor in
+                        callback(fixedFileList)
+                    }
+                }
+            } catch {
+                if !Task.isCancelled {
+                    Task { @MainActor in
+                        callback([])
+                        LogHelper.shared.insertLog(string: error.localizedDescription)
+                    }
                 }
             }
         }

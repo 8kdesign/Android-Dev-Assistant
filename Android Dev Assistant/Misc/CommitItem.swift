@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CommitItem: Identifiable {
+struct CommitItem: Identifiable, Equatable {
     
     var id: String { longHash }
     let longHash: String
@@ -15,5 +15,10 @@ struct CommitItem: Identifiable {
     let author: String
     let date: String
     let message: String
+    
+    
+    static func == (lhs: CommitItem, rhs: CommitItem) -> Bool {
+        return lhs.id == rhs.id
+    }
     
 }
