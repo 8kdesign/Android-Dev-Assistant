@@ -11,6 +11,7 @@ fileprivate let defaults = UserDefaults.standard
 
 fileprivate let SCREENSHOT_EDIT_IS_HIGHLIGHT_KEY = "screenshot_edit_is_highlight"
 fileprivate let DISABLE_SCREENSHOT_CLEANER_KEY = "screenshot_cleaner"
+fileprivate let LAST_SELECTED_TAB_IS_REPO = "last_selected_tab_is_repo"
 
 class UserDefaultsHelper {
     
@@ -28,6 +29,14 @@ class UserDefaultsHelper {
     
     static func getScreenshotCleanerEnabled() -> Bool {
         return !defaults.bool(forKey: DISABLE_SCREENSHOT_CLEANER_KEY)
+    }
+    
+    static func setLastSelectedTab(_ isRepo: Bool) {
+        defaults.set(isRepo, forKey: LAST_SELECTED_TAB_IS_REPO)
+    }
+    
+    static func getLastSelectedTabIsRepo() -> Bool {
+        return defaults.bool(forKey: LAST_SELECTED_TAB_IS_REPO)
     }
     
 }

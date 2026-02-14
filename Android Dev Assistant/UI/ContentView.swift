@@ -11,27 +11,27 @@ struct ContentView: View {
     
     @EnvironmentObject var uiController: UIController
     @EnvironmentObject var externalTool: ExternalToolsHelper
-    @State var isDeviceTab = true
+    @State var isRepoTab = UserDefaultsHelper.getLastSelectedTabIsRepo()
     
     var body: some View {
         ZStack {
             HStack(spacing: 0) {
                 VStack(spacing: 0) {
-                    HeaderTabView(isDeviceTab: $isDeviceTab)
-                    if (isDeviceTab) {
-                        AppSection()
-                    } else {
+                    HeaderTabView(isRepoTab: $isRepoTab)
+                    if (isRepoTab) {
                         RepoSection()
+                    } else {
+                        AppSection()
                     }
                     BottomTogglesSection()
                 }.frame(maxWidth: 250, maxHeight: .infinity)
                     .background(Color(red: 0.07, green: 0.07, blue: 0.07))
                 Divider().opacity(0.7)
                 VStack(spacing: 0) {
-                    if (isDeviceTab) {
-                        DeviceSection()
-                    } else {
+                    if (isRepoTab) {
                         GitSection()
+                    } else {
+                        DeviceSection()
                     }
                     Divider().opacity(0.7)
                     LogsSection()

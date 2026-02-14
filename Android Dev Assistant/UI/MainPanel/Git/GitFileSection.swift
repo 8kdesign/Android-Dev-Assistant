@@ -45,14 +45,29 @@ struct GitFileSection: View {
     }
     
     private func SelectFileView() -> some View {
-        VStack(spacing: 0) {
-            TextField("Search", text: $searchTerm)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .focused($focus)
-                .padding(.horizontal)
-                .padding(.vertical, 10)
-                .background(RoundedRectangle(cornerRadius: 15).fill(Color(red: 0.15, green: 0.15, blue: 0.15)))
-                .textFieldStyle(.plain)
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                TextField("Search", text: $searchTerm)
+                    .textFieldStyle(.plain)
+                    .frame(maxWidth: .infinity)
+                    .focused($focus)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                Image(systemName: "xmark.circle")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                    .opacity(searchTerm.isEmpty ? 0.3 : 0.7)
+                    .onTapGesture {
+                        searchTerm = ""
+                        focus = false
+                    }.hoverOpacity(searchTerm.isEmpty ? 1 : HOVER_OPACITY)
+            }.padding(.horizontal, 20)
+                .frame(height: 40)
+                .background(Capsule().fill(Color(red: 0.13, green: 0.13, blue: 0.13)))
+                .frame(maxWidth: 300, alignment: .leading)
                 .padding(.all)
             ScrollView {
                 LazyVStack(spacing: 10) {
@@ -98,7 +113,7 @@ struct GitFileSection: View {
     }
     
     private func FileItemView(file: GitFileItem) -> some View {
-        HStack(spacing: 5) {
+        HStack(spacing: 15) {
             if selectedFile != nil {
                 Image(systemName: "xmark.circle.fill")
                     .resizable()
@@ -149,7 +164,6 @@ extension GitFileSection {
     
     private func search() {
         job?.cancel()
-        searchResults = []
         let existingFiles = files
         let lowercaseSearchTerm = searchTerm.lowercased()
         job = runOnLogicThread {

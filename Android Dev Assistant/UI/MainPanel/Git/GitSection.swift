@@ -21,7 +21,6 @@ struct GitSection: View {
                 selectedBranch: $selectedBranch,
                 selectedCommit: $selectedCommit
             )
-            Divider().opacity(0.7)
             GitFileSection(selectedCommit: $selectedCommit)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .opacity(selectedBranch == nil ? 0.3 : 1)

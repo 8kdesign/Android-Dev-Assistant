@@ -11,57 +11,44 @@ struct SourceSelectorView: View {
     
     @EnvironmentObject var repoHelper: RepoHelper
     @EnvironmentObject var gitHelper: GitHelper
-    
+    @FocusState var focus: Bool
+
     @Binding var selectedBranch: String?
     @Binding var selectedCommit: CommitItem?
     @State var branches: [String] = []
+    @State var filteredBranches: [String] = []
     @State var commits: [CommitItem] = []
     @State var currentBranch: String? = nil
+    @State var searchTerm: String = ""
     
     @State var isSelectingBranch: Bool = false
-    @State var job: Task<(), Never>? = nil
+    @State var gitJob: Task<(), Never>? = nil
+    @State var searchJob: Task<(), Never>? = nil
     
     var body: some View {
-        VStack(spacing: 0) {
-            SelectedBranchView()
-            Divider().opacity(0.7)
-            ZStack {
-                if isSelectingBranch {
-                    BranchSelectorView()
-                } else {
-                    CommitSelectorView()
-                }
-            }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        }.frame(width: 200)
-            .frame(maxHeight: .infinity)
-            .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+        ZStack(alignment: .top) {
+            VStack(spacing: 0) {
+                SelectedBranchView()
+                Divider().opacity(0.7)
+                CommitSelectorView()
+            }
+            if isSelectingBranch {
+                BranchSelectorView()
+            }
+        }.frame(maxHeight: .infinity)
+            .frame(width: 200)
+            .background(Color(red: 0.12, green: 0.12, blue: 0.12))
+            .clipShape(RoundedRectangle(cornerRadius: 15))
+            .padding(.all)
             .onReceive(repoHelper.$selectedRepo) { repo in
-                job?.cancel()
-                commits = []
-                selectedCommit = nil
-                isSelectingBranch = false
-                if let repo {
-                    gitHelper.getGitBranches(repo: repo) { list, currentBranch in
-                        self.branches = list
-                        self.currentBranch = currentBranch
-                        self.selectedBranch = currentBranch
-                        if let currentBranch {
-                            self.job = gitHelper.getBranchCommits(repo: repo, branch: currentBranch) { commits in
-                                self.commits = commits
-                                selectedCommit = commits.first
-                            }
-                        }
-                    }
-                }
+                fetchRepoBranches(repo)
             }.onChange(of: selectedBranch) { branch in
-                job?.cancel()
-                commits = []
-                selectedCommit = nil
-                if let branch, let repo = repoHelper.selectedRepo {
-                    job = gitHelper.getBranchCommits(repo: repo, branch: branch) { commits in
-                        self.commits = commits
-                        self.selectedCommit = commits.first
-                    }
+                getBranchCommits(branch: branch)
+            }.onChange(of: searchTerm) { _ in
+                getFilteredBranches()
+            }.onChange(of: isSelectingBranch) { value in
+                if !value {
+                    searchTerm = ""
                 }
             }
     }
@@ -92,7 +79,7 @@ struct SourceSelectorView: View {
                 .opacity(0.7)
         }.padding(.all, 15)
             .frame(maxWidth: .infinity, maxHeight: 60)
-            .background(isSelectingBranch ? Color(red: 0.12, green: 0.12, blue: 0.12) : Color(red: 0.08, green: 0.08, blue: 0.08))
+            .background(isSelectingBranch ? Color(red: 0.2, green: 0.2, blue: 0.2) : Color(red: 0.12, green: 0.12, blue: 0.12))
             .onTapGesture {
                 withAnimation(.snappy(duration: 0.2)) {
                     isSelectingBranch.toggle()
@@ -101,10 +88,22 @@ struct SourceSelectorView: View {
     }
     
     private func BranchSelectorView() -> some View {
-        VStack {
+        VStack(spacing: 0) {
+            SelectedBranchView()
+            TextField("Search", text: $searchTerm)
+                .textFieldStyle(.plain)
+                .focused($focus)
+                .foregroundStyle(.white)
+                .foregroundColor(.white)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 15)
+                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.15, green: 0.15, blue: 0.15)))
+                .padding(.horizontal, 5)
+                .padding(.bottom, 10)
+            Divider().opacity(0.7)
             ScrollView {
                 LazyVStack(spacing: 0) {
-                    ForEach(Array(branches.enumerated()), id: \.offset) { index, branch in
+                    ForEach(Array(filteredBranches.enumerated()), id: \.offset) { index, branch in
                         Text(branch)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .lineLimit(1)
@@ -121,10 +120,12 @@ struct SourceSelectorView: View {
                         Divider().opacity(0.3)
                     }
                 }
-            }.frame(maxWidth: .infinity)
+            }.frame(maxWidth: .infinity, maxHeight: 300)
                 .scrollIndicators(.hidden)
-        }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(red: 0.12, green: 0.12, blue: 0.12))
+        }.frame(maxWidth: .infinity, alignment: .top)
+            .background(Color(red: 0.2, green: 0.2, blue: 0.2))
+            .onTapGesture {}
+            .clipShape(RoundedRectangle(cornerRadius: 15))
     }
     
     private func CommitSelectorView() -> some View {
@@ -177,6 +178,62 @@ struct SourceSelectorView: View {
             }
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .scrollIndicators(.hidden)
+    }
+    
+}
+
+extension SourceSelectorView {
+    
+    private func fetchRepoBranches(_ repo: RepoItem?) {
+        gitJob?.cancel()
+        branches = []
+        filteredBranches = []
+        commits = []
+        selectedCommit = nil
+        isSelectingBranch = false
+        if let repo {
+            gitHelper.getGitBranches(repo: repo) { list, currentBranch in
+                self.branches = list
+                self.currentBranch = currentBranch
+                self.selectedBranch = currentBranch
+                self.getFilteredBranches()
+                if let currentBranch {
+                    self.gitJob = gitHelper.getBranchCommits(repo: repo, branch: currentBranch) { commits in
+                        self.commits = commits
+                        selectedCommit = commits.first
+                    }
+                }
+            }
+        }
+    }
+    
+    private func getFilteredBranches() {
+        searchJob?.cancel()
+        if searchTerm.isEmpty {
+            filteredBranches = branches
+        } else {
+            let currentBranches = branches
+            let lowercaseSearchTerm = searchTerm.lowercased()
+            searchJob = runOnLogicThread {
+                let result = currentBranches.filter { $0.lowercased().contains(lowercaseSearchTerm) }
+                if Task.isCancelled { return }
+                Task { @MainActor in
+                    self.filteredBranches = result
+                }
+            }
+        }
+    }
+    
+    private func getBranchCommits(branch: String?) {
+        gitJob?.cancel()
+        commits = []
+        selectedCommit = nil
+        if let branch, let repo = repoHelper.selectedRepo {
+            gitJob = gitHelper.getBranchCommits(repo: repo, branch: branch) { commits in
+                self.commits = commits
+                self.selectedCommit = commits.first
+            }
+        }
     }
     
 }
