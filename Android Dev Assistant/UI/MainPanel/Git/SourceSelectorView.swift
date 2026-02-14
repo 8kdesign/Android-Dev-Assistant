@@ -13,16 +13,9 @@ struct SourceSelectorView: View {
     @EnvironmentObject var gitHelper: GitHelper
     @FocusState var focus: Bool
 
-    @Binding var selectedBranch: String?
-    @Binding var selectedCommit: CommitItem?
-    @State var branches: [String] = []
     @State var filteredBranches: [String] = []
-    @State var commits: [CommitItem] = []
-    @State var currentBranch: String? = nil
     @State var searchTerm: String = ""
-    
     @State var isSelectingBranch: Bool = false
-    @State var gitJob: Task<(), Never>? = nil
     @State var searchJob: Task<(), Never>? = nil
     
     var body: some View {
@@ -40,16 +33,18 @@ struct SourceSelectorView: View {
             .background(Color(red: 0.12, green: 0.12, blue: 0.12))
             .clipShape(RoundedRectangle(cornerRadius: 15))
             .padding([.vertical, .leading])
-            .onReceive(repoHelper.$selectedRepo) { repo in
-                fetchRepoBranches(repo)
-            }.onChange(of: selectedBranch) { branch in
-                getBranchCommits(branch: branch)
-            }.onChange(of: searchTerm) { _ in
-                getFilteredBranches()
+            .onChange(of: searchTerm) { _ in
+                getFilteredBranches(branches: gitHelper.branches)
             }.onChange(of: isSelectingBranch) { value in
                 if !value {
                     searchTerm = ""
                 }
+            }.onReceive(gitHelper.$branches) { value in
+                getFilteredBranches(branches: value)
+            }.onReceive(repoHelper.$selectedRepo) { repo in
+                isSelectingBranch = false
+                filteredBranches = []
+                gitHelper.fetchRepoBranches(repo)
             }
     }
     
@@ -64,7 +59,7 @@ struct SourceSelectorView: View {
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
                     .opacity(0.3)
-                Text(selectedBranch ?? "")
+                Text(gitHelper.selectedBranch ?? "")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.head)
@@ -114,7 +109,7 @@ struct SourceSelectorView: View {
                             .padding(.vertical, 10)
                             .background(.white.opacity(0.00001))
                             .onTapGesture {
-                                selectedBranch = branch
+                                gitHelper.selectBranch(branch: branch, repo: repoHelper.selectedRepo)
                                 isSelectingBranch = false
                             }.hoverOpacity()
                         Divider().opacity(0.3)
@@ -131,8 +126,8 @@ struct SourceSelectorView: View {
     private func CommitSelectorView() -> some View {
         ScrollView {
             LazyVStack(spacing: 0) {
-                ForEach(Array(commits.enumerated()), id: \.offset) { index, item in
-                    let isSelected = item.id == selectedCommit?.id
+                ForEach(Array(gitHelper.commits.enumerated()), id: \.offset) { index, item in
+                    let isSelected = item.id == gitHelper.selectedCommit?.id
                     VStack(spacing: 5) {
                         Text(item.shortHash)
                             .font(.footnote)
@@ -171,7 +166,7 @@ struct SourceSelectorView: View {
                         .padding(.vertical, 10)
                         .background(.white.opacity(isSelected ? 0.7 : 0.00001))
                         .onTapGesture {
-                            selectedCommit = item
+                            gitHelper.selectCommit(commit: item)
                         }.hoverOpacity()
                     Divider().opacity(0.3)
                 }
@@ -184,30 +179,7 @@ struct SourceSelectorView: View {
 
 extension SourceSelectorView {
     
-    private func fetchRepoBranches(_ repo: RepoItem?) {
-        gitJob?.cancel()
-        branches = []
-        filteredBranches = []
-        commits = []
-        selectedCommit = nil
-        isSelectingBranch = false
-        if let repo {
-            gitHelper.getGitBranches(repo: repo) { list, currentBranch in
-                self.branches = list
-                self.currentBranch = currentBranch
-                self.selectedBranch = currentBranch
-                self.getFilteredBranches()
-                if let currentBranch {
-                    self.gitJob = gitHelper.getBranchCommits(repo: repo, branch: currentBranch) { commits in
-                        self.commits = commits
-                        selectedCommit = commits.first
-                    }
-                }
-            }
-        }
-    }
-    
-    private func getFilteredBranches() {
+    private func getFilteredBranches(branches: [String]) {
         searchJob?.cancel()
         if searchTerm.isEmpty {
             filteredBranches = branches
@@ -220,18 +192,6 @@ extension SourceSelectorView {
                 Task { @MainActor in
                     self.filteredBranches = result
                 }
-            }
-        }
-    }
-    
-    private func getBranchCommits(branch: String?) {
-        gitJob?.cancel()
-        commits = []
-        selectedCommit = nil
-        if let branch, let repo = repoHelper.selectedRepo {
-            gitJob = gitHelper.getBranchCommits(repo: repo, branch: branch) { commits in
-                self.commits = commits
-                self.selectedCommit = commits.first
             }
         }
     }

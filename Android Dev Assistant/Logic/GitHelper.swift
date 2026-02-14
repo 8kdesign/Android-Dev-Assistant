@@ -13,8 +13,13 @@ class GitHelper: ObservableObject {
     let objectWillChange = ObservableObjectPublisher()
     
     var gitPath: String? = nil
-    var branches: [String] = []
-    
+    @Published var branches: [String] = []
+    var currentBranch: String? = nil
+    var selectedBranch: String? = nil
+    var commits: [CommitItem] = []
+    var selectedCommit: CommitItem?
+    var gitJob: Task<(), Never>? = nil
+
     init() {
         runOnLogicThread {
             guard let path = runWhich(command: "git") else { return }
@@ -23,9 +28,53 @@ class GitHelper: ObservableObject {
             }
         }
     }
+
+    // Branch
     
-    func getGitBranches(repo: RepoItem, callback: @escaping @MainActor ([String], String?) -> ()) {
-        guard let gitPath else { return }
+    func fetchRepoBranches(_ repo: RepoItem?) {
+        gitJob?.cancel()
+        branches = []
+        commits = []
+        selectedCommit = nil
+        if let repo {
+            getGitBranches(repo: repo) { list, currentBranch in
+                self.branches = list
+                self.currentBranch = currentBranch
+                self.selectedBranch = currentBranch
+                if let currentBranch {
+                    self.gitJob = self.getBranchCommits(repo: repo, branch: currentBranch) { commits in
+                        self.commits = commits
+                        self.selectedCommit = commits.first
+                        self.objectWillChange.send()
+                    }
+                }
+            }
+        } else {
+            self.objectWillChange.send()
+        }
+    }
+    
+    func selectBranch(branch: String?, repo: RepoItem?) {
+        selectedBranch = branch
+        gitJob?.cancel()
+        commits = []
+        selectedCommit = nil
+        if let branch = selectedBranch, let repo {
+            gitJob = getBranchCommits(repo: repo, branch: branch) { commits in
+                self.commits = commits
+                self.selectedCommit = commits.first
+                self.objectWillChange.send()
+            }
+        } else {
+            objectWillChange.send()
+        }
+    }
+    
+    private func getGitBranches(repo: RepoItem, callback: @escaping @MainActor ([String], String?) -> ()) {
+        guard let gitPath else {
+            callback([], nil)
+            return
+        }
         runOnLogicThread {
             do {
                 let allBranchesResult = try await runCommand(path: gitPath, arguments: ["-C", repo.path, "branch", "--all"])
@@ -71,7 +120,14 @@ class GitHelper: ObservableObject {
         }
     }
     
-    func getBranchCommits(repo: RepoItem, branch: String, callback: @escaping @MainActor ([CommitItem]) -> ()) -> Task<(), Never>? {
+    // Commit
+    
+    func selectCommit(commit: CommitItem?) {
+        selectedCommit = commit
+        objectWillChange.send()
+    }
+    
+    private func getBranchCommits(repo: RepoItem, branch: String, callback: @escaping @MainActor ([CommitItem]) -> ()) -> Task<(), Never>? {
         guard let gitPath else {
             callback([])
             return nil
@@ -118,6 +174,8 @@ class GitHelper: ObservableObject {
             }
         }
     }
+    
+    // File
     
     func getFiles(repo: RepoItem, hash: String, callback: @escaping @MainActor ([GitFileItem]) -> ()) {
         guard let gitPath else {
