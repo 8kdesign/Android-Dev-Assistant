@@ -220,9 +220,15 @@ class GitHelper: ObservableObject {
                         if let f = currentFile {
                             diffs.append(f)
                         }
-                        let parts = line.components(separatedBy: " ")
-                        let fileName = parts[2].replacingOccurrences(of: "a/", with: "")
-                        currentFile = FileDiff(file: fileName)
+                        let prefixLength = "diff --git ".count
+                        let pathsPart = line.dropFirst(prefixLength)
+                        let components = pathsPart.components(separatedBy: " b/")
+                        if components.count == 2 {
+                            let filePath = components[1]
+                            currentFile = FileDiff(file: filePath)
+                        } else {
+                            currentFile = nil
+                        }
                     } else if line.hasPrefix("+") && !line.hasPrefix("+++ ") {
                         currentFile?.added.append("+ " + String(line.dropFirst().trimmingCharacters(in: .whitespaces)))
                     } else if line.hasPrefix("-") && !line.hasPrefix("--- ") {
