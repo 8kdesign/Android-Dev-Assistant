@@ -21,8 +21,10 @@ struct SelectFileView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            SearchBarView()
+                .opacity(searchResults == nil ? 0.3 : 1)
+                .allowsHitTesting(searchResults != nil)
             if let searchResults {
-                SearchBarView()
                 if searchTerm.isEmpty, let diff = gitHelper.selectedCommitFileDiff {
                     CommitInfoView(diff: diff)
                 } else {

@@ -14,6 +14,7 @@ struct BrowseFileView: View {
     
     @Binding var selectedFile: GitFileItem?
     @State var content: (list: [String], error: LocalizedStringResource?)? = nil
+    @State var isContentLatest: Bool = false
     @State var firstIndexSelection: Int? = nil
     @State var secondIndexSelection: Int? = nil
     @State var selectedRange: ClosedRange<Int>? = nil
@@ -49,6 +50,8 @@ struct BrowseFileView: View {
                                 FileLineView(index: index, line: item)
                             }
                         }.padding(.all)
+                            .opacity(isContentLatest ? 1 : 0.3)
+                            .blur(radius: isContentLatest ? 0 : 5)
                     }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             } else {
@@ -137,7 +140,7 @@ extension BrowseFileView {
     
     private func getFileContent() {
         contentJob?.cancel()
-        content = nil
+        isContentLatest = false
         selectIndex(index: nil)
         if let repo = repoHelper.selectedRepo, let hash = gitHelper.selectedCommit?.longHash, let file = selectedFile {
             contentJob = gitHelper.getFileData(repo: repo, hash: hash, file: file.path) { result in
@@ -146,7 +149,11 @@ extension BrowseFileView {
                 } else {
                     content = ([], "File not found")
                 }
+                isContentLatest = true
             }
+        } else {
+            content = nil
+            isContentLatest = true
         }
     }
     
