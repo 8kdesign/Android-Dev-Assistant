@@ -11,14 +11,43 @@ struct GitSection: View {
     
     @EnvironmentObject var repoHelper: RepoHelper
     @EnvironmentObject var gitHelper: GitHelper
-    
+    @State private var rotated = false
+
     var body: some View {
-        HStack(spacing: 0) {
-            SourceSelectorView()
-            GitFileSection()
+        VStack(spacing: 0) {
+            HStack(spacing: 10) {
+                Text(repoHelper.selectedRepo?.name ?? "")
+                    .font(.title2.bold())
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                Image(systemName: "arrow.triangle.2.circlepath")
+                    .resizable()
+                    .scaledToFit()
+                    .bold()
+                    .frame(width: 16, height: 16)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                    .rotationEffect(.degrees(rotated ? 360 : 0))
+                    .onTapGesture {
+                        if let repo = repoHelper.selectedRepo {
+                            gitHelper.fetchRepoBranches(repo)
+                            rotated = false
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                rotated = true
+                            }
+                        }
+                    }.hoverOpacity()
+            }.padding([.horizontal, .top])
+                .frame(maxWidth: .infinity, alignment: .leading)
+            HStack(spacing: 0) {
+                SourceSelectorView()
+                GitFileSection()
+            }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                .opacity(gitHelper.selectedBranch == nil ? 0.3 : 1)
+                .disabled(gitHelper.selectedBranch == nil)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .opacity(gitHelper.selectedBranch == nil ? 0.3 : 1)
-            .disabled(gitHelper.selectedBranch == nil)
     }
     
 }

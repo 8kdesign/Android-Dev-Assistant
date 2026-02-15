@@ -37,7 +37,7 @@ class GitHelper: ObservableObject {
 
     // Branch
     
-    private func fetchRepoBranches(_ repo: RepoItem?) {
+    func fetchRepoBranches(_ repo: RepoItem?) {
         gitJob?.cancel()
         branches = []
         commits = []
