@@ -24,22 +24,20 @@ struct SelectFileView: View {
             SearchBarView()
                 .opacity(searchResults == nil ? 0.3 : 1)
                 .allowsHitTesting(searchResults != nil)
-            if let searchResults {
-                if searchTerm.isEmpty, let diff = gitHelper.selectedCommitFileDiff {
-                    CommitInfoView(diff: diff)
-                } else {
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 10) {
-                            ForEach(searchResults) { file in
-                                FileItemView(file: file)
-                                    .onTapGesture {
-                                        selectedFile = file
-                                    }.hoverOpacity()
-                            }
-                        }.frame(maxWidth: .infinity)
-                    }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .scrollIndicators(.hidden)
-                }
+            if searchTerm.isEmpty, let diff = gitHelper.selectedCommitFileDiff {
+                CommitInfoView(diff: diff)
+            } else if let searchResults {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 10) {
+                        ForEach(searchResults) { file in
+                            FileItemView(file: file)
+                                .onTapGesture {
+                                    selectedFile = file
+                                }.hoverOpacity()
+                        }
+                    }.frame(maxWidth: .infinity)
+                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .scrollIndicators(.hidden)
             } else {
                 VStack {
                     ProgressView()
