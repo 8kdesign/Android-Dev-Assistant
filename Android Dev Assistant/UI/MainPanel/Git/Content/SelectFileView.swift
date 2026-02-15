@@ -27,14 +27,14 @@ struct SelectFileView: View {
                     CommitInfoView(diff: diff)
                 } else {
                     ScrollView {
-                        LazyVStack(spacing: 10) {
+                        LazyVStack(alignment: .leading, spacing: 10) {
                             ForEach(searchResults) { file in
                                 FileItemView(file: file)
                                     .onTapGesture {
                                         selectedFile = file
                                     }.hoverOpacity()
                             }
-                        }
+                        }.frame(maxWidth: .infinity)
                     }.frame(maxWidth: .infinity, maxHeight: .infinity)
                         .scrollIndicators(.hidden)
                 }
@@ -106,7 +106,7 @@ struct SelectFileView: View {
             }
         }.padding(.horizontal, 15)
             .padding(.vertical, 10)
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: 600)
             .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.12, green: 0.12, blue: 0.12)))
             .padding(.horizontal, 15)
     }

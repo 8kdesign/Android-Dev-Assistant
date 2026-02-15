@@ -13,9 +13,9 @@ struct CommitInfoView: View {
     
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 10) {
+            LazyVStack(alignment: .leading, spacing: 10) {
                 ListView(diff: diff)
-            }
+            }.frame(maxWidth: .infinity)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .scrollIndicators(.hidden)
     }
@@ -46,9 +46,9 @@ struct CommitInfoView: View {
                         .opacity(0.5)
                 }
             }.padding(.all)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: 600)
                 .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.12, green: 0.12, blue: 0.12)))
-                .padding(.horizontal)
+                .padding(.horizontal, 15)
         }
     }
     
