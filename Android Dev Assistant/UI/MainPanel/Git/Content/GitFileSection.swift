@@ -17,11 +17,12 @@ struct GitFileSection: View {
     @State var filesJob: Task<(), Never>? = nil
     
     var body: some View {
-        VStack {
+        ZStack {
+            SelectFileView(files: $files, selectedFile: $selectedFile)
+                .allowsHitTesting(selectedFile == nil)
+                .opacity(selectedFile == nil ? 1 : 0)
             if selectedFile != nil {
                 BrowseFileView(selectedFile: $selectedFile)
-            } else {
-                SelectFileView(files: $files, selectedFile: $selectedFile)
             }
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear {
