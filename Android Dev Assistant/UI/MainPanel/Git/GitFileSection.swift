@@ -18,7 +18,8 @@ struct GitFileSection: View {
     @State var searchResults: [GitFileItem]? = nil
     @State var selectedFile: GitFileItem? = nil
     @State var content: (list: [String], error: LocalizedStringResource?)? = nil
-    @State var job: Task<(), Never>? = nil
+    @State var filesJob: Task<(), Never>? = nil
+    @State var contentJob: Task<(), Never>? = nil
     @State var firstIndexSelection: Int? = nil
     @State var secondIndexSelection: Int? = nil
     @State var selectedRange: ClosedRange<Int>? = nil
@@ -51,37 +52,19 @@ struct GitFileSection: View {
     
     private func SelectFileView() -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                TextField("Search", text: $searchTerm)
-                    .textFieldStyle(.plain)
-                    .frame(maxWidth: .infinity)
-                    .focused($focus)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
-                Image(systemName: "xmark.circle")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 12, height: 12)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
-                    .opacity(searchTerm.isEmpty ? 0.3 : 0.7)
-                    .onTapGesture {
-                        searchTerm = ""
-                        focus = false
-                    }.hoverOpacity(searchTerm.isEmpty ? 1 : HOVER_OPACITY)
-            }.padding(.horizontal, 20)
-                .frame(height: 40)
-                .background(Capsule().fill(Color(red: 0.13, green: 0.13, blue: 0.13)))
-                .frame(maxWidth: 300, alignment: .leading)
-                .padding(.all)
             if let searchResults {
+                SearchBarView()
                 ScrollView {
                     LazyVStack(spacing: 10) {
-                        ForEach(searchResults) { file in
-                            FileItemView(file: file)
-                                .onTapGesture {
-                                    selectedFile = file
-                                }.hoverOpacity()
+                        if searchTerm.isEmpty, let diff = gitHelper.selectedCommitFileDiff {
+                            CommitInfoView(diff: diff)
+                        } else {
+                            ForEach(searchResults) { file in
+                                FileItemView(file: file)
+                                    .onTapGesture {
+                                        selectedFile = file
+                                    }.hoverOpacity()
+                            }
                         }
                     }
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -95,6 +78,79 @@ struct GitFileSection: View {
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    private func SearchBarView() -> some View {
+        HStack {
+            TextField("Search", text: $searchTerm)
+                .textFieldStyle(.plain)
+                .frame(maxWidth: .infinity)
+                .focused($focus)
+                .foregroundStyle(.white)
+                .foregroundColor(.white)
+            Image(systemName: "xmark.circle")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 12, height: 12)
+                .foregroundStyle(.white)
+                .foregroundColor(.white)
+                .opacity(searchTerm.isEmpty ? 0.3 : 0.7)
+                .onTapGesture {
+                    searchTerm = ""
+                    focus = false
+                }.hoverOpacity(searchTerm.isEmpty ? 1 : HOVER_OPACITY)
+        }.padding(.horizontal, 20)
+            .frame(height: 40)
+            .background(Capsule().fill(Color(red: 0.13, green: 0.13, blue: 0.13)))
+            .frame(maxWidth: 300, alignment: .leading)
+            .padding(.all)
+    }
+    
+    private func CommitInfoView(diff: [FileDiff]) -> some View {
+        ForEach(Array(diff.enumerated()), id: \.offset) { index, item in
+            VStack(spacing: 5) {
+                Text(item.file)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(1)
+                    .truncationMode(.head)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                if !item.added.isEmpty {
+                    CommitInfoListView(list: Array(item.added.prefix(5)))
+                }
+                if !item.removed.isEmpty {
+                    CommitInfoListView(list: Array(item.removed.prefix(5)))
+                }
+                if item.added.count > 5 || item.removed.count > 5 {
+                    Text("...")
+                        .font(.callout)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .foregroundStyle(.white)
+                        .foregroundColor(.white)
+                        .opacity(0.5)
+                }
+            }.padding(.all)
+                .frame(maxWidth: .infinity)
+                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.12, green: 0.12, blue: 0.12)))
+                .padding(.horizontal)
+        }
+    }
+    
+    private func CommitInfoListView(list: [String]) -> some View {
+        VStack(spacing: 5) {
+            ForEach(Array(list.enumerated()), id: \.offset) { index, item in
+                Text(item)
+                    .font(.callout)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                    .opacity(0.5)
+            }
+        }.frame(maxWidth: .infinity)
     }
     
     private func FileItemView(file: GitFileItem) -> some View {
@@ -129,7 +185,7 @@ struct GitFileSection: View {
         }.padding(.horizontal, 15)
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity)
-            .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.15, green: 0.15, blue: 0.15)))
+            .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.12, green: 0.12, blue: 0.12)))
             .padding(.horizontal, 15)
     }
     
@@ -209,10 +265,11 @@ struct GitFileSection: View {
 extension GitFileSection {
     
     private func getFiles() {
+        filesJob?.cancel()
         files = nil
         searchResults = nil
         if let repo = repoHelper.selectedRepo, let hash = gitHelper.selectedCommit?.longHash {
-            gitHelper.getFiles(repo: repo, hash: hash) { list in
+            filesJob = gitHelper.getFiles(repo: repo, hash: hash) { list in
                 files = list
                 search()
             }
@@ -220,10 +277,10 @@ extension GitFileSection {
     }
     
     private func search() {
-        job?.cancel()
+        contentJob?.cancel()
         let existingFiles = files
         let lowercaseSearchTerm = searchTerm.lowercased()
-        job = runOnLogicThread {
+        contentJob = runOnLogicThread {
             let results = existingFiles?.filter { $0.name.lowercased().contains(lowercaseSearchTerm) }
             if !Task.isCancelled {
                 Task { @MainActor in
@@ -234,11 +291,11 @@ extension GitFileSection {
     }
     
     private func getFileContent() {
-        job?.cancel()
+        contentJob?.cancel()
         content = nil
         selectIndex(index: nil)
         if let repo = repoHelper.selectedRepo, let hash = gitHelper.selectedCommit?.longHash, let file = selectedFile {
-            job = gitHelper.getFileData(repo: repo, hash: hash, file: file.path) { result in
+            contentJob = gitHelper.getFileData(repo: repo, hash: hash, file: file.path) { result in
                 if let result {
                     content = (result.split(separator: "\n").map { String($0) }, nil)
                 } else {

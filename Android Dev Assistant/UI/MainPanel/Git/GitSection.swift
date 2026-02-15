@@ -29,6 +29,7 @@ struct GitSection: View {
                     .frame(width: 16, height: 16)
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
+                    .opacity(0.7)
                     .rotationEffect(.degrees(rotated ? 360 : 0))
                     .onTapGesture {
                         if let repo = repoHelper.selectedRepo {

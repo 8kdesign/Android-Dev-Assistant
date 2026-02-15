@@ -22,7 +22,16 @@ class GitHelper: ObservableObject {
     var currentBranch: String? = nil
     var selectedBranch: String? = nil
     var commits: [CommitItem] = []
-    var selectedCommit: CommitItem?
+    var selectedCommit: CommitItem? {
+        didSet {
+            selectedCommitFileDiff = nil
+        }
+    }
+    var selectedCommitFileDiff: [FileDiff]? = nil {
+        didSet {
+            objectWillChange.send()
+        }
+    }
     var gitJob: Task<(), Never>? = nil
 
     init() {
@@ -50,8 +59,7 @@ class GitHelper: ObservableObject {
                 if let currentBranch {
                     self.gitJob = self.getBranchCommits(repo: repo, branch: currentBranch) { commits in
                         self.commits = commits
-                        self.selectedCommit = commits.first
-                        self.objectWillChange.send()
+                        self.selectCommit(commit: commits.first)
                     }
                 }
             }
@@ -131,6 +139,9 @@ class GitHelper: ObservableObject {
     func selectCommit(commit: CommitItem?) {
         selectedCommit = commit
         objectWillChange.send()
+        if let selectedRepo, let commit {
+            getCommitInfo(repo: selectedRepo, hash: commit.longHash)
+        }
     }
     
     private func getBranchCommits(repo: RepoItem, branch: String, callback: @escaping @MainActor ([CommitItem]) -> ()) -> Task<(), Never>? {
@@ -181,14 +192,73 @@ class GitHelper: ObservableObject {
         }
     }
     
-    // File
-    
-    func getFiles(repo: RepoItem, hash: String, callback: @escaping @MainActor ([GitFileItem]) -> ()) {
+    func getCommitInfo(repo: RepoItem, hash: String) {
+        gitJob?.cancel()
         guard let gitPath else {
-            callback([])
+            selectedCommitFileDiff = nil
             return
         }
-        runOnLogicThread {
+        gitJob = runOnLogicThread {
+            do {
+                let result = try await runCommand(
+                    path: gitPath,
+                    arguments: ["-C", repo.path, "show", "--pretty=format:", hash],
+                )
+                guard let string = String(data: result, encoding: .utf8), !string.starts(with: "fatal") else {
+                    if !Task.isCancelled {
+                        Task { @MainActor in
+                            self.selectedCommitFileDiff = nil
+                        }
+                    }
+                    return
+                }
+                let lines = string.components(separatedBy: "\n")
+                var diffs: [FileDiff] = []
+                var currentFile: FileDiff?
+                for line in lines {
+                    if line.hasPrefix("diff --git ") {
+                        if let f = currentFile {
+                            diffs.append(f)
+                        }
+                        let parts = line.components(separatedBy: " ")
+                        let fileName = parts[2].replacingOccurrences(of: "a/", with: "")
+                        currentFile = FileDiff(file: fileName)
+                    } else if line.hasPrefix("+") && !line.hasPrefix("+++ ") {
+                        currentFile?.added.append("+ " + String(line.dropFirst().trimmingCharacters(in: .whitespaces)))
+                    } else if line.hasPrefix("-") && !line.hasPrefix("--- ") {
+                        currentFile?.removed.append("- " + String(line.dropFirst().trimmingCharacters(in: .whitespaces)))
+                    }
+                }
+                if let f = currentFile {
+                    diffs.append(f)
+                }
+                let fixedDiffs = diffs
+                if !Task.isCancelled {
+                    Task { @MainActor in
+                        if self.selectedCommit?.longHash == hash {
+                            self.selectedCommitFileDiff = fixedDiffs
+                        }
+                    }
+                }
+            } catch {
+                if !Task.isCancelled {
+                    Task { @MainActor in
+                        self.selectedCommitFileDiff = nil
+                        LogHelper.shared.insertLog(string: error.localizedDescription)
+                    }
+                }
+            }
+        }
+    }
+    
+    // File
+    
+    func getFiles(repo: RepoItem, hash: String, callback: @escaping @MainActor ([GitFileItem]) -> ()) -> Task<(), Never>? {
+        guard let gitPath else {
+            callback([])
+            return nil
+        }
+        return runOnLogicThread {
             do {
                 let result = try await runCommand(
                     path: gitPath,
