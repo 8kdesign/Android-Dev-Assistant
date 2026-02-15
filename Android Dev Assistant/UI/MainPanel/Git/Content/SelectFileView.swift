@@ -18,12 +18,11 @@ struct SelectFileView: View {
     @State var searchTerm: String = ""
     @State var searchResults: [GitFileItem]? = nil
     @State var searchJob: Task<(), Never>? = nil
+    @State var spinnerAngle: Double = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             SearchBarView()
-                .opacity(searchResults == nil ? 0.3 : 1)
-                .allowsHitTesting(searchResults != nil)
             if searchTerm.isEmpty, let diff = gitHelper.selectedCommitFileDiff {
                 CommitInfoView(diff: diff)
             } else if let searchResults {
@@ -63,28 +62,46 @@ struct SelectFileView: View {
     
     private func SearchBarView() -> some View {
         HStack {
-            TextField("Search", text: $searchTerm)
-                .textFieldStyle(.plain)
-                .frame(maxWidth: .infinity)
-                .focused($focus)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
-            Image(systemName: "xmark.circle")
+            HStack {
+                TextField("Search", text: $searchTerm)
+                    .textFieldStyle(.plain)
+                    .frame(maxWidth: .infinity)
+                    .focused($focus)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                Image(systemName: "xmark.circle")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                    .opacity(searchTerm.isEmpty ? 0.3 : 0.7)
+                    .onTapGesture {
+                        searchTerm = ""
+                        focus = false
+                    }.hoverOpacity(searchTerm.isEmpty ? 1 : HOVER_OPACITY)
+            }.padding(.horizontal, 20)
+                .frame(height: 40)
+                .background(Capsule().fill(Color(red: 0.13, green: 0.13, blue: 0.13)))
+                .frame(maxWidth: 300, alignment: .leading)
+                .padding(.all)
+                .opacity(searchResults == nil ? 0.3 : 1)
+                .allowsHitTesting(searchResults != nil)
+            Image(systemName: "circle.hexagonpath")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 12, height: 12)
+                .frame(width: 16, height: 16)
                 .foregroundStyle(.white)
                 .foregroundColor(.white)
-                .opacity(searchTerm.isEmpty ? 0.3 : 0.7)
-                .onTapGesture {
-                    searchTerm = ""
-                    focus = false
-                }.hoverOpacity(searchTerm.isEmpty ? 1 : HOVER_OPACITY)
-        }.padding(.horizontal, 20)
-            .frame(height: 40)
-            .background(Capsule().fill(Color(red: 0.13, green: 0.13, blue: 0.13)))
-            .frame(maxWidth: 300, alignment: .leading)
-            .padding(.all)
+                .opacity(searchResults == nil ? 1 : 0)
+                .rotationEffect(.degrees(spinnerAngle))
+                .onAppear {
+                    spinnerAngle = 0
+                    withAnimation(.linear(duration: 1).repeatForever(autoreverses: false)) {
+                        spinnerAngle = 360
+                    }
+                }
+        }
     }
     
     private func FileItemView(file: GitFileItem) -> some View {
