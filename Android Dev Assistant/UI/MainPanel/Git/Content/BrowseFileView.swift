@@ -43,6 +43,8 @@ struct BrowseFileView: View {
                             .foregroundColor(.white)
                     }.padding(.all)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .opacity(isContentLatest ? 1 : 0.3)
+                        .blur(radius: isContentLatest ? 0 : 5)
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 0) {

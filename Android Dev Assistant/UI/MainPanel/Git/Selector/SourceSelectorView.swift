@@ -109,7 +109,7 @@ struct SourceSelectorView: View {
                             .padding(.vertical, 10)
                             .background(.white.opacity(0.00001))
                             .onTapGesture {
-                                gitHelper.selectBranch(branch: branch, repo: repoHelper.selectedRepo)
+                                gitHelper.selectBranch(branch: branch)
                                 isSelectingBranch = false
                             }.hoverOpacity()
                         Divider().opacity(0.3)

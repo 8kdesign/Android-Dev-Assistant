@@ -24,15 +24,12 @@ struct SelectFileView: View {
         VStack(alignment: .leading, spacing: 0) {
             SearchBarView()
             if searchTerm.isEmpty, let diff = gitHelper.selectedCommitFileDiff {
-                CommitInfoView(diff: diff)
+                CommitInfoView(selectedFile: $selectedFile, diff: diff)
             } else if let searchResults {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 10) {
                         ForEach(searchResults) { file in
                             FileItemView(file: file)
-                                .onTapGesture {
-                                    selectedFile = file
-                                }.hoverOpacity()
                         }
                     }.frame(maxWidth: .infinity)
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -126,6 +123,9 @@ struct SelectFileView: View {
             .padding(.vertical, 10)
             .frame(maxWidth: 600)
             .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.12, green: 0.12, blue: 0.12)))
+            .onTapGesture {
+                selectedFile = file
+            }.hoverOpacity()
             .padding(.horizontal, 15)
     }
     

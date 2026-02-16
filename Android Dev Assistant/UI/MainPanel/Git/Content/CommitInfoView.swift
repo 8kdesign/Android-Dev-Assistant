@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CommitInfoView: View {
     
+    @Binding var selectedFile: GitFileItem?
     var diff: [FileDiff]
     
     var body: some View {
@@ -48,6 +49,9 @@ struct CommitInfoView: View {
             }.padding(.all)
                 .frame(maxWidth: 600)
                 .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.12, green: 0.12, blue: 0.12)))
+                .onTapGesture {
+                    selectedFile = GitFileItem(path: item.file)
+                }.hoverOpacity()
                 .padding(.horizontal, 15)
         }
     }

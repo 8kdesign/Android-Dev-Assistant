@@ -55,20 +55,20 @@ class GitHelper: ObservableObject {
             getGitBranches(repo: repo) { list, currentBranch in
                 self.branches = list
                 self.currentBranch = currentBranch
-                self.selectBranch(branch: currentBranch, repo: repo)
+                self.selectBranch(branch: currentBranch)
             }
         } else {
             self.objectWillChange.send()
         }
     }
     
-    func selectBranch(branch: String?, repo: RepoItem?) {
+    func selectBranch(branch: String?) {
         selectedBranch = branch
         gitJob?.cancel()
         commits = []
         selectCommit(commit: nil)
-        if let branch = selectedBranch, let repo {
-            gitJob = getBranchCommits(repo: repo, branch: branch) { commits in
+        if let branch = selectedBranch, let selectedRepo {
+            gitJob = getBranchCommits(repo: selectedRepo, branch: branch) { commits in
                 self.commits = commits
                 self.selectCommit(commit: commits.first)
                 self.objectWillChange.send()
