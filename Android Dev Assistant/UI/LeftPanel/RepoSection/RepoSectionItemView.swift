@@ -54,6 +54,7 @@ struct RepoSectionItemView: View {
         ScrollView(.horizontal) {
             HStack(spacing: 5) {
                 ToggleItemView(icon: "folder.fill", label: "Folder") { openFolder(item.path) }
+                ToggleItemView(icon: "terminal", label: "Terminal") { openInTerminal(item.path) }
                 ToggleItemView(icon: "trash.fill", label: "Remove") { repoHelper.removeRepo(item) }
             }.padding(.all, 10)
         }.frame(maxWidth: .infinity, alignment: .leading)

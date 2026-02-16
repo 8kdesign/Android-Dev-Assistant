@@ -136,6 +136,15 @@ func openFolder(_ path: String) {
     }
 }
 
+func openInTerminal(_ path: String) {
+    let url = URL(fileURLWithPath: path)
+    NSWorkspace.shared.open(
+        [url],
+        withApplicationAt: URL(fileURLWithPath: "/System/Applications/Utilities/Terminal.app"),
+        configuration: NSWorkspace.OpenConfiguration()
+    )
+}
+
 func copyToClipboard(_ item: any NSPasteboardWriting) {
     let pasteboard = NSPasteboard.general
     pasteboard.clearContents()
