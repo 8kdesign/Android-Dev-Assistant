@@ -229,7 +229,12 @@ class GitHelper: ObservableObject {
                         } else {
                             currentFile = nil
                         }
-                    } else if line.hasPrefix("+") && !line.hasPrefix("+++ ") {
+                        continue
+                    }
+                    if (currentFile?.added.count ?? 0) + (currentFile?.removed.count ?? 0) > 11 {
+                        continue
+                    }
+                    if line.hasPrefix("+") && !line.hasPrefix("+++ ") {
                         currentFile?.added.append("+ " + String(line.dropFirst().trimmingCharacters(in: .whitespaces)))
                     } else if line.hasPrefix("-") && !line.hasPrefix("--- ") {
                         currentFile?.removed.append("- " + String(line.dropFirst().trimmingCharacters(in: .whitespaces)))
@@ -268,26 +273,17 @@ class GitHelper: ObservableObject {
             do {
                 let result = try await runCommand(
                     path: gitPath,
-                    arguments: ["-C", repo.path, "ls-tree", "-r", hash, "--name-only"],
+                    arguments: ["-C", repo.path, "ls-tree", "-z", "-r", hash, "--name-only"],
                 )
-                let string = String(data: result, encoding: .utf8)
-                if string?.starts(with: "fatal") == true {
-                    if !Task.isCancelled {
-                        Task { @MainActor in
-                            callback([])
-                        }
-                    }
-                    return
-                }
-                var fileList: [GitFileItem] = []
-                for path in string?.split(separator: "\n") ?? [] {
+                let paths = result.split(separator: 0)
+                let fileList: [GitFileItem] = await withControlledTaskGroup(items: paths) {
+                    let path = String(decoding: $0, as: UTF8.self)
                     let item = await GitFileItem(path: String(path))
-                    fileList.append(item)
+                    return item
                 }
-                let fixedFileList = fileList
                 if !Task.isCancelled {
                     Task { @MainActor in
-                        callback(fixedFileList)
+                        callback(fileList)
                     }
                 }
             } catch {

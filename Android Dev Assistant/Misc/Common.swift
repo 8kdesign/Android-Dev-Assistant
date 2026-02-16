@@ -147,3 +147,44 @@ func sha256(_ string: String) -> String {
     let hash = SHA256.hash(data: data)
     return hash.map { String(format: "%02x", $0) }.joined()
 }
+
+@LogicActor func withControlledTaskGroup<T, S>(
+    items: [S],
+    maxSetSize: Int = 100,
+    action: @escaping (S) async -> T?,
+    progressUpdate: @escaping (Int) -> () = { _ in }
+) async -> [T] {
+    return await withTaskGroup(of: (Int, [T]).self, returning: [T].self) { group in
+        var setSize = maxSetSize
+        var setCount = Int(ceil(Double(items.count) / Double(setSize)))
+        if (setCount > 20) {
+            setCount = 20
+            setSize = Int(ceil(Double(items.count) / Double(setCount)))
+        }
+        for i in 0..<setCount {
+            let startIndex = i * setSize
+            let endIndex = min(startIndex + setSize, items.count)
+            if (endIndex <= startIndex) { break }
+            group.addTask {
+                var result: [T] = []
+                for itemIndex in startIndex..<endIndex {
+                    guard let item = await items[safe: itemIndex] else { break }
+                    if let value = await action(item) {
+                        result.append(value)
+                    }
+                }
+                progressUpdate(endIndex)
+                return (i, result)
+            }
+        }
+        var result: [(index: Int, result: [T])] = []
+        for await array in group {
+            result.append(array)
+        }
+        var sortedResult: [T] = []
+        result.sorted { $0.index < $1.index }.forEach { index, array in
+            sortedResult.append(contentsOf: array)
+        }
+        return sortedResult
+    }
+}

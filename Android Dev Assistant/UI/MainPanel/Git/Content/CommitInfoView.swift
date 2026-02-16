@@ -30,12 +30,12 @@ struct CommitInfoView: View {
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
                 if !item.added.isEmpty {
-                    ListDataView(list: Array(item.added.prefix(5)))
+                    ListDataView(list: Array(item.added))
                 }
                 if !item.removed.isEmpty {
-                    ListDataView(list: Array(item.removed.prefix(5)))
+                    ListDataView(list: Array(item.removed))
                 }
-                if item.added.count > 5 || item.removed.count > 5 {
+                if item.added.count + item.removed.count > 10 {
                     Text("...")
                         .font(.callout)
                         .frame(maxWidth: .infinity, alignment: .leading)
