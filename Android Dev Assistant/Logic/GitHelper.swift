@@ -15,7 +15,7 @@ class GitHelper: ObservableObject {
     var gitPath: String? = nil
     var selectedRepo: RepoItem? = nil {
         didSet {
-            fetchRepoBranches(selectedRepo)
+            fetchRepoBranches()
         }
     }
     @Published var branches: [String] = []
@@ -39,29 +39,23 @@ class GitHelper: ObservableObject {
             guard let path = runWhich(command: "git") else { return }
             Task { @MainActor in
                 self.gitPath = path
-                self.fetchRepoBranches(self.selectedRepo)
+                self.fetchRepoBranches()
             }
         }
     }
 
     // Branch
     
-    func fetchRepoBranches(_ repo: RepoItem?) {
+    func fetchRepoBranches() {
         gitJob?.cancel()
         branches = []
         commits = []
-        selectedCommit = nil
-        if let repo {
+        selectCommit(commit: nil)
+        if let repo = selectedRepo {
             getGitBranches(repo: repo) { list, currentBranch in
                 self.branches = list
                 self.currentBranch = currentBranch
-                self.selectedBranch = currentBranch
-                if let currentBranch {
-                    self.gitJob = self.getBranchCommits(repo: repo, branch: currentBranch) { commits in
-                        self.commits = commits
-                        self.selectCommit(commit: commits.first)
-                    }
-                }
+                self.selectBranch(branch: currentBranch, repo: repo)
             }
         } else {
             self.objectWillChange.send()
@@ -72,11 +66,11 @@ class GitHelper: ObservableObject {
         selectedBranch = branch
         gitJob?.cancel()
         commits = []
-        selectedCommit = nil
+        selectCommit(commit: nil)
         if let branch = selectedBranch, let repo {
             gitJob = getBranchCommits(repo: repo, branch: branch) { commits in
                 self.commits = commits
-                self.selectedCommit = commits.first
+                self.selectCommit(commit: commits.first)
                 self.objectWillChange.send()
             }
         } else {
@@ -138,10 +132,10 @@ class GitHelper: ObservableObject {
     
     func selectCommit(commit: CommitItem?) {
         selectedCommit = commit
-        objectWillChange.send()
         if let selectedRepo, let commit {
             getCommitInfo(repo: selectedRepo, hash: commit.longHash)
         }
+        objectWillChange.send()
     }
     
     private func getBranchCommits(repo: RepoItem, branch: String, callback: @escaping @MainActor ([CommitItem]) -> ()) -> Task<(), Never>? {

@@ -107,7 +107,6 @@ class StorageHelper {
                 let fetchRequest = StoredRepoItem.fetchRequest()
                 fetchRequest.predicate = NSPredicate(format: "path == %@", path as CVarArg)
                 let result = try context.fetch(fetchRequest)
-                print(result, path)
                 result.forEach { item in
                     context.delete(item)
                 }
