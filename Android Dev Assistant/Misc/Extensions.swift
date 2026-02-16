@@ -33,6 +33,15 @@ extension View {
     func hoverOpacity(_ value: Double = HOVER_OPACITY) -> some View {
         modifier(HoverOpacity(hoverOpacity: value))
     }
+    
+    @ViewBuilder
+      func hidden(_ shouldHide: Bool) -> some View {
+          if shouldHide {
+              self.hidden()
+          } else {
+              self
+          }
+      }
 }
 
 extension Collection where Indices.Iterator.Element == Index {

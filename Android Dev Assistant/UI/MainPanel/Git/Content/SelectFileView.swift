@@ -95,6 +95,7 @@ struct SelectFileView: View {
                 .foregroundColor(.white)
                 .opacity(searchResults == nil ? 1 : 0)
                 .rotationEffect(.degrees(spinnerAngle))
+                .fixedSize()
                 .onAppear {
                     spinnerAngle = 0
                     withAnimation(.linear(duration: 1).repeatForever(autoreverses: false)) {
