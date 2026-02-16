@@ -101,8 +101,18 @@ enum CommonError: Error {
 
 @LogicActor func locateADBViaSDK() -> String? {
     let home = ProcessInfo.processInfo.environment["HOME"] ?? ""
-    let adb = "\(home)/Library/Android/sdk/platform-tools/adb"
-    return FileManager.default.isExecutableFile(atPath: adb) ? adb : nil
+    let candidates = [
+          "/opt/homebrew/bin/adb",
+          "/usr/local/bin/adb",
+          "\(home)/Library/Android/sdk/platform-tools/adb",
+          "/Applications/Android Studio.app/Contents/jbr/bin/adb"
+      ]
+    for path in candidates {
+        if FileManager.default.isExecutableFile(atPath: path) {
+            return path
+        }
+    }
+    return nil
 }
 
 @LogicActor func locateAaptViaSDK() async -> String? {
