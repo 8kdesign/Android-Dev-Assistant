@@ -17,7 +17,7 @@ struct CommitInfoView: View {
                 ListView(diff: diff)
             }.frame(maxWidth: .infinity)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .scrollIndicators(.hidden)
+            .scrollIndicators(.never)
     }
     
     private func ListView(diff: [FileDiff]) -> some View {

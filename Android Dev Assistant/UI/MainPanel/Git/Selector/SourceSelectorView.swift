@@ -116,7 +116,7 @@ struct SourceSelectorView: View {
                     }
                 }
             }.frame(maxWidth: .infinity, maxHeight: 300)
-                .scrollIndicators(.hidden)
+                .scrollIndicators(.never)
         }.frame(maxWidth: .infinity, alignment: .top)
             .background(Color(red: 0.2, green: 0.2, blue: 0.2))
             .onTapGesture {}
@@ -172,7 +172,7 @@ struct SourceSelectorView: View {
                 }
             }
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .scrollIndicators(.hidden)
+            .scrollIndicators(.never)
     }
     
 }

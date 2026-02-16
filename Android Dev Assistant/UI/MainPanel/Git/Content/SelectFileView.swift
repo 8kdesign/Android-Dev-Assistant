@@ -36,7 +36,7 @@ struct SelectFileView: View {
                         }
                     }.frame(maxWidth: .infinity)
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .scrollIndicators(.hidden)
+                    .scrollIndicators(.never)
             } else {
                 VStack {
                     ProgressView()
