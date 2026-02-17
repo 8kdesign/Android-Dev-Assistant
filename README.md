@@ -14,11 +14,11 @@
 
 3. **Display Size Switching**
    
-   Mock a different display size/ratio on your device with just a click. Note: Enable WRITE_SECURE_SETTINGS in the developer settings for this to work. After changing back to the default size, you might need to restart your device.
+   Mock a different display size/ratio on your device with just a click. Note: You will need to enable WRITE_SECURE_SETTINGS in the developer settings for this to work. After you switch to the default size, restart your device to avoid UI bugs.
 
 4. **View Last Crash**
 
-   Check the last crash logs on your device with just a click, sorted from the most recent to the oldest.
+   Check the last crash logs on your device with a click, sorted from most recent to oldest.
 
 5. **Off-Commit File Search**
 
