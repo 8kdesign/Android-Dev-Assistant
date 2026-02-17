@@ -2,6 +2,8 @@
 
 **Android Dev Assistant** is a productivity tool for macOS designed to help Android developers save time. It combines essential tools for debugging and testing into one intuitive interface that anyone can use.
 
+<img width="1012" height="744" alt="image" src="https://github.com/user-attachments/assets/31bd499b-7667-4c2c-83d3-e9004a3084dd" />
+
 ## Features
 
 1. **Quick APK Installation/Management**
