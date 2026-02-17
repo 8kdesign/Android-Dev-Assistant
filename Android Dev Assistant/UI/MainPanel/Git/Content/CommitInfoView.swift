@@ -23,7 +23,7 @@ struct CommitInfoView: View {
     
     private func ListView(diff: [FileDiff]) -> some View {
         ForEach(Array(diff.enumerated()), id: \.offset) { index, item in
-            VStack(spacing: 5) {
+            VStack(spacing: 0) {
                 Text(item.file)
                     .font(.body.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -31,25 +31,33 @@ struct CommitInfoView: View {
                     .truncationMode(.head)
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
-                if !item.added.isEmpty {
-                    ListDataView(list: Array(item.added), isAdd: true)
+                    .padding(.horizontal, 15)
+                    .padding(.vertical, 10)
+                    .background(Color(red: 0.16, green: 0.16, blue: 0.16))
+                if !(item.added.isEmpty && item.removed.isEmpty) {
+                    VStack(spacing: 5) {
+                        if !item.added.isEmpty {
+                            ListDataView(list: Array(item.added), isAdd: true)
+                        }
+                        if !item.removed.isEmpty {
+                            ListDataView(list: Array(item.removed), isAdd: false)
+                        }
+                        if item.added.count + item.removed.count > 10 {
+                            Text("...")
+                                .font(.callout)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .foregroundStyle(.white)
+                                .foregroundColor(.white)
+                                .opacity(0.5)
+                        }
+                    }.padding(.horizontal, 15)
+                        .padding(.vertical, 10)
                 }
-                if !item.removed.isEmpty {
-                    ListDataView(list: Array(item.removed), isAdd: false)
-                }
-                if item.added.count + item.removed.count > 10 {
-                    Text("...")
-                        .font(.callout)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .foregroundStyle(.white)
-                        .foregroundColor(.white)
-                        .opacity(0.5)
-                }
-            }.padding(.all)
-                .frame(maxWidth: 600)
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.12, green: 0.12, blue: 0.12)))
+            }.frame(maxWidth: 600)
+                .background(Color(red: 0.12, green: 0.12, blue: 0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
                 .onTapGesture {
                     selectedFile = GitFileItem(path: item.file)
                 }.hoverOpacity()
