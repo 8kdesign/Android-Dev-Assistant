@@ -92,7 +92,7 @@ Even after your app has closed, the crash logs are still stored on the device fo
 
 ### 🗃️ Repository Mode
 
-Switching to repository mode, you will be able to browse files across any commits and branches without switching to them.
+In repository mode, you will be able to browse files across any commits and branches without switching.
 
 <p align="center">
 <img width="1012" height="744" alt="image" src="https://github.com/user-attachments/assets/f84031e2-b574-4d23-b03e-a9af678de2e5" />
@@ -110,10 +110,9 @@ Then, on the main panel, tap on the current branch to select the branch you want
 <img width="236" height="233" alt="image" src="https://github.com/user-attachments/assets/3e0b58e9-064b-4e0e-bf31-452e2ce733f7" />
 </p>
 
-Once the files are ready, the spinner should go away, and you will be able to use the search bar to look for any file in the project.
+Once the files are ready, the spinner should go away, and you will be able to use the search bar to look for any file in the project. Right-click to copy the entire file, or click on lines to select them before right-clicking them to copy a range of lines.
 
 <p align="center">
 <img width="416" height="451" alt="image" src="https://github.com/user-attachments/assets/8a7235e7-5fca-44c9-ac77-2b966c96d7f0" />
 </p>
 
-Right-click to copy the entire file, or click on lines to select them before right-clicking them to copy a range of lines.
