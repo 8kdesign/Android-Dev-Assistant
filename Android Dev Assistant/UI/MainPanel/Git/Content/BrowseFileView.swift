@@ -116,6 +116,7 @@ struct BrowseFileView: View {
                 }.hoverOpacity()
             VStack(spacing: 5) {
                 Text(file.name)
+                    .font(.body.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.tail)

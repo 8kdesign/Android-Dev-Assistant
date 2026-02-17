@@ -101,6 +101,7 @@ struct SelectFileView: View {
         HStack(spacing: 15) {
             VStack(spacing: 5) {
                 Text(file.name)
+                    .font(.body.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.tail)

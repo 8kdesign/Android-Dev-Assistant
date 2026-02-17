@@ -25,16 +25,17 @@ struct CommitInfoView: View {
         ForEach(Array(diff.enumerated()), id: \.offset) { index, item in
             VStack(spacing: 5) {
                 Text(item.file)
+                    .font(.body.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.head)
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
                 if !item.added.isEmpty {
-                    ListDataView(list: Array(item.added))
+                    ListDataView(list: Array(item.added), isAdd: true)
                 }
                 if !item.removed.isEmpty {
-                    ListDataView(list: Array(item.removed))
+                    ListDataView(list: Array(item.removed), isAdd: false)
                 }
                 if item.added.count + item.removed.count > 10 {
                     Text("...")
@@ -56,7 +57,7 @@ struct CommitInfoView: View {
         }
     }
     
-    private func ListDataView(list: [String]) -> some View {
+    private func ListDataView(list: [String], isAdd: Bool) -> some View {
         VStack(spacing: 5) {
             ForEach(Array(list.enumerated()), id: \.offset) { index, item in
                 Text(item)
@@ -64,7 +65,7 @@ struct CommitInfoView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(isAdd ? Color(red: 0.6, green: 1, blue: 0.65) : Color(red: 1, green: 0.6, blue: 0.6))
                     .foregroundColor(.white)
                     .opacity(0.5)
             }
