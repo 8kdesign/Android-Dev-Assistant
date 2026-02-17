@@ -35,12 +35,7 @@ struct SelectFileView: View {
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
                     .scrollIndicators(.never)
             } else {
-                VStack {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .accentColor(.white)
-                        .tint(.white)
-                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                Spacer()
             }
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .onTapGesture {
@@ -99,7 +94,7 @@ struct SelectFileView: View {
                         spinnerAngle = 360
                     }
                 }
-        }
+        }.frame(maxWidth: .infinity, alignment: .leading)
     }
     
     private func FileItemView(file: GitFileItem) -> some View {

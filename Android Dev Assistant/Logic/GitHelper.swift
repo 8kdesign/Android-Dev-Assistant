@@ -131,10 +131,10 @@ class GitHelper: ObservableObject {
     // Commit
     
     func selectCommit(commit: CommitItem?) {
-        selectedCommit = commit
         if let selectedRepo, let commit {
             getCommitInfo(repo: selectedRepo, hash: commit.longHash)
         }
+        selectedCommit = commit
         objectWillChange.send()
     }
     

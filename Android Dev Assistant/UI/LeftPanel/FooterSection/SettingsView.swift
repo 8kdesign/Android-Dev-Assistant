@@ -11,6 +11,7 @@ struct SettingsView: View {
     
     @EnvironmentObject var uiController: UIController
     @EnvironmentObject var adbHelper: AdbHelper
+    @EnvironmentObject var apkHelper: ApkHelper
     
     let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "X"
     @State var enableCleanScreenshot: Bool = UserDefaultsHelper.getScreenshotCleanerEnabled()
@@ -60,6 +61,7 @@ struct SettingsView: View {
                 SwitchItemView(title: "Auto cleanup screenshots", isEnabled: $enableCleanScreenshot)
                 HeaderItemView(title: "Folders")
                 FolderItemView(title: "ADB", path: adbHelper.adbPath)
+                FolderItemView(title: "AAPT", path: apkHelper.aaptPath)
             }.padding(.all, 20)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
