@@ -12,7 +12,7 @@ struct HeaderTabView: View {
     @Binding var isRepoTab: Bool
     
     var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             Image(systemName: "smartphone")
                 .resizable()
                 .scaledToFit()
