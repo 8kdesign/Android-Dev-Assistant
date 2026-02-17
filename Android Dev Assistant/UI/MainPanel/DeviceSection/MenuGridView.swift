@@ -36,6 +36,9 @@ struct MenuGridView: View {
                         uiController.showingPopup = .lastCrashLogs(logs: $0)
                     }
                 }
+                MenuGridItem(name: "TalkBack", icon: "text.bubble.fill", iconColor: .purple, requireAdb: true) {
+                    adbHelper.toggleTalkback()
+                }
             }.padding([.horizontal, .bottom])
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }

@@ -328,4 +328,48 @@ class AdbHelper: ObservableObject {
         }
     }
     
+    func toggleTalkback() {
+        guard let adbPath, let selectedDevice else { return }
+        runOnLogicThread {
+            do {
+                let stateResult = try await runCommand(
+                    path: adbPath,
+                    arguments: ["-s", selectedDevice, "shell", "settings", "get", "secure", "enabled_accessibility_services"]
+                )
+                let isEnabled = String(data: stateResult, encoding: .utf8)?.split(separator: "\n")
+                    .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .contains(where: { $0 == "com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService" })
+                if isEnabled == true {
+                    _ = try await runCommand(
+                        path: adbPath,
+                        arguments: ["-s", selectedDevice, "shell", "settings", "delete", "secure", "enabled_accessibility_services"]
+                    )
+                    _ = try await runCommand(
+                        path: adbPath,
+                        arguments: ["-s", selectedDevice, "shell", "am", "force-stop", "com.google.android.marvin.talkback"]
+                    )
+                    Task { @MainActor in
+                        ToastHelper.shared.addToast("TalkBack disabled", style: .normal)
+                    }
+                } else {
+                    _ = try await runCommand(
+                        path: adbPath,
+                        arguments: ["-s", selectedDevice, "shell", "settings", "put", "secure", "enabled_accessibility_services", "\\com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService"]
+                    )
+                    _ = try await runCommand(
+                        path: adbPath,
+                        arguments: ["-s", selectedDevice, "shell", "media", "volume", "--stream", "10", "--set", "7"]
+                    )
+                    Task { @MainActor in
+                        ToastHelper.shared.addToast("TalkBack enabled", style: .normal)
+                    }
+                }
+            } catch {
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
 }
