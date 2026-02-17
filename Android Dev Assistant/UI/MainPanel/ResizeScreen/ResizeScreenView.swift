@@ -16,39 +16,26 @@ struct ResizeScreenView: View {
     
     var body: some View {
         PopupView(title: "Mock Screen", exit: { uiController.showingPopup = nil }) {
-            VStack {
-                HStack {
-                    Spacer()
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))]) {
                     ResizeScreenItemView(type: .NORMAL)
                     ResizeScreenItemView(type: .MOCK_PHONE_23_9)
                     ResizeScreenItemView(type: .MOCK_PHONE_18_9)
                     ResizeScreenItemView(type: .MOCK_PHONE_16_9)
-                    Spacer()
-                }
-                HStack {
-                    Spacer()
                     ResizeScreenItemView(type: .MOCK_PHONE_SMALL)
                     ResizeScreenItemView(type: .MOCK_FOLD_1_1)
                     ResizeScreenItemView(type: .MOCK_TABLET_16_10)
                     ResizeScreenItemView(type: .MOCK_TABLET_4_3)
-                    Spacer()
-                }
-            }.padding(.all, 20)
+                }.padding(.all)
+            }
         }.onAppear {
             getCurrentMockType()
         }
     }
     
-    func ResizeScreenItemView(type: MockScreenType) -> some View {
-        VStack {
-            Image(systemName: type.isTablet() ? "ipad.rear.camera" : "iphone.rear.camera")
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: 60, maxHeight: 60)
-                .scaleEffect(type.isTablet() ? 1 : 0.8)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
-                .opacity(0.7)
+    private func ResizeScreenItemView(type: MockScreenType) -> some View {
+        VStack(spacing: 5) {
+            ScreenSizeIconView(type: type)
             Text(type.getLabel())
                 .frame(maxWidth: .infinity, alignment: .center)
                 .lineLimit(1)
@@ -57,12 +44,30 @@ struct ResizeScreenView: View {
                 .foregroundColor(.white)
                 .opacity(0.7)
         }.padding(.all, 15)
-            .frame(maxWidth: 200, maxHeight: 200)
+            .frame(maxWidth: .infinity)
             .background(RoundedRectangle(cornerRadius: 15).fill(Color(red: 0.1, green: 0.1, blue: 0.1)))
             .opacity(mockScreenType == type ? 1 : 0.3)
             .onTapGesture {
                 setCurrentMockType(type)
             }.hoverOpacity()
+    }
+    
+    private func ScreenSizeIconView(type: MockScreenType) -> some View {
+        Canvas { context, size in
+            if let originalSize {
+                let ratio = type.getPreviewRatio(originalSize: originalSize)
+                let height = size.height * (type.isPreviewTablet() ? 0.9 : 0.7)
+                let width = height * ratio
+                let verticalPadding = (size.height - height) / 2
+                let horizontalPadding = (size.width - width) / 2
+                context.stroke(
+                    Path(roundedRect: CGRect(x: horizontalPadding, y: verticalPadding, width: width, height: height),
+                         cornerRadius: CGFloat(size.height) / 15),
+                    with: .color(.white),
+                    style: .init(lineWidth: 2)
+                )
+            }
+        }.frame(maxWidth: 60, maxHeight: 60)
     }
     
 }

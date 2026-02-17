@@ -59,17 +59,32 @@ enum MockScreenType: Equatable {
         case .CUSTOM: return "Custom"
         }
     }
+
+    @MainActor func getPreviewRatio(originalSize: ScreenSize) -> CGFloat {
+        switch self {
+        case .NORMAL: return CGFloat(originalSize.width) / CGFloat(max(1, originalSize.height))
+        case .MOCK_PHONE_23_9: return 0.39
+        case .MOCK_PHONE_18_9: return 0.5
+        case .MOCK_PHONE_16_9: return 0.5625
+        case .MOCK_PHONE_SMALL: return 0.5625
+        case .MOCK_FOLD_1_1: return 1
+        case .MOCK_TABLET_16_10: return 0.625
+        case .MOCK_TABLET_4_3: return 0.75
+        case .CUSTOM: return 0.75
+        }
+    }
     
-    @MainActor func isTablet() -> Bool {
+    
+    @MainActor func isPreviewTablet() -> Bool {
         switch self {
         case .NORMAL,
         .CUSTOM,
         .MOCK_PHONE_23_9,
         .MOCK_PHONE_18_9,
         .MOCK_PHONE_16_9,
-        .MOCK_PHONE_SMALL: return false
-        case .MOCK_TABLET_16_10,
-        .MOCK_FOLD_1_1,
+        .MOCK_PHONE_SMALL,
+        .MOCK_FOLD_1_1: return false
+        case.MOCK_TABLET_16_10,
         .MOCK_TABLET_4_3: return true
         }
     }
