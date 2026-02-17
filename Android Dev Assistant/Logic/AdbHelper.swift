@@ -33,34 +33,27 @@ class AdbHelper: ObservableObject {
             await MainActor.run {
                 self.adbPath = path
             }
-            startADBDeviceListener(adbPath: path) { status in
-                let lines = status.dropFirst(4).split(whereSeparator: \.isNewline)
-                lines.forEach { line in
-                    let splitStatus = line.split(separator: "\t")
-                    if (splitStatus.count < 2) { return }
-                    Task { @MainActor in
-                        let id = String(splitStatus[0].trimmingCharacters(in: .whitespacesAndNewlines))
-                        switch splitStatus[1].trimmingCharacters(in: .whitespacesAndNewlines) {
-                        case "device":
-                            self.currentDevices.insert(id)
-                            if self.selectedDevice == nil {
-                                self.selectedDevice = id
-                            }
-                            self.objectWillChange.send()
-                            runOnLogicThread {
-                                await self.getName(id: id)
-                            }
-                        case "offline":
-                            self.currentDevices.remove(id)
-                            if self.selectedDevice == id {
-                                self.selectedDevice = self.currentDevices.first
-                            }
-                            self.objectWillChange.send()
-                        default: ()
+            startADBDeviceListener(adbPath: path) { id, state in
+                Task { @MainActor in
+                    switch state {
+                    case "device":
+                        self.currentDevices.insert(id)
+                        if self.selectedDevice == nil {
+                            self.selectedDevice = id
                         }
+                        self.objectWillChange.send()
+                        runOnLogicThread {
+                            await self.getName(id: id)
+                        }
+                    case "offline":
+                        self.currentDevices.remove(id)
+                        if self.selectedDevice == id {
+                            self.selectedDevice = self.currentDevices.first
+                        }
+                        self.objectWillChange.send()
+                    default: ()
                     }
                 }
-                
             }
         }
         runOnLogicThread {
@@ -355,10 +348,6 @@ class AdbHelper: ObservableObject {
                     _ = try await runCommand(
                         path: adbPath,
                         arguments: ["-s", selectedDevice, "shell", "settings", "put", "secure", "enabled_accessibility_services", "\\com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService"]
-                    )
-                    _ = try await runCommand(
-                        path: adbPath,
-                        arguments: ["-s", selectedDevice, "shell", "media", "volume", "--stream", "10", "--set", "7"]
                     )
                     Task { @MainActor in
                         ToastHelper.shared.addToast("TalkBack enabled", style: .normal)

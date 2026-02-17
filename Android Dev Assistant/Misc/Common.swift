@@ -78,24 +78,62 @@ enum CommonError: Error {
     return nil
 }
 
-@LogicActor func startADBDeviceListener(adbPath: String, callback: @escaping (String) -> ()) {
+@LogicActor func startADBDeviceListener(
+    adbPath: String,
+    callback: @escaping (_ serial: String, _ state: String) -> Void
+) {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: adbPath)
     process.arguments = ["track-devices"]
     let pipe = Pipe()
     process.standardOutput = pipe
-    process.standardError = Pipe() // discard errors or capture them
+    var buffer = Data()
+    pipe.fileHandleForReading.readabilityHandler = { handle in
+        let chunk = handle.availableData
+        guard !chunk.isEmpty else { return }
+        Task { @MainActor in
+            runOnLogicThread {
+                buffer.append(chunk)
+                while true {
+                    guard buffer.count >= 4 else { return }
+                    let lengthData = buffer.prefix(4)
+                    guard
+                        let lengthHex = String(data: lengthData, encoding: .ascii),
+                        let length = Int(lengthHex, radix: 16)
+                    else {
+                        buffer.removeAll()
+                        return
+                    }
+                    guard buffer.count >= 4 + length else { return }
+                    let payload = buffer.subdata(in: 4 ..< 4 + length)
+                    buffer.removeSubrange(0 ..< 4 + length)
+                    handleADBPayload(payload, callback: callback)
+                }
+            }
+        }
+    }
     do {
         try process.run()
     } catch {
-        return
+        print("Failed to start adb track-devices:", error)
     }
-    pipe.fileHandleForReading.readabilityHandler = { handle in
-        let data = handle.availableData
-        if !data.isEmpty {
-            let output = String(decoding: data, as: UTF8.self)
-            callback(output.trimmingCharacters(in: .whitespacesAndNewlines))
-        }
+}
+
+@LogicActor private func handleADBPayload(
+    _ data: Data,
+    callback: (_ serial: String, _ state: String) -> Void
+) {
+    guard let text = String(data: data, encoding: .utf8) else { return }
+    let lines = text.split(separator: "\n")
+
+    for line in lines {
+        let parts = line.split(separator: "\t")
+        guard parts.count == 2 else { continue }
+
+        let serial = String(parts[0])
+        let state = String(parts[1])
+
+        callback(serial, state)
     }
 }
 
