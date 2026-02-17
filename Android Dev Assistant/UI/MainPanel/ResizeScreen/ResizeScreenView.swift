@@ -67,7 +67,7 @@ struct ResizeScreenView: View {
                     style: .init(lineWidth: 2)
                 )
             }
-        }.frame(maxWidth: 60, maxHeight: 60)
+        }.frame(width: 60, height: 60)
     }
     
 }
