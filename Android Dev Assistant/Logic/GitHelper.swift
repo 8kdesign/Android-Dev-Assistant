@@ -138,7 +138,16 @@ class GitHelper: ObservableObject {
         objectWillChange.send()
     }
     
-    private func getBranchCommits(repo: RepoItem, branch: String, callback: @escaping @MainActor ([CommitItem]) -> ()) -> Task<(), Never>? {
+    func loadMoreCommits(offset: Int) {
+        guard let selectedRepo, let selectedBranch else { return }
+        gitJob?.cancel()
+        gitJob = getBranchCommits(repo: selectedRepo, branch: selectedBranch, offset: offset) { newCommits in
+            self.commits.append(contentsOf: newCommits)
+            self.objectWillChange.send()
+        }
+    }
+    
+    private func getBranchCommits(repo: RepoItem, branch: String, offset: Int = 0, callback: @escaping @MainActor ([CommitItem]) -> ()) -> Task<(), Never>? {
         guard let gitPath else {
             callback([])
             return nil
@@ -147,7 +156,7 @@ class GitHelper: ObservableObject {
             do {
                 let result = try await runCommand(
                     path: gitPath,
-                    arguments: ["-C", repo.path, "log", branch, "-100", "--pretty=format:\"%H|%h|%an|%ad|%s\"", "--date=short"],
+                    arguments: ["-C", repo.path, "log", branch, "--skip=\(offset)", "-n", "100", "--pretty=format:\"%H|%h|%an|%ad|%s\"", "--date=short"],
                 )
                 let string = String(data: result, encoding: .utf8)
                 if string?.starts(with: "fatal") == true {

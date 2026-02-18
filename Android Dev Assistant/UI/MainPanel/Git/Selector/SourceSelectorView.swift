@@ -127,52 +127,61 @@ struct SourceSelectorView: View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 ForEach(Array(gitHelper.commits.enumerated()), id: \.offset) { index, item in
-                    let isSelected = item.id == gitHelper.selectedCommit?.id
-                    VStack(spacing: 5) {
-                        Text(item.shortHash)
-                            .font(.footnote)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .foregroundStyle(isSelected ? .black : .white)
-                            .foregroundColor(isSelected ? .black : .white)
-                            .opacity(0.5)
-                        Text(item.message)
-                            .font(.callout)
-                            .lineLimit(2)
-                            .truncationMode(.tail)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .multilineTextAlignment(.leading)
-                            .foregroundStyle(isSelected ? .black : .white)
-                            .foregroundColor(isSelected ? .black : .white)
-                        HStack(spacing: 10) {
-                            Text("@\(item.author)")
-                                .font(.footnote)
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .foregroundStyle(isSelected ? .black : .white)
-                                .foregroundColor(isSelected ? .black : .white)
-                                .opacity(0.5)
-                            Text(item.date)
-                                .font(.footnote)
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                                .foregroundStyle(isSelected ? .black : .white)
-                                .foregroundColor(isSelected ? .black : .white)
-                                .opacity(0.3)
-                        }.frame(maxWidth: .infinity)
-                    }.padding(.horizontal, 15)
-                        .padding(.vertical, 10)
-                        .background(.white.opacity(isSelected ? 0.7 : 0.00001))
-                        .onTapGesture {
-                            gitHelper.selectCommit(commit: item)
-                        }.hoverOpacity()
+                    CommitItemView(item: item)
                     Divider().opacity(0.3)
                 }
             }
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .scrollIndicators(.never)
+    }
+    
+    private func CommitItemView(item: CommitItem) -> some View {
+        let isSelected = item.id == gitHelper.selectedCommit?.id
+        return VStack(spacing: 5) {
+            Text(item.shortHash)
+                .font(.footnote)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .foregroundStyle(isSelected ? .black : .white)
+                .foregroundColor(isSelected ? .black : .white)
+                .opacity(0.5)
+            Text(item.message)
+                .font(.callout)
+                .lineLimit(2)
+                .truncationMode(.tail)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .multilineTextAlignment(.leading)
+                .foregroundStyle(isSelected ? .black : .white)
+                .foregroundColor(isSelected ? .black : .white)
+            HStack(spacing: 10) {
+                Text("@\(item.author)")
+                    .font(.footnote)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .foregroundStyle(isSelected ? .black : .white)
+                    .foregroundColor(isSelected ? .black : .white)
+                    .opacity(0.5)
+                Text(item.date)
+                    .font(.footnote)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .foregroundStyle(isSelected ? .black : .white)
+                    .foregroundColor(isSelected ? .black : .white)
+                    .opacity(0.3)
+            }.frame(maxWidth: .infinity)
+        }.padding(.horizontal, 15)
+            .padding(.vertical, 10)
+            .background(.white.opacity(isSelected ? 0.7 : 0.00001))
+            .onTapGesture {
+                gitHelper.selectCommit(commit: item)
+            }.hoverOpacity()
+            .onAppear {
+                if item.id == gitHelper.commits.last?.id {
+                    gitHelper.loadMoreCommits(offset: gitHelper.commits.count)
+                }
+            }
     }
     
 }
