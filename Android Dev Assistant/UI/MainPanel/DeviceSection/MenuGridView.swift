@@ -30,7 +30,7 @@ struct MenuGridView: View {
                 }
                 MenuGridItem(name: "Read Layout", icon: "sidebar.squares.left", iconColor: .blue, requireAdb: true) {
                     adbHelper.getLayout { item in
-                        
+                        uiController.showingPopup = .layout(item: item)
                     }
                 }
 //                MenuGridItem(name: "Perfetto", icon: "chart.bar.fill", iconColor: .red, requireAdb: false) {

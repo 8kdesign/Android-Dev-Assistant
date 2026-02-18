@@ -15,7 +15,7 @@ struct ResizeScreenView: View {
     @State var mockScreenType: MockScreenType = .NORMAL
     
     var body: some View {
-        PopupView(title: "Mock Screen", exit: { uiController.showingPopup = nil }) {
+        PopupView(title: "Mock Screen") {
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))]) {
                     ResizeScreenItemView(type: .NORMAL)

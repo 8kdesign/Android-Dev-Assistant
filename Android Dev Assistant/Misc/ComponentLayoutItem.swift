@@ -12,8 +12,10 @@ import SwiftUI
 class ComponentLayoutItem {
     
     let components: [String: ComponentItem]
+    let rootNodes: [ComponentItem]
+    let image: NSImage
     
-    init?(data: Data) {
+    @LogicActor init?(data: Data, image: NSImage) async {
         let xml = XML.parse(data)
         var queue: [(parent: String?, node: XML.Element)] = []
         xml["hierarchy"].element?.childElements.forEach { element in
@@ -22,23 +24,38 @@ class ComponentLayoutItem {
             }
         }
         var components: [String: ComponentItem] = [:]
+        var rootNodes: [ComponentItem] = []
+        var childrenMap: [String: [String]] = [:]
         while !queue.isEmpty {
             let (parent, element) = queue.removeFirst()
-            let item = ComponentItem(parent: parent, attributes: element.attributes)
+            let item = await ComponentItem(parent: parent, attributes: element.attributes)
             components[item.id] = item
             if let parent {
-                components[parent]?.children.append(item.id)
+                if childrenMap[parent] == nil {
+                    childrenMap[parent] = []
+                }
+                childrenMap[parent]?.append(item.id)
+            } else {
+                rootNodes.append(item)
             }
             element.childElements.forEach { element in
                 if element.name == "node" {
-                    queue.append((nil, element))
+                    queue.append((item.id, element))
                 }
             }
         }
         if !components.isEmpty {
             self.components = components
+            self.rootNodes = rootNodes
+            self.image = image
         } else {
             return nil
+        }
+        let fixedChildrenMap = childrenMap
+        Task { @MainActor in
+            for parent in fixedChildrenMap.keys {
+                self.components[parent]?.children = fixedChildrenMap[parent] ?? []
+            }
         }
     }
     

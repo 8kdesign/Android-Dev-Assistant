@@ -12,5 +12,6 @@ enum PopupScreen {
     case settings
     case screenshot(image: NSImage)
     case mockScreenSize
+    case layout(item: ComponentLayoutItem)
     case lastCrashLogs(logs: String)
 }

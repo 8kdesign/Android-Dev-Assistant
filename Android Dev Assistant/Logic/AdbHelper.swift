@@ -361,7 +361,7 @@ class AdbHelper: ObservableObject {
         }
     }
     
-    func getLayout(callback: @escaping @MainActor (ComponentLayoutItem?) -> ()) {
+    func getLayout(callback: @escaping @MainActor (ComponentLayoutItem) -> ()) {
         guard let adbPath, let selectedDevice else { return }
         runOnLogicThread {
             do {
@@ -373,8 +373,11 @@ class AdbHelper: ObservableObject {
                     path: adbPath,
                     arguments: ["shell", "cat", "/sdcard/ui.xml"]
                 )
+                let imageData = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "exec-out", "screencap", "-p"])
+                let image = NSImage(data: imageData)
+                guard let image, let item = await ComponentLayoutItem(data: data, image: image) else { return }
                 Task { @MainActor in
-                    callback(ComponentLayoutItem(data: data))
+                    callback(item)
                 }
             } catch {
                 Task { @MainActor in

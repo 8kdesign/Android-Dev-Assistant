@@ -9,8 +9,9 @@ import SwiftUI
 
 struct PopupView<Content: View>: View {
     
+    @EnvironmentObject var uiController: UIController
     var title: LocalizedStringResource
-    var exit: () -> ()
+    var onExit: () -> () = {}
     @ViewBuilder var content: () -> Content
     @State var isReady: Bool = false
     
@@ -80,7 +81,8 @@ extension PopupView {
             isReady = false
         }
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { _ in
-            exit()
+            uiController.showingPopup = nil
+            onExit()
         }
     }
     

@@ -23,7 +23,7 @@ struct ScreenshotEditView: View {
     @State var isHighlight: Bool = UserDefaultsHelper.getScreenshotEditIsHighlight()
     
     var body: some View {
-        PopupView(title: "Screenshot", exit: { uiController.showingPopup = nil }) {
+        PopupView(title: "Screenshot") {
             if let holdImage {
                 if holdImage.size.width < holdImage.size.height {
                     HStack (spacing: 0) {

@@ -16,7 +16,7 @@ struct LastCrashLogsView: View {
     @State var parsedLogs: [(Date, String)] = []
     
     var body: some View {
-        PopupView(title: "Last Crash", exit: { uiController.showingPopup = nil }) {
+        PopupView(title: "Last Crash") {
             ScrollView {
                 LazyVStack {
                     ForEach(Array(parsedLogs.enumerated()), id: \.offset) { index, item in

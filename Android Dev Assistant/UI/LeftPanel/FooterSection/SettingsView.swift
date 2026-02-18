@@ -17,7 +17,7 @@ struct SettingsView: View {
     @State var enableCleanScreenshot: Bool = UserDefaultsHelper.getScreenshotCleanerEnabled()
     
     var body: some View {
-        PopupView(title: "Settings", exit: { uiController.showingPopup = nil }) {
+        PopupView(title: "Settings") {
             HStack(spacing: 0) {
                 InfoView()
                 TogglesView()
