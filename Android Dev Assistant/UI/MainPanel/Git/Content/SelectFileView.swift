@@ -55,7 +55,7 @@ struct SelectFileView: View {
     private func SearchBarView() -> some View {
         HStack {
             HStack {
-                TextField("Search", text: $searchTerm)
+                TextField("Search File", text: $searchTerm)
                     .textFieldStyle(.plain)
                     .frame(maxWidth: .infinity)
                     .focused($focus)

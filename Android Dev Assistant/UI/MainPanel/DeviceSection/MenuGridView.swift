@@ -28,6 +28,11 @@ struct MenuGridView: View {
                         externalToolsHelper.launchScrcpy(deviceId: deviceId, adbPath: adbHelper.adbPath)
                     }
                 }
+                MenuGridItem(name: "Read Layout", icon: "sidebar.squares.left", iconColor: .blue, requireAdb: true) {
+                    adbHelper.getLayout { item in
+                        
+                    }
+                }
 //                MenuGridItem(name: "Perfetto", icon: "chart.bar.fill", iconColor: .red, requireAdb: false) {
 //                    externalToolsHelper.launchPerfetto()
 //                }

@@ -361,4 +361,27 @@ class AdbHelper: ObservableObject {
         }
     }
     
+    func getLayout(callback: @escaping @MainActor (ComponentLayoutItem?) -> ()) {
+        guard let adbPath, let selectedDevice else { return }
+        runOnLogicThread {
+            do {
+                _ = try await runCommand(
+                    path: adbPath,
+                    arguments: ["-s", selectedDevice, "shell", "uiautomator", "dump", "/sdcard/ui.xml"]
+                )
+                let data = try await runCommand(
+                    path: adbPath,
+                    arguments: ["shell", "cat", "/sdcard/ui.xml"]
+                )
+                Task { @MainActor in
+                    callback(ComponentLayoutItem(data: data))
+                }
+            } catch {
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
 }

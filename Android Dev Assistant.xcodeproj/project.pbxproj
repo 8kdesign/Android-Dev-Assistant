@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5C73F67E2F45F91200F7F7E6 /* SwiftyXMLParser in Frameworks */ = {isa = PBXBuildFile; productRef = 5C73F67D2F45F91200F7F7E6 /* SwiftyXMLParser */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		5C2071C62F2D7C680052131E /* Android Dev Assistant.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Android Dev Assistant.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C73F67E2F45F91200F7F7E6 /* SwiftyXMLParser in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = "Android Dev Assistant";
 			packageProductDependencies = (
+				5C73F67D2F45F91200F7F7E6 /* SwiftyXMLParser */,
 			);
 			productName = "Android Dev Assistant";
 			productReference = 5C2071C62F2D7C680052131E /* Android Dev Assistant.app */;
@@ -95,6 +101,9 @@
 			);
 			mainGroup = 5C2071BD2F2D7C680052131E;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5C73F67C2F45F91200F7F7E6 /* XCRemoteSwiftPackageReference "SwiftyXMLParser" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5C2071C72F2D7C680052131E /* Products */;
 			projectDirPath = "";
@@ -362,6 +371,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5C73F67C2F45F91200F7F7E6 /* XCRemoteSwiftPackageReference "SwiftyXMLParser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/yahoojapan/SwiftyXMLParser";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5C73F67D2F45F91200F7F7E6 /* SwiftyXMLParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5C73F67C2F45F91200F7F7E6 /* XCRemoteSwiftPackageReference "SwiftyXMLParser" */;
+			productName = SwiftyXMLParser;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5C2071BE2F2D7C680052131E /* Project object */;
 }
