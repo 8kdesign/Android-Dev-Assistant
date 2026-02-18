@@ -17,7 +17,7 @@ class ComponentLayoutItem {
     
     @LogicActor init?(data: Data, image: NSImage) async {
         let xml = XML.parse(data)
-        var queue: [(parent: String?, node: XML.Element)] = []
+        var queue: [(parent: ComponentItem?, node: XML.Element)] = []
         xml["hierarchy"].element?.childElements.forEach { element in
             if element.name == "node" {
                 queue.append((nil, element))
@@ -31,16 +31,16 @@ class ComponentLayoutItem {
             let item = await ComponentItem(parent: parent, attributes: element.attributes)
             components[item.id] = item
             if let parent {
-                if childrenMap[parent] == nil {
-                    childrenMap[parent] = []
+                if childrenMap[parent.id] == nil {
+                    childrenMap[parent.id] = []
                 }
-                childrenMap[parent]?.append(item.id)
+                childrenMap[parent.id]?.append(item.id)
             } else {
                 rootNodes.append(item)
             }
             element.childElements.forEach { element in
                 if element.name == "node" {
-                    queue.append((item.id, element))
+                    queue.append((item, element))
                 }
             }
         }
@@ -57,6 +57,24 @@ class ComponentLayoutItem {
                 self.components[parent]?.children = fixedChildrenMap[parent] ?? []
             }
         }
+    }
+    
+    func getOrderedComponents(parent: ComponentItem? = nil) -> [ComponentItem] {
+        var result: [ComponentItem] = []
+        if let parent {
+            parent.children.forEach { id in
+                if let item = components[id] {
+                    result.append(item)
+                    result.append(contentsOf: getOrderedComponents(parent: item))
+                }
+            }
+        } else {
+            rootNodes.forEach { item in
+                result.append(item)
+                result.append(contentsOf: getOrderedComponents(parent: item))
+            }
+        }
+        return result
     }
     
     func getComponentsAtPoint(point: CGPoint) -> [ComponentItem] {
@@ -80,21 +98,43 @@ class ComponentLayoutItem {
     
 }
 
-class ComponentItem {
+class ComponentItem: Identifiable {
     
     let id: String = UUID().uuidString
     let parent: String?
     let resourceId: String
     let componentClass: String
     let bounds: CGRect
+    let depth: Int
     
     var children: [String] = []
 
-    init(parent: String?, attributes: [String: String]) {
-        self.parent = parent
+    init(parent: ComponentItem?, attributes: [String: String]) {
+        self.parent = parent?.id
+        if let parent {
+            self.depth = parent.depth + 1
+        } else {
+            self.depth = 0
+        }
         self.resourceId = attributes["resource-id"] ?? ""
         self.componentClass = attributes["class"] ?? ""
         self.bounds = parseBounds(attributes["bounds"] ?? "")
+    }
+    
+    func getLabel() -> String {
+        var label = ""
+        for _ in 0..<depth {
+            label += "  "
+        }
+        if depth > 0 {
+            _ = label.drop
+            label += "↪ "
+        }
+        label += componentClass
+        if !resourceId.isEmpty {
+            label += " (\(resourceId))"
+        }
+        return label
     }
     
 }
