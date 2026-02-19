@@ -145,6 +145,14 @@ class ComponentItem: Identifiable, Equatable {
         return label
     }
     
+    func getShortLabel() -> String {
+        var label = componentClass
+        if !resourceId.isEmpty {
+            label += " (\(resourceId))"
+        }
+        return label
+    }
+    
 }
 
 fileprivate func parseBounds(_ string: String) -> CGRect {
