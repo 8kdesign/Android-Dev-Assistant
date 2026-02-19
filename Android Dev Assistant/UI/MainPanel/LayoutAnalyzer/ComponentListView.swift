@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ComponentListView: View {
     
-    var item: ComponentLayoutItem
+    @StateObject var item: ComponentLayoutItem
     @Binding var selectedComponent: ComponentItem?
     @State var components: [ComponentItem] = []
 
@@ -28,8 +28,8 @@ struct ComponentListView: View {
                 .onChange(of: selectedComponent) { value in
                     reader.scrollTo(value?.id, anchor: .center)
                 }
-        }.onAppear {
-            components = item.getOrderedComponents()
+        }.onReceive(item.$components) { value in
+            components = item.getOrderedComponents(components: value)
         }
     }
     

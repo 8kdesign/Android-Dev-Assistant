@@ -365,6 +365,13 @@ class AdbHelper: ObservableObject {
         guard let adbPath, let selectedDevice else { return }
         runOnLogicThread {
             do {
+                let imageData = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "exec-out", "screencap", "-p"])
+                let image = NSImage(data: imageData)
+                guard let image else { return }
+                let item = await ComponentLayoutItem(image: image)
+                Task { @MainActor in
+                    callback(item)
+                }
                 _ = try await runCommand(
                     path: adbPath,
                     arguments: ["-s", selectedDevice, "shell", "uiautomator", "dump", "/sdcard/ui.xml"]
@@ -373,12 +380,7 @@ class AdbHelper: ObservableObject {
                     path: adbPath,
                     arguments: ["shell", "cat", "/sdcard/ui.xml"]
                 )
-                let imageData = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "exec-out", "screencap", "-p"])
-                let image = NSImage(data: imageData)
-                guard let image, let item = await ComponentLayoutItem(data: data, image: image) else { return }
-                Task { @MainActor in
-                    callback(item)
-                }
+                await item.loadData(data: data)
             } catch {
                 Task { @MainActor in
                     LogHelper.shared.insertLog(string: error.localizedDescription)

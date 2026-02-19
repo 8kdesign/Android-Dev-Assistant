@@ -8,14 +8,22 @@
 import Foundation
 import SwiftyXMLParser
 import SwiftUI
+import Combine
 
-class ComponentLayoutItem {
+class ComponentLayoutItem: ObservableObject {
     
-    let components: [String: ComponentItem]
-    let rootNodes: [ComponentItem]
+    let objectWillChange = ObservableObjectPublisher()
+    
+    @Published var components: [String: ComponentItem] = [:]
+    var rootNodes: [ComponentItem] = []
     let image: NSImage
+    var isLoaded: Bool = false
     
-    @LogicActor init?(data: Data, image: NSImage) async {
+    @LogicActor init(image: NSImage) async {
+        self.image = image
+    }
+    
+    @LogicActor func loadData(data: Data) async {
         let xml = XML.parse(data)
         var queue: [(parent: ComponentItem?, node: XML.Element)] = []
         xml["hierarchy"].element?.childElements.forEach { element in
@@ -44,22 +52,21 @@ class ComponentLayoutItem {
                 }
             }
         }
-        if !components.isEmpty {
-            self.components = components
-            self.rootNodes = rootNodes
-            self.image = image
-        } else {
-            return nil
-        }
+        let fixedComponents = components
+        let fixedRootNodes = rootNodes
         let fixedChildrenMap = childrenMap
         Task { @MainActor in
             for parent in fixedChildrenMap.keys {
-                self.components[parent]?.children = fixedChildrenMap[parent] ?? []
+                fixedComponents[parent]?.children = fixedChildrenMap[parent] ?? []
             }
+            self.rootNodes = fixedRootNodes
+            self.components = fixedComponents
+            self.isLoaded = true
+            self.objectWillChange.send()
         }
     }
     
-    func getOrderedComponents(parent: ComponentItem? = nil, filter: (ComponentItem) -> Bool = { _ in true }) -> [ComponentItem] {
+    func getOrderedComponents(parent: ComponentItem? = nil, components: [String: ComponentItem], filter: (ComponentItem) -> Bool = { _ in true }) -> [ComponentItem] {
         var result: [ComponentItem] = []
         if let parent {
             parent.children.forEach { id in
@@ -67,7 +74,7 @@ class ComponentLayoutItem {
                     if filter(item) {
                         result.append(item)
                     }
-                    result.append(contentsOf: getOrderedComponents(parent: item, filter: filter))
+                    result.append(contentsOf: getOrderedComponents(parent: item, components: components, filter: filter))
                 }
             }
         } else {
@@ -75,14 +82,14 @@ class ComponentLayoutItem {
                 if filter(item) {
                     result.append(item)
                 }
-                result.append(contentsOf: getOrderedComponents(parent: item, filter: filter))
+                result.append(contentsOf: getOrderedComponents(parent: item, components: components, filter: filter))
             }
         }
         return result
     }
     
     func getComponentsAtPoint(point: CGPoint) -> [ComponentItem] {
-        return getOrderedComponents { $0.bounds.contains(point) }
+        return getOrderedComponents(components: components) { $0.bounds.contains(point) }
     }
     
     func getHighlightComponents(parent: ComponentItem) -> [ComponentItem] {
