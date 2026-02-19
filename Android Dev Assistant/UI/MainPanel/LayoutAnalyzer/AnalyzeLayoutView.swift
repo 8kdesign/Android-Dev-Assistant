@@ -12,6 +12,8 @@ struct AnalyzeLayoutView: View {
     @EnvironmentObject var uiController: UIController
     var item: ComponentLayoutItem
     @State var imageSize: CGSize = .zero
+    @State var selectedComponent: ComponentItem? = nil
+    @State var highlightComponents: [ComponentItem] = []
 
     var body: some View {
         PopupView(title: "Read Layout") {
@@ -23,6 +25,10 @@ struct AnalyzeLayoutView: View {
             } else {
                 PreviewSectionView()
                 BottomControlsView()
+            }
+        }.onChange(of: selectedComponent) { value in
+            if let value {
+                highlightComponents = item.getHighlightComponents(parent: value)
             }
         }
     }
@@ -45,22 +51,32 @@ struct AnalyzeLayoutView: View {
                 .gesture(DragGesture(minimumDistance: 0).onEnded(onSelectComponent))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             Canvas { context, size in
-                
+                highlightComponents.forEach { component in
+                    let bounds = component.bounds
+                    let scale = size.width / max(1, item.image.size.width)
+                    let x = bounds.minX * scale
+                    let y = bounds.minY * scale
+                    let width = bounds.width * scale
+                    let height = bounds.height * scale
+                    let scaledRect = CGRect(x: x, y: y, width: width, height: height)
+                    context.stroke(Path(scaledRect), with: .color(.yellow), style: .init(lineWidth: 2))
+                }
             }.frame(maxWidth: imageSize.width, maxHeight: imageSize.height)
+                .allowsHitTesting(false)
         }.padding(.all, 20)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private func SideControlsView() -> some View {
         VStack(spacing: 0) {
-            ComponentListView(item: item)
+            ComponentListView(item: item, selectedComponent: $selectedComponent)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(red: 0.1, green: 0.1, blue: 0.1))
     }
     
     private func BottomControlsView() -> some View {
         HStack(spacing: 0) {
-            ComponentListView(item: item)
+            ComponentListView(item: item, selectedComponent: $selectedComponent)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(red: 0.1, green: 0.1, blue: 0.1))
     }
@@ -74,6 +90,7 @@ extension AnalyzeLayoutView {
         let actualXPosition = gesture.location.x / imageSize.width * item.image.size.width
         let actualYPosition = gesture.location.y / imageSize.height * item.image.size.height
         let components = item.getComponentsAtPoint(point: CGPoint(x: actualXPosition, y: actualYPosition))
+        selectedComponent = components.last
     }
     
 }

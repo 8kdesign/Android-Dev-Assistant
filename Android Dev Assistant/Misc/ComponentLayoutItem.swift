@@ -59,26 +59,30 @@ class ComponentLayoutItem {
         }
     }
     
-    func getOrderedComponents(parent: ComponentItem? = nil) -> [ComponentItem] {
+    func getOrderedComponents(parent: ComponentItem? = nil, filter: (ComponentItem) -> Bool = { _ in true }) -> [ComponentItem] {
         var result: [ComponentItem] = []
         if let parent {
             parent.children.forEach { id in
                 if let item = components[id] {
-                    result.append(item)
-                    result.append(contentsOf: getOrderedComponents(parent: item))
+                    if filter(item) {
+                        result.append(item)
+                    }
+                    result.append(contentsOf: getOrderedComponents(parent: item, filter: filter))
                 }
             }
         } else {
             rootNodes.forEach { item in
-                result.append(item)
-                result.append(contentsOf: getOrderedComponents(parent: item))
+                if filter(item) {
+                    result.append(item)
+                }
+                result.append(contentsOf: getOrderedComponents(parent: item, filter: filter))
             }
         }
         return result
     }
     
     func getComponentsAtPoint(point: CGPoint) -> [ComponentItem] {
-        return components.values.filter { $0.bounds.contains(point) }
+        return getOrderedComponents { $0.bounds.contains(point) }
     }
     
     func getHighlightComponents(parent: ComponentItem) -> [ComponentItem] {
@@ -98,7 +102,7 @@ class ComponentLayoutItem {
     
 }
 
-class ComponentItem: Identifiable {
+class ComponentItem: Identifiable, Equatable {
     
     let id: String = UUID().uuidString
     let parent: String?
@@ -108,6 +112,10 @@ class ComponentItem: Identifiable {
     let depth: Int
     
     var children: [String] = []
+    
+    static func == (lhs: ComponentItem, rhs: ComponentItem) -> Bool {
+        lhs.id == rhs.id
+    }
 
     init(parent: ComponentItem?, attributes: [String: String]) {
         self.parent = parent?.id
