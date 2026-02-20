@@ -22,7 +22,7 @@ struct AnalyzeTabView: View {
                     }
                 }
             }.frame(height: 35)
-                .padding(.top, 5)
+                .padding([.top, .horizontal], 5)
         }.frame(height: 40)
             .frame(maxWidth: .infinity)
             .scrollIndicators(.never)

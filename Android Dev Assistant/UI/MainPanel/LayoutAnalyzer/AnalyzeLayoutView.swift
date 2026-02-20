@@ -39,9 +39,9 @@ struct AnalyzeLayoutView: View {
                         case .list:
                             ComponentListView(item: item)
                         case .fixed(let component):
-                            EmptyView()
+                            ComponentInfoView(item: component)
                         case .temp(let component):
-                            EmptyView()
+                            ComponentInfoView(item: component)
                         }
                     }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {

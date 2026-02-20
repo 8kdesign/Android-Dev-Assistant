@@ -118,6 +118,14 @@ class ComponentItem: Identifiable, Equatable {
     let bounds: CGRect
     let depth: Int
     
+    let clickable: String?
+    let longClickable: String?
+    let scrollable: String?
+    let isEnabled: String?
+    let text: String?
+    let hint: String?
+    let contentDescription: String?
+    
     var children: [String] = []
     
     static func == (lhs: ComponentItem, rhs: ComponentItem) -> Bool {
@@ -134,6 +142,13 @@ class ComponentItem: Identifiable, Equatable {
         self.resourceId = attributes["resource-id"] ?? ""
         self.componentClass = attributes["class"] ?? ""
         self.bounds = parseBounds(attributes["bounds"] ?? "")
+        self.clickable = attributes["clickable"]
+        self.longClickable = attributes["long-clickable"]
+        self.scrollable = attributes["scrollable"]
+        self.isEnabled = attributes["enabled"]
+        self.text = attributes["text"]
+        self.hint = attributes["hint"]
+        self.contentDescription = attributes["content-desc"]
     }
     
     func getLabel() -> String {
