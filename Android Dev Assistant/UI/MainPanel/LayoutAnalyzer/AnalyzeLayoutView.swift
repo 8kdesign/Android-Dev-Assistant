@@ -10,8 +10,8 @@ import SwiftUI
 struct AnalyzeLayoutView: View {
     
     @EnvironmentObject var uiController: UIController
-    @StateObject var analyzeScreenHelper: AnalyzeScreenHelper = AnalyzeScreenHelper()
     @StateObject var item: ComponentLayoutItem
+    @StateObject var analyzeScreenHelper: AnalyzeScreenHelper = AnalyzeScreenHelper()
     @State var showMenu: Bool = false
     
     var body: some View {
@@ -39,9 +39,9 @@ struct AnalyzeLayoutView: View {
                         case .list:
                             ComponentListView(item: item)
                         case .fixed(let component):
-                            ComponentInfoView(item: component)
+                            ComponentInfoView(layout: item, component: component)
                         case .temp(let component):
-                            ComponentInfoView(item: component)
+                            ComponentInfoView(layout: item, component: component)
                         }
                     }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {

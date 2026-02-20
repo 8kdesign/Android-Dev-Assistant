@@ -120,7 +120,7 @@ class ComponentItem: Identifiable, Equatable {
     let id: String = UUID().uuidString
     let parent: String?
     let resourceId: String
-    let componentClass: String
+    let accessibilityClass: String
     let bounds: CGRect
     let boundsDp: CGRect?
     let depth: Int
@@ -147,7 +147,7 @@ class ComponentItem: Identifiable, Equatable {
             self.depth = 0
         }
         self.resourceId = attributes["resource-id"] ?? ""
-        self.componentClass = attributes["class"] ?? ""
+        self.accessibilityClass = attributes["class"] ?? ""
         self.bounds = parseBounds(attributes["bounds"] ?? "")
         if let density {
             self.boundsDp = CGRect(
@@ -177,18 +177,19 @@ class ComponentItem: Identifiable, Equatable {
             _ = label.drop
             label += "↪ "
         }
-        label += componentClass
-        if !resourceId.isEmpty {
-            label += " (\(resourceId))"
+        if !resourceId.isEmpty, let id = resourceId.split(separator: "id/")[safe: 1] {
+            label += "R.id.\(id) "
         }
+        label += "[\(bounds.width), \(bounds.height)]"
         return label
     }
     
     func getShortLabel() -> String {
-        var label = componentClass
-        if !resourceId.isEmpty {
-            label += " (\(resourceId))"
+        var label = ""
+        if !resourceId.isEmpty, let id = resourceId.split(separator: "id/")[safe: 1] {
+            label += "R.id.\(id) "
         }
+        label += "[\(bounds.width), \(bounds.height)]"
         return label
     }
     

@@ -10,52 +10,53 @@ import SwiftUI
 struct ComponentInfoView: View {
     
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
-    var item: ComponentItem
+    var layout: ComponentLayoutItem
+    var component: ComponentItem
 
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 Divider()
-                DataRow(key: "Id", value: item.resourceId)
+                DataRow(key: "Id", value: component.resourceId)
                 Divider()
-                DataRow(key: "Class", value: item.componentClass)
+                DataRow(key: "Accessibility Class", value: component.accessibilityClass)
                 Divider()
-                if let boundsDp = item.boundsDp {
-                    DataRow(key: "Size", value: "w:\(item.bounds.width) [\(String(format: "%.1f", boundsDp.width))dp], h: \(item.bounds.height) [\(String(format: "%.1f", boundsDp.height))dp]")
+                if let boundsDp = component.boundsDp {
+                    DataRow(key: "Size", value: "w:\(component.bounds.width) [\(String(format: "%.1f", boundsDp.width))dp], h: \(component.bounds.height) [\(String(format: "%.1f", boundsDp.height))dp]")
                     Divider()
-                    DataRow(key: "Absolute Position", value: "x: \(item.bounds.minX) [\(String(format: "%.1f", boundsDp.minX))dp], y: \(item.bounds.minY) [\(String(format: "%.1f", boundsDp.minY))dp]")
+                    DataRow(key: "Absolute Position", value: "x: \(component.bounds.minX) [\(String(format: "%.1f", boundsDp.minX))dp], y: \(component.bounds.minY) [\(String(format: "%.1f", boundsDp.minY))dp]")
                     Divider()
                 } else {
-                    DataRow(key: "Size", value: "w:\(item.bounds.width), h: \(item.bounds.height)")
+                    DataRow(key: "Size", value: "w:\(component.bounds.width), h: \(component.bounds.height)")
                     Divider()
-                    DataRow(key: "Absolute Position", value: "x: \(item.bounds.minX), y: \(item.bounds.minY)")
+                    DataRow(key: "Absolute Position", value: "x: \(component.bounds.minX), y: \(component.bounds.minY)")
                     Divider()
                 }
-                if let clickable = item.clickable {
+                if let clickable = component.clickable {
                     DataRow(key: "Clickable", value: clickable)
                     Divider()
                 }
-                if let longClickable = item.longClickable {
+                if let longClickable = component.longClickable {
                     DataRow(key: "Long Clickable", value: longClickable)
                     Divider()
                 }
-                if let scrollable = item.scrollable {
+                if let scrollable = component.scrollable {
                     DataRow(key: "Scrollable", value: scrollable)
                     Divider()
                 }
-                if let isEnabled = item.isEnabled {
+                if let isEnabled = component.isEnabled {
                     DataRow(key: "Enabled", value: isEnabled)
                     Divider()
                 }
-                if let text = item.text, !text.isEmpty {
+                if let text = component.text, !text.isEmpty {
                     DataRow(key: "Text", value: text)
                     Divider()
                 }
-                if let hint = item.hint, !hint.isEmpty {
+                if let hint = component.hint, !hint.isEmpty {
                     DataRow(key: "Hint", value: hint)
                     Divider()
                 }
-                if let contentDescription = item.contentDescription, !contentDescription.isEmpty {
+                if let contentDescription = component.contentDescription, !contentDescription.isEmpty {
                     DataRow(key: "Content Description", value: contentDescription)
                     Divider()
                 }
