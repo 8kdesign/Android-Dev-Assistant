@@ -11,7 +11,9 @@ import Combine
 class AnalyzeScreenHelper: ObservableObject {
     
     let objectWillChange = ObservableObjectPublisher()
+    private var cancellables = Set<AnyCancellable>()
 
+    var layout: ComponentLayoutItem
     @Published var selectedComponent: ComponentItem? = nil {
         didSet {
             addTab(component: selectedComponent, needSet: false)
@@ -39,6 +41,13 @@ class AnalyzeScreenHelper: ObservableObject {
         }
     }
     var tabs: [AnalyzeTab] = [.list]
+    
+    init(layout: ComponentLayoutItem) {
+        self.layout = layout
+        layout.objectWillChange.sink { [weak self] _ in
+            self?.objectWillChange.send()
+        }.store(in: &cancellables)
+    }
     
     func addTab(component: ComponentItem?, needSet: Bool) {
         guard let component else {

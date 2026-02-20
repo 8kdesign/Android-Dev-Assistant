@@ -10,7 +10,6 @@ import SwiftUI
 struct ComponentListView: View {
     
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
-    @StateObject var item: ComponentLayoutItem
     @State var components: [ComponentItem] = []
     @State var maxDepth = 0
 
@@ -26,8 +25,8 @@ struct ComponentListView: View {
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 .scrollIndicators(.never)
-        }.onReceive(item.$components) { value in
-            components = item.getOrderedComponents(components: value)
+        }.onReceive(analyzeScreenHelper.layout.$components) { value in
+            components = analyzeScreenHelper.layout.getOrderedComponents(components: value)
             maxDepth = components.max(by: { $0.depth < $1.depth })?.depth ?? 0
         }
     }

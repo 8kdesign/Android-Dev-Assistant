@@ -10,7 +10,6 @@ import SwiftUI
 struct ComponentInfoView: View {
     
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
-    var layout: ComponentLayoutItem
     var component: ComponentItem
 
     var body: some View {

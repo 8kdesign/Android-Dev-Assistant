@@ -10,7 +10,6 @@ import SwiftUI
 struct AnalyzePreviewSectionView: View {
     
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
-    var item: ComponentLayoutItem
     @Binding var showMenu: Bool
     @State var imageSize: CGSize = .zero
     @State var highlightComponents: [ComponentItem] = []
@@ -22,13 +21,13 @@ struct AnalyzePreviewSectionView: View {
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .onChange(of: analyzeScreenHelper.selectedComponent) { value in
                 if let value {
-                    highlightComponents = item.getHighlightComponents(parent: value)
+                    highlightComponents = analyzeScreenHelper.layout.getHighlightComponents(parent: value)
                 }
             }
     }
     
     private func ImageView() -> some View {
-        Image(nsImage: item.image)
+        Image(nsImage: analyzeScreenHelper.layout.image)
             .resizable()
             .scaledToFit()
             .background(
@@ -58,7 +57,7 @@ struct AnalyzePreviewSectionView: View {
         Canvas { context, size in
             highlightComponents.forEach { component in
                 let bounds = component.bounds
-                let scale = (size.width - 40) / max(1, item.image.size.width)
+                let scale = (size.width - 40) / max(1, analyzeScreenHelper.layout.image.size.width)
                 let x = bounds.minX * scale + 20
                 let y = bounds.minY * scale + 20
                 let width = bounds.width * scale
@@ -81,9 +80,10 @@ extension AnalyzePreviewSectionView {
                 showMenu = false
             }
         }
-        let actualXPosition = point.x / imageSize.width * item.image.size.width
-        let actualYPosition = point.y / imageSize.height * item.image.size.height
-        let components = item.getComponentsAtPoint(point: CGPoint(x: actualXPosition, y: actualYPosition))
+        let actualImageSize = analyzeScreenHelper.layout.image.size
+        let actualXPosition = point.x / imageSize.width * actualImageSize.width
+        let actualYPosition = point.y / imageSize.height * actualImageSize.height
+        let components = analyzeScreenHelper.layout.getComponentsAtPoint(point: CGPoint(x: actualXPosition, y: actualYPosition))
         analyzeScreenHelper.selectedComponentList = components.reversed()
         analyzeScreenHelper.addTab(component: components.last, needSet: true)
     }

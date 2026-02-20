@@ -10,19 +10,19 @@ import SwiftUI
 struct AnalyzeLayoutView: View {
     
     @EnvironmentObject var uiController: UIController
-    @StateObject var item: ComponentLayoutItem
-    @StateObject var analyzeScreenHelper: AnalyzeScreenHelper = AnalyzeScreenHelper()
+    @StateObject var analyzeScreenHelper: AnalyzeScreenHelper
     @State var showMenu: Bool = false
     
     var body: some View {
         PopupView(title: "Read Layout") {
-            if item.image.size.width < item.image.size.height {
+            let imageSize = analyzeScreenHelper.layout.image.size
+            if imageSize.width < imageSize.height {
                 HStack (spacing: 0) {
-                    AnalyzePreviewSectionView(item: item, showMenu: $showMenu)
+                    AnalyzePreviewSectionView(showMenu: $showMenu)
                     ControlsView()
                 }
             } else {
-                AnalyzePreviewSectionView(item: item, showMenu: $showMenu)
+                AnalyzePreviewSectionView(showMenu: $showMenu)
                 ControlsView()
             }
         }.environmentObject(analyzeScreenHelper)
@@ -32,16 +32,16 @@ struct AnalyzeLayoutView: View {
     private func ControlsView() -> some View {
         ZStack {
             VStack(spacing: 0) {
-                if item.isLoaded {
+                if analyzeScreenHelper.layout.isLoaded {
                     AnalyzeTabView()
                     VStack {
                         switch analyzeScreenHelper.selectedTab {
                         case .list:
-                            ComponentListView(item: item)
+                            ComponentListView()
                         case .fixed(let component):
-                            ComponentInfoView(layout: item, component: component)
+                            ComponentInfoView(component: component)
                         case .temp(let component):
-                            ComponentInfoView(layout: item, component: component)
+                            ComponentInfoView(component: component)
                         }
                     }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
