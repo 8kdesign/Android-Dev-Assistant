@@ -33,9 +33,6 @@ struct MenuGridView: View {
                         uiController.showingPopup = .layout(item: item)
                     }
                 }
-//                MenuGridItem(name: "Perfetto", icon: "chart.bar.fill", iconColor: .red, requireAdb: false) {
-//                    externalToolsHelper.launchPerfetto()
-//                }
                 MenuGridItem(name: "Last Crash", icon: "exclamationmark.triangle.fill", iconColor: .orange, requireAdb: true) {
                     adbHelper.getLastCrashLogs {
                         uiController.showingPopup = .lastCrashLogs(logs: $0)

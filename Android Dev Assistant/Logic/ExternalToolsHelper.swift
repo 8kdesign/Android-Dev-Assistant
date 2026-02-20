@@ -65,37 +65,6 @@ class ExternalToolsHelper: ObservableObject {
         }
     }
     
-    func launchPerfetto() {
-        guard let toolsUrl else { return }
-        runOnLogicThread {
-            let perfettoPath = toolsUrl.appendingPathComponent("trace_processor").path(percentEncoded: false)
-            if !FileManager.default.fileExists(atPath: perfettoPath) {
-                Task { @MainActor in
-                    LogHelper.shared.insertLog(string: "Downloading Perfetto")
-                }
-                _ = try await runCommand(path: "/usr/bin/curl", arguments: ["-LO", "https://get.perfetto.dev/trace_processor"], directory: toolsUrl)
-                _ = try await runCommand(path: "/bin/chmod", arguments: ["+x", "./trace_processor"], directory: toolsUrl)
-            }
-            Task { @MainActor in
-                let panel = NSOpenPanel()
-                panel.allowsMultipleSelection = false
-                panel.canChooseFiles = true
-                panel.canChooseDirectories = false
-                if panel.runModal() == .OK, let url = panel.url {
-                    LogHelper.shared.insertLog(string: "Starting Perfetto")
-                    runOnLogicThread {
-                        let result = try await runCommand(path: perfettoPath, arguments: ["--httpd", url.path(percentEncoded: false)], directory: toolsUrl)
-                        if let stringResult = String(data: result, encoding: .utf8) {
-                            Task { @MainActor in
-                                LogHelper.shared.insertLog(string: stringResult)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
     private func recheck(command: String, set: @escaping (String) -> ()) {
         runOnLogicThread {
             if let path = runWhich(command: command) {
