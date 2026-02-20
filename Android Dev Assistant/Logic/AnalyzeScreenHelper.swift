@@ -17,6 +17,11 @@ class AnalyzeScreenHelper: ObservableObject {
             addTab(component: selectedComponent, needSet: false)
         }
     }
+    var selectedComponentList: [ComponentItem] = [] {
+        didSet {
+            objectWillChange.send()
+        }
+    }
     var selectedTab: AnalyzeTab = .list {
         didSet {
             switch selectedTab {

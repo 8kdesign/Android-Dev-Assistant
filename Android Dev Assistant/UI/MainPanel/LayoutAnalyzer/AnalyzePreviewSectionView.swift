@@ -11,19 +11,14 @@ struct AnalyzePreviewSectionView: View {
     
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
     var item: ComponentLayoutItem
+    @Binding var showMenu: Bool
     @State var imageSize: CGSize = .zero
-    @State var showMenu: Bool = false
-    @State var nonAnimatedShowMenu: Bool = false
-    @State var selectedComponentList: [ComponentItem] = []
     @State var highlightComponents: [ComponentItem] = []
 
     var body: some View {
         ZStack {
             ImageView()
             CanvasView()
-            ComponentSelectorListView()
-                .opacity(showMenu ? 1 : 0)
-                .allowsHitTesting(showMenu)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .onChange(of: analyzeScreenHelper.selectedComponent) { value in
                 if let value {
@@ -48,8 +43,7 @@ struct AnalyzePreviewSectionView: View {
             ).overlay {
                 RightClickView { point in
                     onSelectComponent(point: point)
-                    if selectedComponentList.isEmpty { return }
-                    nonAnimatedShowMenu = true
+                    if analyzeScreenHelper.selectedComponentList.isEmpty { return }
                     withAnimation(.easeInOut(duration: 0.2)) {
                         showMenu = true
                     }
@@ -76,75 +70,21 @@ struct AnalyzePreviewSectionView: View {
             .allowsHitTesting(false)
     }
     
-    private func ComponentSelectorListView() -> some View {
-        VStack {
-            VStack(spacing: 0) {
-                Text("Select View")
-                    .font(.title3.bold())
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
-                    .padding(.all, 15)
-                    .background(Color(red: 0.15, green: 0.15, blue: 0.15))
-                Divider()
-                ScrollView {
-                    if nonAnimatedShowMenu {
-                        LazyVStack(spacing: 0) {
-                            ForEach(selectedComponentList) { component in
-                                ComponentListItemView(component: component)
-                                Divider()
-                            }
-                        }
-                    }
-                }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .scrollIndicators(.never)
-            }.frame(maxWidth: .infinity, maxHeight: 300)
-                .background(Color(red: 0.12, green: 0.12, blue: 0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .onTapGesture {}
-                .padding(.all, 50)
-        }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(.black.opacity(0.8))
-            .onTapGesture {
-                nonAnimatedShowMenu = false
-                withAnimation(.easeInOut(duration: 0.1)) {
-                    showMenu = false
-                }
-            }
-    }
-    
-    private func ComponentListItemView(component: ComponentItem) -> some View {
-        Text(component.getShortLabel())
-            .font(.callout)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .lineLimit(1)
-            .truncationMode(.tail)
-            .foregroundStyle(.white)
-            .foregroundColor(.white)
-            .opacity(0.7)
-            .padding(.all, 15)
-            .background(.white.opacity(0.000001))
-            .onTapGesture {
-                analyzeScreenHelper.addTab(component: component, needSet: true)
-                nonAnimatedShowMenu = false
-                withAnimation(.easeInOut(duration: 0.1)) {
-                    showMenu = false
-                }
-            }.hoverOpacity()
-    }
-    
 }
 
 extension AnalyzePreviewSectionView {
     
     func onSelectComponent(point: CGPoint) {
         guard imageSize.width > 0, imageSize.height > 0 else { return }
+        if showMenu {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                showMenu = false
+            }
+        }
         let actualXPosition = point.x / imageSize.width * item.image.size.width
         let actualYPosition = point.y / imageSize.height * item.image.size.height
         let components = item.getComponentsAtPoint(point: CGPoint(x: actualXPosition, y: actualYPosition))
-        selectedComponentList = components.reversed()
+        analyzeScreenHelper.selectedComponentList = components.reversed()
         analyzeScreenHelper.addTab(component: components.last, needSet: true)
     }
     

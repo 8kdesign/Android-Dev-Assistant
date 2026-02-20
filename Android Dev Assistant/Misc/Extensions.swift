@@ -19,19 +19,25 @@ extension NSImage {
 
 struct HoverOpacity: ViewModifier {
     let hoverOpacity: Double
+    let onHover: () -> ()
 
     @State private var hovering = false
 
     func body(content: Content) -> some View {
         content
             .opacity(hovering ? hoverOpacity : 1)
-            .onHover { hovering = $0 }
+            .onHover {
+                if $0, hovering != $0 {
+                    onHover()
+                }
+                hovering = $0
+            }
     }
 }
 
 extension View {
-    func hoverOpacity(_ value: Double = HOVER_OPACITY) -> some View {
-        modifier(HoverOpacity(hoverOpacity: value))
+    func hoverOpacity(_ value: Double = HOVER_OPACITY, onHover: @escaping () -> () = {}) -> some View {
+        modifier(HoverOpacity(hoverOpacity: value, onHover: onHover))
     }
     
     @ViewBuilder
