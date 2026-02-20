@@ -25,6 +25,7 @@ struct AnalyzeTabView: View {
                 .padding(.top, 5)
         }.frame(height: 40)
             .frame(maxWidth: .infinity)
+            .scrollIndicators(.never)
             .background(Color(red: 0.15, green: 0.15, blue: 0.15))
     }
     

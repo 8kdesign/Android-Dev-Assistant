@@ -43,7 +43,7 @@ struct ComponentListView: View {
             .background(.white.opacity(0.00001))
             .onTapGesture {
                 if analyzeScreenHelper.selectedComponent == component {
-                    // todo: select tab
+                    analyzeScreenHelper.addTab(component: component, needSet: true)
                 } else {
                     analyzeScreenHelper.selectedComponent = component
                 }

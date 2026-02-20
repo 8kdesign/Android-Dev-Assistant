@@ -127,7 +127,7 @@ struct AnalyzePreviewSectionView: View {
             .padding(.all, 15)
             .background(.white.opacity(0.000001))
             .onTapGesture {
-                analyzeScreenHelper.selectedComponent = component
+                analyzeScreenHelper.addTab(component: component, needSet: true)
                 nonAnimatedShowMenu = false
                 withAnimation(.easeInOut(duration: 0.1)) {
                     showMenu = false
@@ -145,7 +145,7 @@ extension AnalyzePreviewSectionView {
         let actualYPosition = point.y / imageSize.height * item.image.size.height
         let components = item.getComponentsAtPoint(point: CGPoint(x: actualXPosition, y: actualYPosition))
         selectedComponentList = components.reversed()
-        analyzeScreenHelper.selectedComponent = components.last
+        analyzeScreenHelper.addTab(component: components.last, needSet: true)
     }
     
 }

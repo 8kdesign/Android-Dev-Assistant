@@ -20,10 +20,7 @@ class AnalyzeScreenHelper: ObservableObject {
     var selectedTab: AnalyzeTab = .list {
         didSet {
             switch selectedTab {
-            case .list:
-                if selectedComponent != nil {
-                    selectedComponent = nil
-                }
+            case .list: ()
             case .fixed(let component):
                 if selectedComponent != component {
                     selectedComponent = component
