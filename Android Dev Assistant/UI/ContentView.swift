@@ -47,7 +47,7 @@ struct ContentView: View {
             default: EmptyView()
             }
             ToastView()
-        }.frame(minWidth: 900, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
+        }.frame(minWidth: 900, maxWidth: .infinity, minHeight: 900, maxHeight: .infinity)
             .background(Color(red: 0.06, green: 0.06, blue: 0.06))
             .preferredColorScheme(.dark)
     }
