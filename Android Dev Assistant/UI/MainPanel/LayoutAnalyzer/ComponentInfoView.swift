@@ -20,10 +20,17 @@ struct ComponentInfoView: View {
                 Divider()
                 DataRow(key: "Class", value: item.componentClass)
                 Divider()
-                DataRow(key: "Size", value: "\(item.bounds.width) x \(item.bounds.height)")
-                Divider()
-                DataRow(key: "Absolute Position", value: "x: \(item.bounds.minX), y: \(item.bounds.minY)")
-                Divider()
+                if let boundsDp = item.boundsDp {
+                    DataRow(key: "Size", value: "w:\(item.bounds.width) [\(String(format: "%.1f", boundsDp.width))dp], h: \(item.bounds.height) [\(String(format: "%.1f", boundsDp.height))dp]")
+                    Divider()
+                    DataRow(key: "Absolute Position", value: "x: \(item.bounds.minX) [\(String(format: "%.1f", boundsDp.minX))dp], y: \(item.bounds.minY) [\(String(format: "%.1f", boundsDp.minY))dp]")
+                    Divider()
+                } else {
+                    DataRow(key: "Size", value: "w:\(item.bounds.width), h: \(item.bounds.height)")
+                    Divider()
+                    DataRow(key: "Absolute Position", value: "x: \(item.bounds.minX), y: \(item.bounds.minY)")
+                    Divider()
+                }
                 if let clickable = item.clickable {
                     DataRow(key: "Clickable", value: clickable)
                     Divider()

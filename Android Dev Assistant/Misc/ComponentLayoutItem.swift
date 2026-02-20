@@ -17,10 +17,12 @@ class ComponentLayoutItem: ObservableObject {
     @Published var components: [String: ComponentItem] = [:]
     var rootNodes: [ComponentItem] = []
     let image: NSImage
+    let density: CGFloat?
     var isLoaded: Bool = false
     
-    @LogicActor init(image: NSImage) async {
+    @LogicActor init(image: NSImage, density: CGFloat?) async {
         self.image = image
+        self.density = density
     }
     
     @LogicActor func loadData(data: Data) async {
@@ -36,7 +38,11 @@ class ComponentLayoutItem: ObservableObject {
         var childrenMap: [String: [String]] = [:]
         while !queue.isEmpty {
             let (parent, element) = queue.removeFirst()
-            let item = await ComponentItem(parent: parent, attributes: element.attributes)
+            let item = await ComponentItem(
+                parent: parent,
+                attributes: element.attributes,
+                density: density
+            )
             components[item.id] = item
             if let parent {
                 if childrenMap[parent.id] == nil {
@@ -116,6 +122,7 @@ class ComponentItem: Identifiable, Equatable {
     let resourceId: String
     let componentClass: String
     let bounds: CGRect
+    let boundsDp: CGRect?
     let depth: Int
     
     let clickable: String?
@@ -132,7 +139,7 @@ class ComponentItem: Identifiable, Equatable {
         lhs.id == rhs.id
     }
 
-    init(parent: ComponentItem?, attributes: [String: String]) {
+    init(parent: ComponentItem?, attributes: [String: String], density: CGFloat?) {
         self.parent = parent?.id
         if let parent {
             self.depth = parent.depth + 1
@@ -142,6 +149,16 @@ class ComponentItem: Identifiable, Equatable {
         self.resourceId = attributes["resource-id"] ?? ""
         self.componentClass = attributes["class"] ?? ""
         self.bounds = parseBounds(attributes["bounds"] ?? "")
+        if let density {
+            self.boundsDp = CGRect(
+                x: bounds.minX / density,
+                y: bounds.minY / density,
+                width: bounds.width / density,
+                height: bounds.height / density
+            )
+        } else {
+            self.boundsDp = nil
+        }
         self.clickable = attributes["clickable"]
         self.longClickable = attributes["long-clickable"]
         self.scrollable = attributes["scrollable"]

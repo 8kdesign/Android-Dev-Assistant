@@ -277,6 +277,7 @@ class AdbHelper: ObservableObject {
                 }
                 if case .NORMAL = type {
                     let result = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "wm", "size", "reset"])
+                    let _ = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "wm", "density", "reset"])
                     if let message = String(data: result, encoding: .utf8) {
                         Task { @MainActor in
                             LogHelper.shared.insertLog(string: message)
@@ -368,7 +369,9 @@ class AdbHelper: ObservableObject {
                 let imageData = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "exec-out", "screencap", "-p"])
                 let image = NSImage(data: imageData)
                 guard let image else { return }
-                let item = await ComponentLayoutItem(image: image)
+                let densityData = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "wm", "density"])
+                let density = self.getDpScale(String(data: densityData, encoding: .utf8) ?? "")
+                let item = await ComponentLayoutItem(image: image, density: density)
                 Task { @MainActor in
                     callback(item)
                 }
@@ -387,6 +390,27 @@ class AdbHelper: ObservableObject {
                 }
             }
         }
+    }
+    
+    @LogicActor private func getDpScale(_ output: String) -> CGFloat? {
+        let patterns = [
+            #"Override density:\s*(\d+)"#,
+            #"Physical density:\s*(\d+)"#,
+            #"Density:\s*(\d+)"#,
+            #"(\d+)"#
+        ]
+        for pattern in patterns {
+            if let regex = try? NSRegularExpression(pattern: pattern),
+               let match = regex.firstMatch(
+                    in: output,
+                    range: NSRange(output.startIndex..., in: output)
+               ),
+               let range = Range(match.range(at: 1), in: output),
+               let dpi = Int(output[range]) {
+                return CGFloat(dpi) / 160.0
+            }
+        }
+        return nil
     }
     
 }
