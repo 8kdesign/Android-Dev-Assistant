@@ -9,8 +9,8 @@ import SwiftUI
 
 struct AnalyzePreviewSectionView: View {
     
+    @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
     var item: ComponentLayoutItem
-    @Binding var selectedComponent: ComponentItem?
     @State var imageSize: CGSize = .zero
     @State var showMenu: Bool = false
     @State var nonAnimatedShowMenu: Bool = false
@@ -25,7 +25,7 @@ struct AnalyzePreviewSectionView: View {
                 .opacity(showMenu ? 1 : 0)
                 .allowsHitTesting(showMenu)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onChange(of: selectedComponent) { value in
+            .onChange(of: analyzeScreenHelper.selectedComponent) { value in
                 if let value {
                     highlightComponents = item.getHighlightComponents(parent: value)
                 }
@@ -93,23 +93,7 @@ struct AnalyzePreviewSectionView: View {
                     if nonAnimatedShowMenu {
                         LazyVStack(spacing: 0) {
                             ForEach(selectedComponentList) { component in
-                                Text(component.getShortLabel())
-                                    .font(.callout)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .lineLimit(1)
-                                    .truncationMode(.tail)
-                                    .foregroundStyle(.white)
-                                    .foregroundColor(.white)
-                                    .opacity(0.7)
-                                    .padding(.all, 15)
-                                    .background(.white.opacity(0.000001))
-                                    .onTapGesture {
-                                        selectedComponent = component
-                                        nonAnimatedShowMenu = false
-                                        withAnimation(.easeInOut(duration: 0.1)) {
-                                            showMenu = false
-                                        }
-                                    }.hoverOpacity()
+                                ComponentListItemView(component: component)
                                 Divider()
                             }
                         }
@@ -131,6 +115,26 @@ struct AnalyzePreviewSectionView: View {
             }
     }
     
+    private func ComponentListItemView(component: ComponentItem) -> some View {
+        Text(component.getShortLabel())
+            .font(.callout)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .lineLimit(1)
+            .truncationMode(.tail)
+            .foregroundStyle(.white)
+            .foregroundColor(.white)
+            .opacity(0.7)
+            .padding(.all, 15)
+            .background(.white.opacity(0.000001))
+            .onTapGesture {
+                analyzeScreenHelper.selectedComponent = component
+                nonAnimatedShowMenu = false
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    showMenu = false
+                }
+            }.hoverOpacity()
+    }
+    
 }
 
 extension AnalyzePreviewSectionView {
@@ -141,7 +145,7 @@ extension AnalyzePreviewSectionView {
         let actualYPosition = point.y / imageSize.height * item.image.size.height
         let components = item.getComponentsAtPoint(point: CGPoint(x: actualXPosition, y: actualYPosition))
         selectedComponentList = components.reversed()
-        selectedComponent = components.last
+        analyzeScreenHelper.selectedComponent = components.last
     }
     
 }
