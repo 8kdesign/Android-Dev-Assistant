@@ -11,6 +11,7 @@ struct ComponentSelectorListView: View {
     
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
     @Binding var showMenu: Bool
+    @State var isSelectCompare: Bool = false
 
     var body: some View {
         VStack {
@@ -47,6 +48,8 @@ struct ComponentSelectorListView: View {
                 withAnimation(.easeInOut(duration: 0.1)) {
                     showMenu = false
                 }
+            }.onChange(of: showMenu) { value in
+                isSelectCompare = value && analyzeScreenHelper.selectedComponent != nil && NSEvent.modifierFlags.contains(.shift)
             }
     }
     
@@ -62,12 +65,18 @@ struct ComponentSelectorListView: View {
             .padding(.all, 15)
             .background(.white.opacity(0.000001))
             .onTapGesture {
-                analyzeScreenHelper.addTab(component: component, needSet: true)
+                if !isSelectCompare {
+                    analyzeScreenHelper.addTab(component: component, needSet: true)
+                }
                 withAnimation(.easeInOut(duration: 0.1)) {
                     showMenu = false
                 }
             }.hoverOpacity {
-                analyzeScreenHelper.selectedComponent = component
+                if isSelectCompare {
+                    analyzeScreenHelper.compareComponent = component
+                } else {
+                    analyzeScreenHelper.selectedComponent = component
+                }
             }
     }
     

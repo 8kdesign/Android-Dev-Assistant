@@ -31,8 +31,10 @@ struct PopupView<Content: View>: View {
             .background(Color(white: 0.2).opacity(0.7))
             .opacity(isReady ? 1 : 0)
             .background(
-                EscapeKeyCatcher {
-                    close()
+                KeyCatcher(keyCode: 53) { isDown in
+                    if isDown {
+                        close()
+                    }
                 }
             ).onTapGesture {
                 close()

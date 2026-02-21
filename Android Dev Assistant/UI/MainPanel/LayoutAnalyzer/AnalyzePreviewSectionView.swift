@@ -65,6 +65,16 @@ struct AnalyzePreviewSectionView: View {
                 let scaledRect = CGRect(x: x, y: y, width: width, height: height)
                 context.stroke(Path(scaledRect), with: .color(.yellow), style: .init(lineWidth: 2))
             }
+            if let component = analyzeScreenHelper.compareComponent {
+                let bounds = component.bounds
+                let scale = (size.width - 40) / max(1, analyzeScreenHelper.layout.image.size.width)
+                let x = bounds.minX * scale + 20
+                let y = bounds.minY * scale + 20
+                let width = bounds.width * scale
+                let height = bounds.height * scale
+                let scaledRect = CGRect(x: x, y: y, width: width, height: height)
+                context.stroke(Path(scaledRect), with: .color(.red), style: .init(lineWidth: 2))
+            }
         }.frame(maxWidth: imageSize.width + 40, maxHeight: imageSize.height + 40)
             .allowsHitTesting(false)
     }
@@ -84,8 +94,12 @@ extension AnalyzePreviewSectionView {
         let actualXPosition = point.x / imageSize.width * actualImageSize.width
         let actualYPosition = point.y / imageSize.height * actualImageSize.height
         let components = analyzeScreenHelper.layout.getComponentsAtPoint(point: CGPoint(x: actualXPosition, y: actualYPosition))
-        analyzeScreenHelper.selectedComponentList = components.reversed()
-        analyzeScreenHelper.addTab(component: components.last, needSet: true)
+        if NSEvent.modifierFlags.contains(.shift), analyzeScreenHelper.selectedComponent != nil {
+            analyzeScreenHelper.compareComponent = components.last
+        } else {
+            analyzeScreenHelper.selectedComponentList = components.reversed()
+            analyzeScreenHelper.addTab(component: components.last, needSet: true)
+        }
     }
     
 }

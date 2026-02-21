@@ -21,6 +21,12 @@ class AnalyzeScreenHelper: ObservableObject {
     }
     var selectedComponentList: [ComponentItem] = [] {
         didSet {
+            compareComponent = nil
+            objectWillChange.send()
+        }
+    }
+    var compareComponent: ComponentItem? = nil {
+        didSet {
             objectWillChange.send()
         }
     }
