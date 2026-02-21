@@ -74,7 +74,7 @@ struct SelectFileView: View {
                     }.hoverOpacity(searchTerm.isEmpty ? 1 : HOVER_OPACITY)
             }.padding(.horizontal, 20)
                 .frame(height: 40)
-                .background(Capsule().fill(Color(red: 0.13, green: 0.13, blue: 0.13)))
+                .background(Capsule().fill(Color(white: 0.13)))
                 .frame(maxWidth: 300, alignment: .leading)
                 .padding(.all)
                 .opacity(searchResults == nil ? 0.3 : 1)
@@ -118,7 +118,7 @@ struct SelectFileView: View {
         }.padding(.horizontal, 15)
             .padding(.vertical, 10)
             .frame(maxWidth: 600)
-            .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.12, green: 0.12, blue: 0.12)))
+            .background(RoundedRectangle(cornerRadius: 10).fill(Color(white: 0.12)))
             .onTapGesture {
                 selectedFile = file
             }.hoverOpacity()

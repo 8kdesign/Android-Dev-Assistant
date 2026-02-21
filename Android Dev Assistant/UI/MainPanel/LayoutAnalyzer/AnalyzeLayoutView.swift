@@ -38,10 +38,10 @@ struct AnalyzeLayoutView: View {
                         switch analyzeScreenHelper.selectedTab {
                         case .list:
                             ComponentListView()
-                        case .fixed(let component):
-                            ComponentInfoView(component: component)
-                        case .temp(let component):
-                            ComponentInfoView(component: component)
+                        case .fixed(_):
+                            ComponentInfoView()
+                        case .temp(_):
+                            ComponentInfoView()
                         }
                     }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
@@ -52,7 +52,7 @@ struct AnalyzeLayoutView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .background(Color(white: 0.1))
             ComponentSelectorListView(showMenu: $showMenu)
                 .opacity(showMenu ? 1 : 0)
                 .allowsHitTesting(showMenu)

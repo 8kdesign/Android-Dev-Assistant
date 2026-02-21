@@ -33,7 +33,7 @@ struct CommitInfoView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 15)
                     .padding(.vertical, 10)
-                    .background(Color(red: 0.16, green: 0.16, blue: 0.16))
+                    .background(Color(white: 0.16))
                 if !(item.added.isEmpty && item.removed.isEmpty) {
                     VStack(spacing: 5) {
                         if !item.added.isEmpty {
@@ -56,7 +56,7 @@ struct CommitInfoView: View {
                         .padding(.vertical, 10)
                 }
             }.frame(maxWidth: 600)
-                .background(Color(red: 0.12, green: 0.12, blue: 0.12))
+                .background(Color(white: 0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .onTapGesture {
                     selectedFile = GitFileItem(path: item.file)

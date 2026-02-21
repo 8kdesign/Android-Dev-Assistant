@@ -23,7 +23,7 @@ struct ComponentSelectorListView: View {
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
                     .padding(.all, 15)
-                    .background(Color(red: 0.15, green: 0.15, blue: 0.15))
+                    .background(Color(white: 0.15))
                 Divider()
                 ScrollView {
                     if showMenu {
@@ -37,7 +37,7 @@ struct ComponentSelectorListView: View {
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
                     .scrollIndicators(.never)
             }.frame(maxWidth: .infinity, maxHeight: 300)
-                .background(Color(red: 0.12, green: 0.12, blue: 0.12))
+                .background(Color(white: 0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .onTapGesture {}
                 .padding(.all, 50)

@@ -21,7 +21,7 @@ struct RepoSectionItemView: View {
             if (isSelected) {
                 TogglesView()
             }
-        }.background(Color(red: 0.15, green: 0.15, blue: 0.15))
+        }.background(Color(white: 0.15))
             .clipShape(RoundedRectangle(cornerRadius: 15))
     }
     
@@ -43,7 +43,7 @@ struct RepoSectionItemView: View {
                 .opacity(0.5)
         }.padding(.all)
             .frame(maxWidth: .infinity)
-            .background(Color(red: 0.12, green: 0.12, blue: 0.12))
+            .background(Color(white: 0.12))
             .opacity(isSelected ? 1 : 0.3)
             .onTapGesture {
                 select()

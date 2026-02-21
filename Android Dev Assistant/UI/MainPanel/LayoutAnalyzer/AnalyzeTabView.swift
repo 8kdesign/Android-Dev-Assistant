@@ -26,7 +26,7 @@ struct AnalyzeTabView: View {
         }.frame(height: 40)
             .frame(maxWidth: .infinity)
             .scrollIndicators(.never)
-            .background(Color(red: 0.15, green: 0.15, blue: 0.15))
+            .background(Color(white: 0.15))
     }
     
     private func ListTabView() -> some View {
@@ -39,7 +39,7 @@ struct AnalyzeTabView: View {
             .padding(.horizontal)
             .frame(height:35)
             .opacity(analyzeScreenHelper.selectedTab == .list ? 1 : 0.3)
-            .background(analyzeScreenHelper.selectedTab == .list ? Color(red: 0.1, green: 0.1, blue: 0.1) : Color(red: 0.13, green: 0.13, blue: 0.13))
+            .background(analyzeScreenHelper.selectedTab == .list ? Color(white: 0.1) : Color(white: 0.13))
             .onTapGesture {
                 analyzeScreenHelper.selectedTab = .list
             }.hoverOpacity()
@@ -67,7 +67,7 @@ struct AnalyzeTabView: View {
         }.padding(.horizontal)
             .frame(height:35)
             .opacity(analyzeScreenHelper.selectedTab == .temp(component: component) ? 1 : 0.3)
-            .background(analyzeScreenHelper.selectedTab == .temp(component: component) ? Color(red: 0.1, green: 0.1, blue: 0.1) : Color(red: 0.13, green: 0.13, blue: 0.13))
+            .background(analyzeScreenHelper.selectedTab == .temp(component: component) ? Color(white: 0.1) : Color(white: 0.13))
             .onTapGesture {
                 analyzeScreenHelper.selectedTab = .temp(component: component)
             }.hoverOpacity()
@@ -95,7 +95,7 @@ struct AnalyzeTabView: View {
         }.padding(.horizontal)
             .frame(height:35)
             .opacity(analyzeScreenHelper.selectedTab == .fixed(component: component) ? 1 : 0.3)
-            .background(analyzeScreenHelper.selectedTab == .fixed(component: component) ? Color(red: 0.1, green: 0.1, blue: 0.1) : Color(red: 0.13, green: 0.13, blue: 0.13))
+            .background(analyzeScreenHelper.selectedTab == .fixed(component: component) ? Color(white: 0.1) : Color(white: 0.13))
             .onTapGesture {
                 analyzeScreenHelper.selectedTab = .fixed(component: component)
             }.hoverOpacity()

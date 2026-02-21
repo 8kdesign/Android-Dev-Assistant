@@ -82,7 +82,7 @@ struct DeviceSection: View {
                     }.hoverOpacity(input.isEmpty ? 1 : HOVER_OPACITY)
             }.padding(.horizontal, 20)
                 .frame(height: 40)
-                .background(Capsule().fill(Color(red: 0.13, green: 0.13, blue: 0.13)))
+                .background(Capsule().fill(Color(white: 0.13)))
                 .frame(maxWidth: 200, alignment: .leading)
             Button {
                 sendText()
@@ -92,7 +92,7 @@ struct DeviceSection: View {
                     .scaledToFit()
                     .frame(width: 16, height: 16)
                     .frame(width: 36, height: 36)
-                    .background(Circle().fill(input.isEmpty ? Color(red: 0.15, green: 0.15, blue: 0.15) : .red))
+                    .background(Circle().fill(input.isEmpty ? Color(white: 0.15) : .red))
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
             }.buttonStyle(.plain)

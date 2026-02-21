@@ -10,54 +10,76 @@ import SwiftUI
 struct ComponentInfoView: View {
     
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
-    var component: ComponentItem
+    @State var component: ComponentItem? = nil
+    @State var parentComponent: ComponentItem? = nil
 
     var body: some View {
+        Group {
+            let imageSize = analyzeScreenHelper.layout.image.size
+            if imageSize.width < imageSize.height {
+                VStack(spacing: 0) {
+                    InfoListView()
+                    SpacingComparatorView()
+                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                HStack(spacing: 0) {
+                    InfoListView()
+                    SpacingComparatorView()
+                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }.onReceive(analyzeScreenHelper.$selectedComponent) { component in
+            self.component = component
+        }
+    }
+    
+    private func InfoListView() -> some View {
         ScrollView {
-            LazyVStack(spacing: 0) {
-                Divider()
-                DataRow(key: "Id", value: component.resourceId)
-                Divider()
-                DataRow(key: "Accessibility Class", value: component.accessibilityClass)
-                Divider()
-                if let boundsDp = component.boundsDp {
-                    DataRow(key: "Size", value: "w:\(component.bounds.width) [\(String(format: "%.1f", boundsDp.width))dp], h: \(component.bounds.height) [\(String(format: "%.1f", boundsDp.height))dp]")
+            if let component {
+                LazyVStack(spacing: 0) {
                     Divider()
-                    DataRow(key: "Absolute Position", value: "x: \(component.bounds.minX) [\(String(format: "%.1f", boundsDp.minX))dp], y: \(component.bounds.minY) [\(String(format: "%.1f", boundsDp.minY))dp]")
+                    DataRow(key: "Id", value: component.resourceId)
                     Divider()
-                } else {
-                    DataRow(key: "Size", value: "w:\(component.bounds.width), h: \(component.bounds.height)")
+                    DataRow(key: "Accessibility Class", value: component.accessibilityClass)
                     Divider()
-                    DataRow(key: "Absolute Position", value: "x: \(component.bounds.minX), y: \(component.bounds.minY)")
-                    Divider()
-                }
-                if let clickable = component.clickable {
-                    DataRow(key: "Clickable", value: clickable)
-                    Divider()
-                }
-                if let longClickable = component.longClickable {
-                    DataRow(key: "Long Clickable", value: longClickable)
-                    Divider()
-                }
-                if let scrollable = component.scrollable {
-                    DataRow(key: "Scrollable", value: scrollable)
-                    Divider()
-                }
-                if let isEnabled = component.isEnabled {
-                    DataRow(key: "Enabled", value: isEnabled)
-                    Divider()
-                }
-                if let text = component.text, !text.isEmpty {
-                    DataRow(key: "Text", value: text)
-                    Divider()
-                }
-                if let hint = component.hint, !hint.isEmpty {
-                    DataRow(key: "Hint", value: hint)
-                    Divider()
-                }
-                if let contentDescription = component.contentDescription, !contentDescription.isEmpty {
-                    DataRow(key: "Content Description", value: contentDescription)
-                    Divider()
+                    if let boundsDp = component.boundsDp {
+                        DataRow(key: "Size", value: "w:\(component.bounds.width) [\(String(format: "%.1f", boundsDp.width))dp], h: \(component.bounds.height) [\(String(format: "%.1f", boundsDp.height))dp]")
+                        Divider()
+                        DataRow(key: "Absolute Position", value: "x: \(component.bounds.minX) [\(String(format: "%.1f", boundsDp.minX))dp], y: \(component.bounds.minY) [\(String(format: "%.1f", boundsDp.minY))dp]")
+                        Divider()
+                    } else {
+                        DataRow(key: "Size", value: "w:\(component.bounds.width), h: \(component.bounds.height)")
+                        Divider()
+                        DataRow(key: "Absolute Position", value: "x: \(component.bounds.minX), y: \(component.bounds.minY)")
+                        Divider()
+                    }
+                    if let clickable = component.clickable {
+                        DataRow(key: "Clickable", value: clickable)
+                        Divider()
+                    }
+                    if let longClickable = component.longClickable {
+                        DataRow(key: "Long Clickable", value: longClickable)
+                        Divider()
+                    }
+                    if let scrollable = component.scrollable {
+                        DataRow(key: "Scrollable", value: scrollable)
+                        Divider()
+                    }
+                    if let isEnabled = component.isEnabled {
+                        DataRow(key: "Enabled", value: isEnabled)
+                        Divider()
+                    }
+                    if let text = component.text, !text.isEmpty {
+                        DataRow(key: "Text", value: text)
+                        Divider()
+                    }
+                    if let hint = component.hint, !hint.isEmpty {
+                        DataRow(key: "Hint", value: hint)
+                        Divider()
+                    }
+                    if let contentDescription = component.contentDescription, !contentDescription.isEmpty {
+                        DataRow(key: "Content Description", value: contentDescription)
+                        Divider()
+                    }
                 }
             }
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -81,6 +103,13 @@ struct ComponentInfoView: View {
                 .opacity(0.7)
                 .padding(.all, 5)
         }.frame(maxWidth: .infinity)
+    }
+    
+    private func SpacingComparatorView() -> some View {
+        HStack(spacing: 0) {
+            
+        }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(white: 0.12))
     }
     
 }

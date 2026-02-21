@@ -25,6 +25,15 @@ struct ComponentListView: View {
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 .scrollIndicators(.never)
+                .onAppear {
+                    Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { _ in
+                        if let id = analyzeScreenHelper.selectedComponent?.id {
+                            Task { @MainActor in
+                                reader.scrollTo(id, anchor: .center)
+                            }
+                        }
+                    }
+                }
         }.onReceive(analyzeScreenHelper.layout.$components) { value in
             components = analyzeScreenHelper.layout.getOrderedComponents(components: value)
             maxDepth = components.max(by: { $0.depth < $1.depth })?.depth ?? 0

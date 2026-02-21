@@ -25,7 +25,7 @@ struct ContentView: View {
                     }
                     BottomTogglesSection()
                 }.frame(maxWidth: 250, maxHeight: .infinity)
-                    .background(Color(red: 0.07, green: 0.07, blue: 0.07))
+                    .background(Color(white: 0.07))
                 Divider().opacity(0.7)
                 VStack(spacing: 0) {
                     if (isRepoTab) {
@@ -48,7 +48,7 @@ struct ContentView: View {
             }
             ToastView()
         }.frame(minWidth: 900, maxWidth: .infinity, minHeight: 900, maxHeight: .infinity)
-            .background(Color(red: 0.06, green: 0.06, blue: 0.06))
+            .background(Color(white: 0.06))
             .preferredColorScheme(.dark)
     }
 }

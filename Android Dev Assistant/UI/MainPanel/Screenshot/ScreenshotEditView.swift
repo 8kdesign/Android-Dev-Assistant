@@ -74,7 +74,7 @@ struct ScreenshotEditView: View {
             ModeSwitchView()
         }.padding(.all)
             .frame(maxWidth: 300, maxHeight: .infinity)
-            .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+            .background(Color(white: 0.1))
     }
     
     private func BottomControlsView(image: NSImage) -> some View {
@@ -92,7 +92,7 @@ struct ScreenshotEditView: View {
             Spacer()
         }.padding(.all)
             .frame(maxWidth: .infinity)
-            .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+            .background(Color(white: 0.1))
     }
     
     private func FooterItemView(name: LocalizedStringResource, icon: String, action: @escaping () -> ()) -> some View {
@@ -105,7 +105,7 @@ struct ScreenshotEditView: View {
                     .scaledToFit()
                     .frame(width: 16, height: 16)
                     .padding(.all, 12)
-                    .background(Circle().fill(Color(red: 0.15, green: 0.15, blue: 0.15)))
+                    .background(Circle().fill(Color(white: 0.15)))
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
                 Text(name)

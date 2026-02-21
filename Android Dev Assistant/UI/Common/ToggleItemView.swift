@@ -45,7 +45,7 @@ struct ToggleItemView: View {
                 }
             }.frame(width: 60, height: 50)
                 .background(RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(red: isDangerous ? 0.3 : 0.1, green: 0.1, blue: 0.1))
+                    .fill(isDangerous ? Color(red: 0.3, green: 0.1, blue: 0.1) : Color(white: 0.1))
                 ).opacity(0.7)
         }.buttonStyle(.plain)
             .hoverOpacity()

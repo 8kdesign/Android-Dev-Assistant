@@ -51,7 +51,7 @@ struct SettingsView: View {
                 .opacity(0.3)
         }.padding(.all, 30)
             .frame(maxWidth: 200, maxHeight: .infinity, alignment: .top)
-            .background(Color(red: 0.08, green: 0.08, blue: 0.08))
+            .background(Color(white: 0.08))
     }
     
     private func TogglesView() -> some View {
@@ -127,11 +127,11 @@ struct SettingsView: View {
                         .foregroundColor(.white)
                         .opacity(0.7)
                         .padding(.all, 16)
-                        .background(Color(red: 0.15, green: 0.15, blue: 0.15))
+                        .background(Color(white: 0.15))
                 }.buttonStyle(.plain)
                     .hoverOpacity()
             }.frame(maxWidth: .infinity)
-                .background(Color(red: 0.12, green: 0.12, blue: 0.12))
+                .background(Color(white: 0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         }
     }

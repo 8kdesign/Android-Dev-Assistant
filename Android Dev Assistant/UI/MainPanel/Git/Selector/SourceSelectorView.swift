@@ -30,7 +30,7 @@ struct SourceSelectorView: View {
             }
         }.frame(maxHeight: .infinity)
             .frame(width: 200)
-            .background(Color(red: 0.12, green: 0.12, blue: 0.12))
+            .background(Color(white: 0.12))
             .clipShape(RoundedRectangle(cornerRadius: 15))
             .padding([.vertical, .leading])
             .onChange(of: searchTerm) { _ in
@@ -74,7 +74,7 @@ struct SourceSelectorView: View {
                 .opacity(0.7)
         }.padding(.all, 15)
             .frame(maxWidth: .infinity, maxHeight: 60)
-            .background(isSelectingBranch ? Color(red: 0.2, green: 0.2, blue: 0.2) : Color(red: 0.12, green: 0.12, blue: 0.12))
+            .background(isSelectingBranch ? Color(white: 0.2) : Color(white: 0.12))
             .onTapGesture {
                 withAnimation(.snappy(duration: 0.2)) {
                     isSelectingBranch.toggle()
@@ -92,7 +92,7 @@ struct SourceSelectorView: View {
                 .foregroundColor(.white)
                 .padding(.vertical, 10)
                 .padding(.horizontal, 15)
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.15, green: 0.15, blue: 0.15)))
+                .background(RoundedRectangle(cornerRadius: 10).fill(Color(white: 0.15)))
                 .padding(.horizontal, 5)
                 .padding(.bottom, 10)
             Divider().opacity(0.7)
@@ -118,7 +118,7 @@ struct SourceSelectorView: View {
             }.frame(maxWidth: .infinity, maxHeight: 300)
                 .scrollIndicators(.never)
         }.frame(maxWidth: .infinity, alignment: .top)
-            .background(Color(red: 0.2, green: 0.2, blue: 0.2))
+            .background(Color(white: 0.2))
             .onTapGesture {}
             .clipShape(RoundedRectangle(cornerRadius: 15))
     }

@@ -45,7 +45,7 @@ struct ResizeScreenView: View {
                 .opacity(0.7)
         }.padding(.all, 15)
             .frame(maxWidth: .infinity)
-            .background(RoundedRectangle(cornerRadius: 15).fill(Color(red: 0.1, green: 0.1, blue: 0.1)))
+            .background(RoundedRectangle(cornerRadius: 15).fill(Color(white: 0.1)))
             .opacity(mockScreenType == type ? 1 : 0.3)
             .onTapGesture {
                 setCurrentMockType(type)
