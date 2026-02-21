@@ -16,6 +16,26 @@
     "AAPT" : {
       "shouldTranslate" : false
     },
+    "Absolute Position" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "绝对坐标"
+          }
+        }
+      }
+    },
+    "Accessibility Class" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无障碍Class"
+          }
+        }
+      }
+    },
     "ADB" : {
       "shouldTranslate" : false
     },
@@ -69,6 +89,26 @@
         }
       }
     },
+    "Children" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "子view"
+          }
+        }
+      }
+    },
+    "Clickable" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可点击"
+          }
+        }
+      }
+    },
     "Confirm" : {
       "localizations" : {
         "zh-Hans" : {
@@ -85,6 +125,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "确认卸载应用？"
+          }
+        }
+      }
+    },
+    "Content Description" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内容标签"
           }
         }
       }
@@ -139,6 +189,16 @@
         }
       }
     },
+    "Enabled" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已开启"
+          }
+        }
+      }
+    },
     "File not found" : {
       "localizations" : {
         "zh-Hans" : {
@@ -178,6 +238,19 @@
           }
         }
       }
+    },
+    "Hint" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提示文案"
+          }
+        }
+      }
+    },
+    "Id" : {
+      "shouldTranslate" : false
     },
     "Install" : {
       "localizations" : {
@@ -219,6 +292,16 @@
         }
       }
     },
+    "Long Clickable" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可长按"
+          }
+        }
+      }
+    },
     "Mock Screen" : {
       "localizations" : {
         "zh-Hans" : {
@@ -245,6 +328,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "还原"
+          }
+        }
+      }
+    },
+    "Parent" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "母view"
           }
         }
       }
@@ -352,6 +445,16 @@
         }
       }
     },
+    "Scrollable" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可滑动"
+          }
+        }
+      }
+    },
     "Search" : {
       "localizations" : {
         "zh-Hans" : {
@@ -388,6 +491,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设置"
+          }
+        }
+      }
+    },
+    "Size" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "大小"
           }
         }
       }
@@ -441,6 +554,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "终端"
+          }
+        }
+      }
+    },
+    "Text" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文案"
           }
         }
       }
