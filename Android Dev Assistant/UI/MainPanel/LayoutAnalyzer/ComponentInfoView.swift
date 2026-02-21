@@ -159,14 +159,7 @@ struct ComponentInfoView: View {
             }.frame(maxWidth: .infinity)
         }.frame(maxWidth: .infinity)
     }
-    
-    private func SpacingComparatorView() -> some View {
-        HStack(spacing: 0) {
-            
-        }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(white: 0.12))
-    }
-    
+
 }
 
 extension ComponentInfoView {

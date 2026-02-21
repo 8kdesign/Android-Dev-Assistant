@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 class AnalyzeScreenHelper: ObservableObject {
     
@@ -92,6 +93,14 @@ class AnalyzeScreenHelper: ObservableObject {
             selectedTab = .temp(component: component)
             objectWillChange.send()
         }
+    }
+    
+    func compare() -> ComponentPositionRelation? {
+        guard let selectedComponent, let compareComponent else { return nil }
+        return ComponentPositionRelation.getPositionRelation(
+            bounds1: selectedComponent.bounds,
+            bounds2: compareComponent.bounds
+        )
     }
     
 }
