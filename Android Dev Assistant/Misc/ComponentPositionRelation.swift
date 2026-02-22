@@ -9,31 +9,28 @@ import Foundation
 import SwiftUI
 
 enum ComponentPositionRelation {
+    case identical
     case noOverlap(mainBounds: CGRect, otherBounds: CGRect)
-    case mainContainsOther(left: CGFloat, right: CGFloat, top: CGFloat, bottom: CGFloat, mainSize: CGSize, otherSize: CGSize)
-    case otherContainsMain(left: CGFloat, right: CGFloat, top: CGFloat, bottom: CGFloat, mainSize: CGSize, otherSize: CGSize)
+    case mainContainsOther(left: CGFloat, right: CGFloat, top: CGFloat, bottom: CGFloat)
+    case otherContainsMain(left: CGFloat, right: CGFloat, top: CGFloat, bottom: CGFloat)
     case partialOverlapHorizontal( // start and end are outside, top and bottom are inside
         left: CGFloat,
         right: CGFloat,
         top: CGFloat,
-        bottom: CGFloat,
-        mainSize: CGSize,
-        otherSize: CGSize
+        bottom: CGFloat
     )
     case partialOverlapVertical( // start and end are inside, top and bottom are outside
         left: CGFloat,
         right: CGFloat,
         top: CGFloat,
-        bottom: CGFloat,
-        mainSize: CGSize,
-        otherSize: CGSize
+        bottom: CGFloat
     )
     case partialOverlapCorner(
         corner: Corner,
-        x: CGFloat, // opposing corners x displacement
-        y: CGFloat, // opposing corners y displacement
-        mainSize: CGSize,
-        otherSize: CGSize
+        left: CGFloat,
+        right: CGFloat,
+        top: CGFloat,
+        bottom: CGFloat
     )
     case partialOverlapSide(
         side: Side,
@@ -60,6 +57,9 @@ enum ComponentPositionRelation {
     }
     
     static func getPositionRelation(bounds1: CGRect, bounds2: CGRect) -> ComponentPositionRelation {
+        if bounds1 == bounds2 {
+            return .identical
+        }
         if !bounds1.intersects(bounds2) {
             return .noOverlap(mainBounds: bounds1, otherBounds: bounds2)
         }
@@ -67,6 +67,24 @@ enum ComponentPositionRelation {
         let bottomBottomDiff = bounds1.maxY - bounds2.maxY
         let leftLeftDiff = bounds1.minX - bounds2.minX
         let rightRightDiff = bounds1.maxX - bounds2.maxX
+        
+        if bounds1.contains(bounds2) {
+            return .mainContainsOther(
+                left: abs(leftLeftDiff),
+                right: abs(rightRightDiff),
+                top: abs(topTopDiff),
+                bottom: abs(bottomBottomDiff)
+            )
+        }
+        if bounds2.contains(bounds1) {
+            return .otherContainsMain(
+                left: abs(leftLeftDiff),
+                right: abs(rightRightDiff),
+                top: abs(topTopDiff),
+                bottom: abs(bottomBottomDiff)
+            )
+        }
+        
         let topBottomDiff = bounds1.minY - bounds2.maxY
         let bottomTopDiff = bounds1.maxY - bounds2.minY
         let leftRightDiff = bounds1.minX - bounds2.maxX
@@ -91,10 +109,10 @@ enum ComponentPositionRelation {
                 let corner: Corner = isLeftCorner ? isTopCorner ? .topLeft : .bottomLeft : isTopCorner ? .topRight : .bottomRight
                 return .partialOverlapCorner(
                     corner: corner,
-                    x: abs(isLeftCorner ? leftRightDiff : rightLeftDiff),
-                    y: abs(isTopCorner ? topBottomDiff : bottomTopDiff),
-                    mainSize: bounds1.size,
-                    otherSize: bounds2.size
+                    left: abs(leftLeftDiff),
+                    right: abs(rightRightDiff),
+                    top: abs(topTopDiff),
+                    bottom: abs(bottomBottomDiff)
                 )
             case 2: // side, top and bottom inside
                 let isLeftSide = isRightInside
@@ -132,23 +150,19 @@ enum ComponentPositionRelation {
                     mainSize: bounds1.size,
                     otherSize: bounds2.size
                 )
-            case 2: // inside
+            case 2: // inside (should have been caught earlier)
                 return .mainContainsOther(
                     left: abs(leftLeftDiff),
                     right: abs(rightRightDiff),
                     top: abs(topTopDiff),
-                    bottom: abs(bottomBottomDiff),
-                    mainSize: bounds1.size,
-                    otherSize: bounds2.size
+                    bottom: abs(bottomBottomDiff)
                 )
             default: // vertical
                 return .partialOverlapVertical(
                     left: abs(leftLeftDiff),
                     right: abs(rightRightDiff),
                     top: abs(topTopDiff),
-                    bottom: abs(bottomBottomDiff),
-                    mainSize: bounds1.size,
-                    otherSize: bounds2.size
+                    bottom: abs(bottomBottomDiff)
                 )
             }
         } else {
@@ -169,18 +183,14 @@ enum ComponentPositionRelation {
                     left: abs(leftLeftDiff),
                     right: abs(rightRightDiff),
                     top: abs(topTopDiff),
-                    bottom: abs(bottomBottomDiff),
-                    mainSize: bounds1.size,
-                    otherSize: bounds2.size
+                    bottom: abs(bottomBottomDiff)
                 )
-            default: // outside
+            default: // outside (should have been caught earlier)
                 return .otherContainsMain(
                     left: abs(leftLeftDiff),
                     right: abs(rightRightDiff),
                     top: abs(topTopDiff),
-                    bottom: abs(bottomBottomDiff),
-                    mainSize: bounds1.size,
-                    otherSize: bounds2.size
+                    bottom: abs(bottomBottomDiff)
                 )
             }
         }

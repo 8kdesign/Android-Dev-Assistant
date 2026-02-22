@@ -95,10 +95,10 @@ extension AnalyzePreviewSectionView {
         let actualXPosition = point.x / imageSize.width * actualImageSize.width
         let actualYPosition = point.y / imageSize.height * actualImageSize.height
         let components = analyzeScreenHelper.layout.getComponentsAtPoint(point: CGPoint(x: actualXPosition, y: actualYPosition))
+        analyzeScreenHelper.selectedComponentList = components.reversed()
         if NSEvent.modifierFlags.contains(.shift), analyzeScreenHelper.selectedComponent != nil {
             analyzeScreenHelper.compareComponent = components.last
         } else {
-            analyzeScreenHelper.selectedComponentList = components.reversed()
             analyzeScreenHelper.addTab(component: components.last, needSet: true)
         }
     }
