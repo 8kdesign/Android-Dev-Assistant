@@ -16,21 +16,23 @@ struct SpacingComparatorView: View {
     
     var body: some View {
         HStack(spacing: 0) {
-            CanvasView()
+            CanvasView(relation: positionRelation)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(white: 0.12))
-            .onChange(of: analyzeScreenHelper.compareComponent) { _ in
+            .onAppear {
+                positionRelation = analyzeScreenHelper.compare()
+            }.onChange(of: analyzeScreenHelper.compareComponent) { _ in
                 positionRelation = analyzeScreenHelper.compare()
             }
     }
     
-    private func CanvasView() -> some View {
+    private func CanvasView(relation: ComponentPositionRelation?) -> some View {
         Canvas { context, size in
             let mainRect = CGRect(
                 origin: CGPoint(x: (size.width - BOX_WIDTH) / 2, y: (size.height - BOX_WIDTH) / 2),
                 size: CGSize(width: BOX_WIDTH, height: BOX_WIDTH)
             )
-            let otherRect = getOtherRect(size: size, mainRect: mainRect)
+            let otherRect = getOtherRect(size: size, mainRect: mainRect, relation: relation)
             drawLines(context: context, size: size, rect: mainRect)
             if let otherRect {
                 drawLines(context: context, size: size, rect: otherRect)
@@ -71,8 +73,8 @@ extension SpacingComparatorView {
     
     // Calculation
     
-    private func getOtherRect(size: CGSize, mainRect: CGRect) -> CGRect? {
-        switch positionRelation {
+    private func getOtherRect(size: CGSize, mainRect: CGRect, relation: ComponentPositionRelation?) -> CGRect? {
+        switch relation {
         case .noOverlap(let xIntersectType, let yIntersectType, let left, let right, let top, let bottom):
             return getNoOverlapRect(size: size, mainRect: mainRect,
                           xIntersectType: xIntersectType, yIntersectType: yIntersectType,
