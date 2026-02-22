@@ -16,7 +16,7 @@ struct SpacingComparatorView: View {
         HStack(spacing: 0) {
             CanvasView(relation: positionRelation)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .aspectRatio(1, contentMode: .fit)
+            .aspectRatio(1, contentMode: .fill)
             .background(Color(white: 0.12))
             .onAppear {
                 positionRelation = analyzeScreenHelper.compare()
@@ -27,11 +27,12 @@ struct SpacingComparatorView: View {
     
     private func CanvasView(relation: ComponentPositionRelation?) -> some View {
         Canvas { context, size in
+            let componentBoxWidth = size.width / 5
             let mainRect = CGRect(
-                origin: CGPoint(x: (size.width - COMPONENT_BOX_WIDTH) / 2, y: (size.height - COMPONENT_BOX_WIDTH) / 2),
-                size: CGSize(width: COMPONENT_BOX_WIDTH, height: COMPONENT_BOX_WIDTH)
+                origin: CGPoint(x: (size.width - componentBoxWidth) / 2, y: (size.height - componentBoxWidth) / 2),
+                size: CGSize(width: componentBoxWidth, height: componentBoxWidth)
             )
-            let info = relation?.getOtherRect(size: size, mainRect: mainRect)
+            let info = relation?.getOtherRect(size: size, mainRect: mainRect, componentBoxWidth: componentBoxWidth)
             if let info {
                 drawLines(context: &context, size: size, lines: info.xGridMap, isX: true)
                 drawLines(context: &context, size: size, lines: info.yGridMap, isX: false)

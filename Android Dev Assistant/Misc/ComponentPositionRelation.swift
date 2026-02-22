@@ -41,21 +41,21 @@ class ComponentPositionRelation {
         self.otherSize = otherSize
     }
     
-    func getOtherRect(size: CGSize, mainRect: CGRect) -> AnalyzeSpacingInfo? {
+    func getOtherRect(size: CGSize, mainRect: CGRect, componentBoxWidth: CGFloat) -> AnalyzeSpacingInfo? {
         var x1Position: CGFloat = 0
         var x2Position: CGFloat = 0
         var xGridMap: [Int: CGFloat] = [:]
         switch xIntersectType {
         case .negative:
-            x2Position = mainRect.minX - (left > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
-            x1Position = x2Position - COMPONENT_BOX_WIDTH
+            x2Position = mainRect.minX - (left > 0 ? (componentBoxWidth / 2) : 0)
+            x1Position = x2Position - componentBoxWidth
             xGridMap[0] = x1Position
             xGridMap[Int(otherSize.width)] = x2Position
             xGridMap[Int(otherSize.width + left)] = mainRect.minX
             xGridMap[Int(otherSize.width + left + mainSize.width)] = mainRect.maxX
         case .partialNegative:
-            x2Position = mainRect.minX + (left > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
-            x1Position = x2Position - COMPONENT_BOX_WIDTH
+            x2Position = mainRect.minX + (left > 0 ? (componentBoxWidth / 2) : 0)
+            x1Position = x2Position - componentBoxWidth
             xGridMap[0] = x1Position
             xGridMap[Int(left)] = mainRect.minX
             xGridMap[Int(otherSize.width)] = x2Position
@@ -68,22 +68,22 @@ class ComponentPositionRelation {
             xGridMap[Int(mainSize.width - right)] = x2Position
             xGridMap[Int(mainSize.width)] = mainRect.maxX
         case .partialPositive:
-            x2Position = mainRect.maxX + (right > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
-            x1Position = x2Position - COMPONENT_BOX_WIDTH
+            x2Position = mainRect.maxX + (right > 0 ? (componentBoxWidth / 2) : 0)
+            x1Position = x2Position - componentBoxWidth
             xGridMap[0] = mainRect.minX
             xGridMap[Int(left)] = x1Position
             xGridMap[Int(mainSize.width)] = mainRect.maxX
             xGridMap[Int(mainSize.width + right)] = x2Position
         case .positive:
-            x1Position = mainRect.maxX + (right > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
-            x2Position = x1Position + COMPONENT_BOX_WIDTH
+            x1Position = mainRect.maxX + (right > 0 ? (componentBoxWidth / 2) : 0)
+            x2Position = x1Position + componentBoxWidth
             xGridMap[0] = mainRect.minX
             xGridMap[Int(mainSize.width)] = mainRect.maxX
             xGridMap[Int(mainSize.width + right)] = x1Position
             xGridMap[Int(mainSize.width + right + otherSize.width)] = x2Position
         case .outside:
-            x1Position = mainRect.minX - (left > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
-            x2Position = mainRect.maxX + (right > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            x1Position = mainRect.minX - (left > 0 ? (componentBoxWidth / 2) : 0)
+            x2Position = mainRect.maxX + (right > 0 ? (componentBoxWidth / 2) : 0)
             xGridMap[0] = x1Position
             xGridMap[Int(left)] = mainRect.minX
             xGridMap[Int(left + mainSize.width)] = mainRect.maxX
@@ -94,15 +94,15 @@ class ComponentPositionRelation {
         var yGridMap: [Int: CGFloat] = [:]
         switch yIntersectType {
         case .negative:
-            y2Position = mainRect.minY - (top > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
-            y1Position = y2Position - COMPONENT_BOX_WIDTH
+            y2Position = mainRect.minY - (top > 0 ? (componentBoxWidth / 2) : 0)
+            y1Position = y2Position - componentBoxWidth
             yGridMap[0] = y1Position
             yGridMap[Int(otherSize.height)] = y2Position
             yGridMap[Int(otherSize.height + top)] = mainRect.minY
             yGridMap[Int(otherSize.height + top + mainSize.height)] = mainRect.maxY
         case .partialNegative:
-            y2Position = mainRect.minY + (top > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
-            y1Position = y2Position - COMPONENT_BOX_WIDTH
+            y2Position = mainRect.minY + (top > 0 ? (componentBoxWidth / 2) : 0)
+            y1Position = y2Position - componentBoxWidth
             yGridMap[0] = y1Position
             yGridMap[Int(top)] = mainRect.minY
             yGridMap[Int(otherSize.height)] = y2Position
@@ -115,22 +115,22 @@ class ComponentPositionRelation {
             yGridMap[Int(mainSize.height - bottom)] = y2Position
             yGridMap[Int(mainSize.height)] = mainRect.maxY
         case .partialPositive:
-            y2Position = mainRect.maxY + (bottom > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
-            y1Position = y2Position - COMPONENT_BOX_WIDTH
+            y2Position = mainRect.maxY + (bottom > 0 ? (componentBoxWidth / 2) : 0)
+            y1Position = y2Position - componentBoxWidth
             yGridMap[0] = mainRect.minY
             yGridMap[Int(top)] = y1Position
             yGridMap[Int(mainSize.height)] = mainRect.maxY
             yGridMap[Int(mainSize.height + bottom)] = y2Position
         case .positive:
-            y1Position = mainRect.maxY + (bottom > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
-            y2Position = y1Position + COMPONENT_BOX_WIDTH
+            y1Position = mainRect.maxY + (bottom > 0 ? (componentBoxWidth / 2) : 0)
+            y2Position = y1Position + componentBoxWidth
             yGridMap[0] = mainRect.minY
             yGridMap[Int(mainSize.height)] = mainRect.maxY
             yGridMap[Int(mainSize.height + bottom)] = y1Position
             yGridMap[Int(mainSize.height + bottom + otherSize.height)] = y2Position
         case .outside:
-            y1Position = mainRect.minY - (top > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
-            y2Position = mainRect.maxY + (bottom > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            y1Position = mainRect.minY - (top > 0 ? (componentBoxWidth / 2) : 0)
+            y2Position = mainRect.maxY + (bottom > 0 ? (componentBoxWidth / 2) : 0)
             yGridMap[0] = y1Position
             yGridMap[Int(top)] = mainRect.minY
             yGridMap[Int(top + mainSize.height)] = mainRect.maxY

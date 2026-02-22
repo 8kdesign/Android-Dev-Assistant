@@ -14,26 +14,29 @@ struct ComponentListView: View {
     @State var maxDepth = 0
 
     var body: some View {
-        ScrollViewReader { reader in
-            ScrollView([.horizontal,.vertical]) {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    ForEach(components) { component in
-                        ComponentItemView(component: component)
-                            .id(component.id)
-                        Divider().opacity(0.3)
+        VStack(spacing: 0) {
+            AnalyzeTabView()
+            ScrollViewReader { reader in
+                ScrollView([.horizontal,.vertical]) {
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        ForEach(components) { component in
+                            ComponentItemView(component: component)
+                                .id(component.id)
+                            Divider().opacity(0.3)
+                        }
                     }
-                }
-            }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                .scrollIndicators(.never)
-                .onAppear {
-                    Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { _ in
-                        if let id = analyzeScreenHelper.selectedComponent?.id {
-                            Task { @MainActor in
-                                reader.scrollTo(id, anchor: .center)
+                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .scrollIndicators(.never)
+                    .onAppear {
+                        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { _ in
+                            if let id = analyzeScreenHelper.selectedComponent?.id {
+                                Task { @MainActor in
+                                    reader.scrollTo(id, anchor: .center)
+                                }
                             }
                         }
                     }
-                }
+            }
         }.onReceive(analyzeScreenHelper.layout.$components) { value in
             components = analyzeScreenHelper.layout.getOrderedComponents(components: value)
             maxDepth = components.max(by: { $0.depth < $1.depth })?.depth ?? 0

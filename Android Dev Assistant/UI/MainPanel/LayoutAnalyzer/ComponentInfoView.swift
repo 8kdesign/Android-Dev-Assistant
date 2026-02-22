@@ -20,12 +20,18 @@ struct ComponentInfoView: View {
             let imageSize = analyzeScreenHelper.layout.image.size
             if imageSize.width < imageSize.height {
                 VStack(spacing: 0) {
+                    AnalyzeTabView()
                     InfoListView()
+                    Spacer(minLength: 0)
                     SpacingComparatorView()
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 HStack(spacing: 0) {
-                    InfoListView()
+                    VStack(spacing: 0) {
+                        AnalyzeTabView()
+                        InfoListView()
+                            .frame(maxWidth: .infinity)
+                    }
                     SpacingComparatorView()
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
             }
@@ -102,7 +108,7 @@ struct ComponentInfoView: View {
                     Divider()
                 }
             }
-        }.frame(maxWidth: .infinity, maxHeight: .infinity)
+        }.frame(maxWidth: .infinity)
     }
     
     private func DataRow(key: LocalizedStringResource, value: String, action: (() -> ())? = nil) -> some View {

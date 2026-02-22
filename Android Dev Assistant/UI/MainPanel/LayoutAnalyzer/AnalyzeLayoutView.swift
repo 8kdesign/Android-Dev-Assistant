@@ -33,7 +33,6 @@ struct AnalyzeLayoutView: View {
         ZStack {
             VStack(spacing: 0) {
                 if analyzeScreenHelper.layout.isLoaded {
-                    AnalyzeTabView()
                     VStack {
                         switch analyzeScreenHelper.selectedTab {
                         case .list:

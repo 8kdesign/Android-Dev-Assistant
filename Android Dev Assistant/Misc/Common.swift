@@ -15,7 +15,6 @@ import CryptoKit
     .first?
     .appendingPathComponent("AndroidDevAssistant", isDirectory: true)
 let HOVER_OPACITY = 0.8
-let COMPONENT_BOX_WIDTH: CGFloat = 70
 
 enum CommonError: Error {
     case notFound
