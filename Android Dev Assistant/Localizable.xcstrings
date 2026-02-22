@@ -169,6 +169,16 @@
         }
       }
     },
+    "Disable" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        }
+      }
+    },
     "Drag and drop APK files here to add them." : {
       "localizations" : {
         "zh-Hans" : {
@@ -185,6 +195,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "将项目根文件夹拖放到此处即可导入"
+          }
+        }
+      }
+    },
+    "Enable" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启"
           }
         }
       }

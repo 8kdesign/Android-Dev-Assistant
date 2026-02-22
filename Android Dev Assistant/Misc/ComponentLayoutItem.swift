@@ -115,7 +115,7 @@ class ComponentLayoutItem: ObservableObject {
     
 }
 
-class ComponentItem: Identifiable, Equatable {
+class ComponentItem: Identifiable, Equatable, Hashable {
     
     let id: String = UUID().uuidString
     let parent: String?
@@ -137,6 +137,10 @@ class ComponentItem: Identifiable, Equatable {
     
     static func == (lhs: ComponentItem, rhs: ComponentItem) -> Bool {
         lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 
     init(parent: ComponentItem?, attributes: [String: String], density: CGFloat?) {

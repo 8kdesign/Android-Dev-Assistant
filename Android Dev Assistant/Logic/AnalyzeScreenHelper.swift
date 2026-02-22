@@ -26,6 +26,11 @@ class AnalyzeScreenHelper: ObservableObject {
             objectWillChange.send()
         }
     }
+    var disabledComponentList: Set<ComponentItem> = [] {
+        didSet {
+            objectWillChange.send()
+        }
+    }
     var compareComponent: ComponentItem? = nil {
         didSet {
             objectWillChange.send()

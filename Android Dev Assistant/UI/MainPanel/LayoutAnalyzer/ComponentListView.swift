@@ -48,12 +48,28 @@ struct ComponentListView: View {
             .foregroundStyle(analyzeScreenHelper.selectedComponent == component ? .yellow : .white)
             .foregroundColor(analyzeScreenHelper.selectedComponent == component ? .yellow : .white)
             .padding(.all, 10)
+            .opacity(analyzeScreenHelper.disabledComponentList.contains(component) ? 0.3 : 1)
+            .strikethrough(analyzeScreenHelper.disabledComponentList.contains(component))
             .background(.white.opacity(0.00001))
             .onTapGesture {
                 if analyzeScreenHelper.selectedComponent == component {
                     analyzeScreenHelper.addTab(component: component, needSet: true)
                 } else {
                     analyzeScreenHelper.selectedComponent = component
+                }
+            }.contextMenu {
+                if analyzeScreenHelper.disabledComponentList.contains(component) {
+                    Button {
+                        analyzeScreenHelper.disabledComponentList.remove(component)
+                    } label: {
+                        Text("Enable")
+                    }
+                } else {
+                    Button {
+                        analyzeScreenHelper.disabledComponentList.insert(component)
+                    } label: {
+                        Text("Disable")
+                    }
                 }
             }.hoverOpacity()
     }
