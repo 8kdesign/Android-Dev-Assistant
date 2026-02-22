@@ -30,15 +30,15 @@ struct SpacingComparatorView: View {
                 origin: CGPoint(x: (size.width - COMPONENT_BOX_WIDTH) / 2, y: (size.height - COMPONENT_BOX_WIDTH) / 2),
                 size: CGSize(width: COMPONENT_BOX_WIDTH, height: COMPONENT_BOX_WIDTH)
             )
-            let otherRect = relation?.getOtherRect(size: size, mainRect: mainRect)
-            drawLines(context: context, size: size, rect: mainRect)
-            if let otherRect {
-                drawLines(context: context, size: size, rect: otherRect)
+            let info = relation?.getOtherRect(size: size, mainRect: mainRect)
+            if let info {
+                drawLines(context: &context, size: size, lines: info.xGridMap, isX: true)
+                drawLines(context: &context, size: size, lines: info.yGridMap, isX: false)
             }
             let mainPath = Path(mainRect)
             context.fill(mainPath, with: .color(.yellow.opacity(0.3)))
             context.stroke(mainPath, with: .color(.yellow), style: .init(lineWidth: 2))
-            if let otherRect {
+            if let otherRect = info?.otherRect {
                 context.stroke(Path(otherRect), with: .color(.red), style: .init(lineWidth: 2))
             }
         }
@@ -50,23 +50,42 @@ extension SpacingComparatorView {
     
     // Draw
     
-    private func drawLines(context: GraphicsContext, size: CGSize, rect: CGRect) {
-        var topLine = Path()
-        topLine.move(to: CGPoint(x: 0, y: rect.minY))
-        topLine.addLine(to: CGPoint(x: size.width, y: rect.minY))
-        context.stroke(topLine, with: .color(Color(white: 0.2)), style: .init(lineWidth: 1))
-        var bottomLine = Path()
-        bottomLine.move(to: CGPoint(x: 0, y: rect.maxY))
-        bottomLine.addLine(to: CGPoint(x: size.width, y: rect.maxY))
-        context.stroke(bottomLine, with: .color(Color(white: 0.2)), style: .init(lineWidth: 1))
-        var leftLine = Path()
-        leftLine.move(to: CGPoint(x: rect.minX, y: 0))
-        leftLine.addLine(to: CGPoint(x: rect.minX, y: size.height))
-        context.stroke(leftLine, with: .color(Color(white: 0.2)), style: .init(lineWidth: 1))
-        var rightLine = Path()
-        rightLine.move(to: CGPoint(x: rect.maxX, y: 0))
-        rightLine.addLine(to: CGPoint(x: rect.maxX, y: size.height))
-        context.stroke(rightLine, with: .color(Color(white: 0.2)), style: .init(lineWidth: 1))
+    private func drawLines(context: inout GraphicsContext, size: CGSize, lines: [Int: CGFloat], isX: Bool) {
+        let keys = lines.keys.sorted()
+        if isX {
+            context.translateBy(x: 0, y: size.height)
+            context.rotate(by: .degrees(-90))
+        }
+        let sideSize = isX ? size.height : size.width
+        for index in keys.indices {
+            guard let key = keys[safe: index], let value = lines[key] else { continue }
+            var line = Path()
+            line.move(to: CGPoint(x: 0, y: value))
+            line.addLine(to: CGPoint(x: sideSize, y: value))
+            context.stroke(line, with: .color(Color(white: 0.2)), style: .init(lineWidth: 1))
+            if let nextKey = keys[safe: index + 1] {
+                let text = Text("\(nextKey - key)")
+                    .font(.callout)
+                    .foregroundColor(Color(white: 0.3))
+                if isX {
+                    context.draw(
+                        text,
+                        at: CGPoint(x: 5, y: value + 5),
+                        anchor: .topLeading
+                    )
+                } else {
+                    context.draw(
+                        text,
+                        at: CGPoint(x: sideSize - 5, y: value + 5),
+                        anchor: .topTrailing
+                    )
+                }
+            }
+        }
+        if isX {
+            context.rotate(by: .degrees(90))
+            context.translateBy(x: 0, y: -size.height)
+        }
     }
         
 }

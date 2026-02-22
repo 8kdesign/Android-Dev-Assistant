@@ -41,52 +41,103 @@ class ComponentPositionRelation {
         self.otherSize = otherSize
     }
     
-    func getOtherRect(size: CGSize, mainRect: CGRect) -> CGRect? {
+    func getOtherRect(size: CGSize, mainRect: CGRect) -> AnalyzeSpacingInfo? {
         var x1Position: CGFloat = 0
         var x2Position: CGFloat = 0
+        var xGridMap: [Int: CGFloat] = [:]
         switch xIntersectType {
         case .negative:
             x2Position = mainRect.minX - (left > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
             x1Position = x2Position - COMPONENT_BOX_WIDTH
+            xGridMap[0] = x1Position
+            xGridMap[Int(otherSize.width)] = x2Position
+            xGridMap[Int(otherSize.width + left)] = mainRect.minX
+            xGridMap[Int(otherSize.width + left + mainSize.width)] = mainRect.maxX
         case .partialNegative:
             x2Position = mainRect.minX + (left > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
             x1Position = x2Position - COMPONENT_BOX_WIDTH
+            xGridMap[0] = x1Position
+            xGridMap[Int(left)] = mainRect.minX
+            xGridMap[Int(otherSize.width)] = x2Position
+            xGridMap[Int(mainSize.width + left)] = mainRect.maxX
         case .inside:
             x1Position = mainRect.minX + (left > 0 ? 20 : 0)
             x2Position = mainRect.maxX - (right > 0 ? 20 : 0)
+            xGridMap[0] = mainRect.minX
+            xGridMap[Int(left)] = x1Position
+            xGridMap[Int(mainSize.width - right)] = x2Position
+            xGridMap[Int(mainSize.width)] = mainRect.maxX
         case .partialPositive:
             x2Position = mainRect.maxX + (right > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
             x1Position = x2Position - COMPONENT_BOX_WIDTH
+            xGridMap[0] = mainRect.minX
+            xGridMap[Int(left)] = x1Position
+            xGridMap[Int(mainSize.width)] = mainRect.maxX
+            xGridMap[Int(mainSize.width + right)] = x2Position
         case .positive:
             x1Position = mainRect.maxX + (right > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
             x2Position = x1Position + COMPONENT_BOX_WIDTH
+            xGridMap[0] = mainRect.minX
+            xGridMap[Int(mainSize.width)] = mainRect.maxX
+            xGridMap[Int(mainSize.width + right)] = x1Position
+            xGridMap[Int(mainSize.width + right + otherSize.width)] = x2Position
         case .outside:
             x1Position = mainRect.minX - (left > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
             x2Position = mainRect.maxX + (right > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            xGridMap[0] = x1Position
+            xGridMap[Int(left)] = mainRect.minX
+            xGridMap[Int(left + mainSize.width)] = mainRect.maxX
+            xGridMap[Int(left + mainSize.width + right)] = x2Position
         }
         var y1Position: CGFloat = 0
         var y2Position: CGFloat = 0
+        var yGridMap: [Int: CGFloat] = [:]
         switch yIntersectType {
         case .negative:
             y2Position = mainRect.minY - (top > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
             y1Position = y2Position - COMPONENT_BOX_WIDTH
+            yGridMap[0] = y1Position
+            yGridMap[Int(otherSize.height)] = y2Position
+            yGridMap[Int(otherSize.height + top)] = mainRect.minY
+            yGridMap[Int(otherSize.height + top + mainSize.height)] = mainRect.maxY
         case .partialNegative:
             y2Position = mainRect.minY + (top > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
             y1Position = y2Position - COMPONENT_BOX_WIDTH
+            yGridMap[0] = y1Position
+            yGridMap[Int(top)] = mainRect.minY
+            yGridMap[Int(otherSize.height)] = y2Position
+            yGridMap[Int(mainSize.height + top)] = mainRect.maxY
         case .inside:
             y1Position = mainRect.minY + (top > 0 ? 20 : 0)
             y2Position = mainRect.maxY - (bottom > 0 ? 20 : 0)
+            yGridMap[0] = mainRect.minY
+            yGridMap[Int(top)] = y1Position
+            yGridMap[Int(mainSize.height - bottom)] = y2Position
+            yGridMap[Int(mainSize.height)] = mainRect.maxY
         case .partialPositive:
             y2Position = mainRect.maxY + (bottom > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
             y1Position = y2Position - COMPONENT_BOX_WIDTH
+            yGridMap[0] = mainRect.minY
+            yGridMap[Int(top)] = y1Position
+            yGridMap[Int(mainSize.height)] = mainRect.maxY
+            yGridMap[Int(mainSize.height + bottom)] = y2Position
         case .positive:
             y1Position = mainRect.maxY + (bottom > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
             y2Position = y1Position + COMPONENT_BOX_WIDTH
+            yGridMap[0] = mainRect.minY
+            yGridMap[Int(mainSize.height)] = mainRect.maxY
+            yGridMap[Int(mainSize.height + bottom)] = y1Position
+            yGridMap[Int(mainSize.height + bottom + otherSize.height)] = y2Position
         case .outside:
             y1Position = mainRect.minY - (top > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
             y2Position = mainRect.maxY + (bottom > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            yGridMap[0] = y1Position
+            yGridMap[Int(top)] = mainRect.minY
+            yGridMap[Int(top + mainSize.height)] = mainRect.maxY
+            yGridMap[Int(top + mainSize.height + bottom)] = y2Position
         }
-        return CGRect(x: x1Position, y: y1Position, width: (x2Position - x1Position), height: (y2Position - y1Position))
+        let otherRect = CGRect(x: x1Position, y: y1Position, width: (x2Position - x1Position), height: (y2Position - y1Position))
+        return AnalyzeSpacingInfo(otherRect: otherRect, xGridMap: xGridMap, yGridMap: yGridMap)
     }
     
     static func getPositionRelation(mainBounds: CGRect, otherBounds: CGRect) -> ComponentPositionRelation? {
