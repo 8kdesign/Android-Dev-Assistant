@@ -9,8 +9,6 @@ import SwiftUI
 
 struct SpacingComparatorView: View {
     
-    let BOX_WIDTH: CGFloat = 70
-
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
     @State var positionRelation: ComponentPositionRelation? = nil
     
@@ -29,10 +27,10 @@ struct SpacingComparatorView: View {
     private func CanvasView(relation: ComponentPositionRelation?) -> some View {
         Canvas { context, size in
             let mainRect = CGRect(
-                origin: CGPoint(x: (size.width - BOX_WIDTH) / 2, y: (size.height - BOX_WIDTH) / 2),
-                size: CGSize(width: BOX_WIDTH, height: BOX_WIDTH)
+                origin: CGPoint(x: (size.width - COMPONENT_BOX_WIDTH) / 2, y: (size.height - COMPONENT_BOX_WIDTH) / 2),
+                size: CGSize(width: COMPONENT_BOX_WIDTH, height: COMPONENT_BOX_WIDTH)
             )
-            let otherRect = getOtherRect(size: size, mainRect: mainRect, relation: relation)
+            let otherRect = relation?.getOtherRect(size: size, mainRect: mainRect)
             drawLines(context: context, size: size, rect: mainRect)
             if let otherRect {
                 drawLines(context: context, size: size, rect: otherRect)
@@ -70,60 +68,5 @@ extension SpacingComparatorView {
         rightLine.addLine(to: CGPoint(x: rect.maxX, y: size.height))
         context.stroke(rightLine, with: .color(Color(white: 0.2)), style: .init(lineWidth: 1))
     }
-    
-    // Calculation
-    
-    private func getOtherRect(size: CGSize, mainRect: CGRect, relation: ComponentPositionRelation?) -> CGRect? {
-        switch relation {
-        case .nonIdentical(let xIntersectType, let yIntersectType, let left, let right, let top, let bottom):
-            var x1Position: CGFloat = 0
-            var x2Position: CGFloat = 0
-            switch xIntersectType {
-            case .negative:
-                x2Position = mainRect.minX - (left > 0 ? (BOX_WIDTH / 2) : 0)
-                x1Position = x2Position - BOX_WIDTH
-            case .partialNegative:
-                x2Position = mainRect.minX + (left > 0 ? (BOX_WIDTH / 2) : 0)
-                x1Position = x2Position - BOX_WIDTH
-            case .inside:
-                x1Position = mainRect.minX + (left > 0 ? 20 : 0)
-                x2Position = mainRect.maxX - (right > 0 ? 20 : 0)
-            case .partialPositive:
-                x2Position = mainRect.maxX + (right > 0 ? (BOX_WIDTH / 2) : 0)
-                x1Position = x2Position - BOX_WIDTH
-            case .positive:
-                x1Position = mainRect.maxX + (right > 0 ? (BOX_WIDTH / 2) : 0)
-                x2Position = x1Position + BOX_WIDTH
-            case .outside:
-                x1Position = mainRect.minX - (left > 0 ? (BOX_WIDTH / 2) : 0)
-                x2Position = mainRect.maxX + (right > 0 ? (BOX_WIDTH / 2) : 0)
-            }
-            var y1Position: CGFloat = 0
-            var y2Position: CGFloat = 0
-            switch yIntersectType {
-            case .negative:
-                y2Position = mainRect.minY - (top > 0 ? (BOX_WIDTH / 2) : 0)
-                y1Position = y2Position - BOX_WIDTH
-            case .partialNegative:
-                y2Position = mainRect.minY + (top > 0 ? (BOX_WIDTH / 2) : 0)
-                y1Position = y2Position - BOX_WIDTH
-            case .inside:
-                y1Position = mainRect.minY + (top > 0 ? 20 : 0)
-                y2Position = mainRect.maxY - (bottom > 0 ? 20 : 0)
-            case .partialPositive:
-                y2Position = mainRect.maxY + (bottom > 0 ? (BOX_WIDTH / 2) : 0)
-                y1Position = y2Position - BOX_WIDTH
-            case .positive:
-                y1Position = mainRect.maxY + (bottom > 0 ? (BOX_WIDTH / 2) : 0)
-                y2Position = y1Position + BOX_WIDTH
-            case .outside:
-                y1Position = mainRect.minY - (top > 0 ? (BOX_WIDTH / 2) : 0)
-                y2Position = mainRect.maxY + (bottom > 0 ? (BOX_WIDTH / 2) : 0)
-            }
-            return CGRect(x: x1Position, y: y1Position, width: (x2Position - x1Position), height: (y2Position - y1Position))
-        case nil, .identical:
-            return nil
-        }
-    }
-    
+        
 }

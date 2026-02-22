@@ -8,17 +8,17 @@
 import Foundation
 import SwiftUI
 
-enum ComponentPositionRelation {
-    case identical
-    case nonIdentical(
-        xIntersectType: AxisIntersectType,
-        yIntersectType: AxisIntersectType,
-        left: CGFloat,
-        right: CGFloat,
-        top: CGFloat,
-        bottom: CGFloat
-    )
-
+class ComponentPositionRelation {
+    
+    var xIntersectType: AxisIntersectType
+    var yIntersectType: AxisIntersectType
+    var left: CGFloat
+    var right: CGFloat
+    var top: CGFloat
+    var bottom: CGFloat
+    var mainSize: CGSize
+    var otherSize: CGSize
+    
     enum AxisIntersectType {
         case negative
         case partialNegative
@@ -28,9 +28,70 @@ enum ComponentPositionRelation {
         case outside
     }
     
-    static func getPositionRelation(mainBounds: CGRect, otherBounds: CGRect) -> ComponentPositionRelation {
+    init(xIntersectType: AxisIntersectType, yIntersectType: AxisIntersectType,
+         left: CGFloat, right: CGFloat, top: CGFloat, bottom: CGFloat,
+         mainSize: CGSize, otherSize: CGSize) {
+        self.xIntersectType = xIntersectType
+        self.yIntersectType = yIntersectType
+        self.left = left
+        self.right = right
+        self.top = top
+        self.bottom = bottom
+        self.mainSize = mainSize
+        self.otherSize = otherSize
+    }
+    
+    func getOtherRect(size: CGSize, mainRect: CGRect) -> CGRect? {
+        var x1Position: CGFloat = 0
+        var x2Position: CGFloat = 0
+        switch xIntersectType {
+        case .negative:
+            x2Position = mainRect.minX - (left > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            x1Position = x2Position - COMPONENT_BOX_WIDTH
+        case .partialNegative:
+            x2Position = mainRect.minX + (left > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            x1Position = x2Position - COMPONENT_BOX_WIDTH
+        case .inside:
+            x1Position = mainRect.minX + (left > 0 ? 20 : 0)
+            x2Position = mainRect.maxX - (right > 0 ? 20 : 0)
+        case .partialPositive:
+            x2Position = mainRect.maxX + (right > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            x1Position = x2Position - COMPONENT_BOX_WIDTH
+        case .positive:
+            x1Position = mainRect.maxX + (right > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            x2Position = x1Position + COMPONENT_BOX_WIDTH
+        case .outside:
+            x1Position = mainRect.minX - (left > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            x2Position = mainRect.maxX + (right > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+        }
+        var y1Position: CGFloat = 0
+        var y2Position: CGFloat = 0
+        switch yIntersectType {
+        case .negative:
+            y2Position = mainRect.minY - (top > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            y1Position = y2Position - COMPONENT_BOX_WIDTH
+        case .partialNegative:
+            y2Position = mainRect.minY + (top > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            y1Position = y2Position - COMPONENT_BOX_WIDTH
+        case .inside:
+            y1Position = mainRect.minY + (top > 0 ? 20 : 0)
+            y2Position = mainRect.maxY - (bottom > 0 ? 20 : 0)
+        case .partialPositive:
+            y2Position = mainRect.maxY + (bottom > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            y1Position = y2Position - COMPONENT_BOX_WIDTH
+        case .positive:
+            y1Position = mainRect.maxY + (bottom > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            y2Position = y1Position + COMPONENT_BOX_WIDTH
+        case .outside:
+            y1Position = mainRect.minY - (top > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+            y2Position = mainRect.maxY + (bottom > 0 ? (COMPONENT_BOX_WIDTH / 2) : 0)
+        }
+        return CGRect(x: x1Position, y: y1Position, width: (x2Position - x1Position), height: (y2Position - y1Position))
+    }
+    
+    static func getPositionRelation(mainBounds: CGRect, otherBounds: CGRect) -> ComponentPositionRelation? {
         if mainBounds == otherBounds {
-            return .identical
+            return nil
         }
         var xIntersectType: AxisIntersectType
         var leftOffset: CGFloat = 0
@@ -84,8 +145,11 @@ enum ComponentPositionRelation {
             topOffset = abs(mainBounds.minY - otherBounds.minY)
             bottomOffset = abs(mainBounds.maxY - otherBounds.minY)
         }
-        return .nonIdentical(xIntersectType: xIntersectType, yIntersectType: yIntersectType,
-                          left: leftOffset, right: rightOffset, top: topOffset, bottom: bottomOffset)
+        return ComponentPositionRelation(
+            xIntersectType: xIntersectType, yIntersectType: yIntersectType,
+            left: leftOffset, right: rightOffset, top: topOffset, bottom: bottomOffset,
+            mainSize: mainBounds.size, otherSize: otherBounds.size
+        )
     }
-
+    
 }
