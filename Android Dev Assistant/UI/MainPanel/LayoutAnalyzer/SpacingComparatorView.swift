@@ -19,7 +19,6 @@ struct SpacingComparatorView: View {
             .background(Color(white: 0.12))
             .onChange(of: analyzeScreenHelper.compareComponent) { _ in
                 positionRelation = analyzeScreenHelper.compare()
-                print(positionRelation)
             }
     }
     

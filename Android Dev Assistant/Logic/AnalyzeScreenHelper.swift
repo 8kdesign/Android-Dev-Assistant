@@ -17,12 +17,12 @@ class AnalyzeScreenHelper: ObservableObject {
     var layout: ComponentLayoutItem
     @Published var selectedComponent: ComponentItem? = nil {
         didSet {
+            compareComponent = nil
             addTab(component: selectedComponent, needSet: false)
         }
     }
     var selectedComponentList: [ComponentItem] = [] {
         didSet {
-            compareComponent = nil
             objectWillChange.send()
         }
     }
