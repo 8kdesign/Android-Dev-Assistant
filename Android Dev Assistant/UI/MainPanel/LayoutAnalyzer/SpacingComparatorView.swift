@@ -16,6 +16,7 @@ struct SpacingComparatorView: View {
         HStack(spacing: 0) {
             CanvasView(relation: positionRelation)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            .aspectRatio(1, contentMode: .fit)
             .background(Color(white: 0.12))
             .onAppear {
                 positionRelation = analyzeScreenHelper.compare()
@@ -63,7 +64,7 @@ extension SpacingComparatorView {
             var line = Path()
             line.move(to: CGPoint(x: 0, y: value))
             line.addLine(to: CGPoint(x: sideSize, y: value))
-            context.stroke(line, with: .color(Color(white: 0.2)), style: .init(lineWidth: 1))
+            context.stroke(line, with: .color(Color(white: 0.3)), style: .init(lineWidth: 1))
             if let nextKey = keys[safe: index + 1] {
                 var message = ""
                 if let density {
@@ -74,7 +75,7 @@ extension SpacingComparatorView {
                 }
                 let text = Text(message)
                     .font(.caption)
-                    .foregroundColor(Color(white: 0.3))
+                    .foregroundColor(Color(white: 0.5))
                 if isX {
                     context.draw(
                         text,

@@ -21,7 +21,7 @@ struct PopupView<Content: View>: View {
                 HeaderView()
                 Divider().opacity(0.7)
                 content()
-            }.frame(maxWidth: 800, maxHeight: 800, alignment: .top)
+            }.frame(maxWidth: 800, maxHeight: 900, alignment: .top)
                 .background(Color(white: 0.05))
                 .clipShape(RoundedRectangle(cornerRadius: 30))
                 .onTapGesture {}
