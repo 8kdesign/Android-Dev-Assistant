@@ -98,8 +98,8 @@ class AnalyzeScreenHelper: ObservableObject {
     func compare() -> ComponentPositionRelation? {
         guard let selectedComponent, let compareComponent else { return nil }
         return ComponentPositionRelation.getPositionRelation(
-            bounds1: selectedComponent.bounds,
-            bounds2: compareComponent.bounds
+            mainBounds: selectedComponent.bounds,
+            otherBounds: compareComponent.bounds
         )
     }
     

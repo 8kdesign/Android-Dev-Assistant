@@ -34,8 +34,10 @@ struct SpacingComparatorView: View {
             context.fill(mainPath, with: .color(.yellow.opacity(0.3)))
             context.stroke(mainPath, with: .color(.yellow), style: .init(lineWidth: 2))
             switch positionRelation {
-            case .noOverlap(let mainBounds, let otherBounds):
-                ()
+            case .noOverlap(let xIntersectType, let yIntersectType, let left, let right, let top, let bottom):
+                drawNoOverlap(context: context, size: size, mainRect: mainRect,
+                              xIntersectType: xIntersectType, yIntersectType: yIntersectType,
+                              left: left, right: right, top: top, bottom: bottom)
             case .mainContainsOther(let left, let right, let top, let bottom):
                 let otherRect = CGRect(
                     x: mainRect.minX + (left > 0 ? 50 : 0),
@@ -92,11 +94,71 @@ extension SpacingComparatorView {
             return 140
         } else if case .otherContainsMain(_, _, _, _) = positionRelation {
             return 70
-        } else if case .noOverlap(_, _) = positionRelation {
+        } else if case .noOverlap(_, _, _, _, _, _) = positionRelation {
             return 70
         } else {
             return 200
         }
+    }
+    
+    private func drawNoOverlap(
+        context: GraphicsContext,
+        size: CGSize,
+        mainRect: CGRect,
+        xIntersectType: ComponentPositionRelation.AxisIntersectType,
+        yIntersectType: ComponentPositionRelation.AxisIntersectType,
+        left: CGFloat,
+        right: CGFloat,
+        top: CGFloat,
+        bottom: CGFloat
+    ) {
+        let otherWidth: CGFloat = 70
+        var x1Position: CGFloat = 0
+        var x2Position: CGFloat = 0
+        switch xIntersectType {
+        case .negative:
+            x2Position = mainRect.minX - (left > 0 ? 40 : 0)
+            x1Position = x2Position - otherWidth
+        case .partialNegative:
+            x2Position = mainRect.minX + (left > 0 ? 40 : 0)
+            x1Position = x2Position - otherWidth
+        case .inside:
+            x1Position = mainRect.minX + (left > 0 ? 20 : 0)
+            x2Position = mainRect.maxX - (right > 0 ? 20 : 0)
+        case .partialPositive:
+            x2Position = mainRect.maxX + (right > 0 ? 40 : 0)
+            x1Position = x2Position - otherWidth
+        case .positive:
+            x1Position = mainRect.maxX + (right > 0 ? 40 : 0)
+            x2Position = x1Position + otherWidth
+        case .outside:
+            x1Position = mainRect.minX - (left > 0 ? 20 : 0)
+            x2Position = mainRect.maxX + (right > 0 ? 20 : 0)
+        }
+        var y1Position: CGFloat = 0
+        var y2Position: CGFloat = 0
+        switch yIntersectType {
+        case .negative:
+            y2Position = mainRect.minY - (top > 0 ? 40 : 0)
+            y1Position = y2Position - otherWidth
+        case .partialNegative:
+            y2Position = mainRect.minY + (top > 0 ? 40 : 0)
+            y1Position = y2Position - otherWidth
+        case .inside:
+            y1Position = mainRect.minY + (top > 0 ? 20 : 0)
+            y2Position = mainRect.maxY - (bottom > 0 ? 20 : 0)
+        case .partialPositive:
+            y2Position = mainRect.maxY + (bottom > 0 ? 40 : 0)
+            y1Position = y2Position - otherWidth
+        case .positive:
+            y1Position = mainRect.maxY + (bottom > 0 ? 40 : 0)
+            y2Position = y1Position + otherWidth
+        case .outside:
+            y1Position = mainRect.minY - (top > 0 ? 20 : 0)
+            y2Position = mainRect.maxY + (bottom > 0 ? 20 : 0)
+        }
+        let rect = CGRect(x: x1Position, y: y1Position, width: (x2Position - x1Position), height: (y2Position - y1Position))
+        context.stroke(Path(rect), with: .color(.red), style: .init(lineWidth: 2))
     }
     
     private func drawCanvasOverlapCorner(

@@ -10,7 +10,14 @@ import SwiftUI
 
 enum ComponentPositionRelation {
     case identical
-    case noOverlap(mainBounds: CGRect, otherBounds: CGRect)
+    case noOverlap(
+        xIntersectType: AxisIntersectType,
+        yIntersectType: AxisIntersectType,
+        left: CGFloat,
+        right: CGFloat,
+        top: CGFloat,
+        bottom: CGFloat
+    )
     case mainContainsOther(left: CGFloat, right: CGFloat, top: CGFloat, bottom: CGFloat)
     case otherContainsMain(left: CGFloat, right: CGFloat, top: CGFloat, bottom: CGFloat)
     case partialOverlapHorizontal( // start and end are outside, top and bottom are inside
@@ -42,6 +49,15 @@ enum ComponentPositionRelation {
         otherSize: CGSize
     )
     
+    enum AxisIntersectType {
+        case negative
+        case partialNegative
+        case inside
+        case partialPositive
+        case positive
+        case outside
+    }
+    
     enum Corner {
         case topLeft
         case topRight
@@ -56,19 +72,79 @@ enum ComponentPositionRelation {
         case bottom
     }
     
-    static func getPositionRelation(bounds1: CGRect, bounds2: CGRect) -> ComponentPositionRelation {
-        if bounds1 == bounds2 {
+    static func getPositionRelation(mainBounds: CGRect, otherBounds: CGRect) -> ComponentPositionRelation {
+        if mainBounds == otherBounds {
             return .identical
         }
-        if !bounds1.intersects(bounds2) {
-            return .noOverlap(mainBounds: bounds1, otherBounds: bounds2)
+        if !mainBounds.intersects(otherBounds) {
+            return processNonIntersecting(mainBounds: mainBounds, otherBounds: otherBounds)
         }
-        let topTopDiff = bounds1.minY - bounds2.minY
-        let bottomBottomDiff = bounds1.maxY - bounds2.maxY
-        let leftLeftDiff = bounds1.minX - bounds2.minX
-        let rightRightDiff = bounds1.maxX - bounds2.maxX
-        
-        if bounds1.contains(bounds2) {
+        return processIntersecting(mainBounds: mainBounds, otherBounds: otherBounds)
+    }
+    
+    private static func processNonIntersecting(mainBounds: CGRect, otherBounds: CGRect) -> ComponentPositionRelation {
+        var xIntersectType: AxisIntersectType
+        var leftOffset: CGFloat = 0
+        var rightOffset: CGFloat = 0
+        var yIntersectType: AxisIntersectType
+        var topOffset: CGFloat = 0
+        var bottomOffset: CGFloat = 0
+        if mainBounds.minX >= otherBounds.maxX {
+            xIntersectType = .negative
+            leftOffset = abs(mainBounds.minX - otherBounds.maxX)
+        } else if mainBounds.maxX <= otherBounds.minX {
+            xIntersectType = .positive
+            rightOffset = abs(mainBounds.maxX - otherBounds.minX)
+        } else if mainBounds.minX <= otherBounds.minX && mainBounds.maxX >= otherBounds.maxX {
+            xIntersectType = .inside
+            leftOffset = abs(mainBounds.minX - otherBounds.minX)
+            rightOffset = abs(mainBounds.maxX - otherBounds.maxX)
+        } else if mainBounds.minX > otherBounds.minX && mainBounds.maxX < otherBounds.maxX {
+            xIntersectType = .outside
+            leftOffset = abs(mainBounds.minX - otherBounds.minX)
+            rightOffset = abs(mainBounds.maxX - otherBounds.maxX)
+        } else if mainBounds.minX <= otherBounds.minX {
+            xIntersectType = .partialPositive
+            leftOffset = abs(mainBounds.minX - otherBounds.maxX)
+            rightOffset = abs(mainBounds.maxX - otherBounds.maxX)
+        } else {
+            xIntersectType = .partialNegative
+            leftOffset = abs(mainBounds.minX - otherBounds.minX)
+            rightOffset = abs(mainBounds.maxX - otherBounds.minX)
+        }
+        if mainBounds.minY >= otherBounds.maxY {
+            yIntersectType = .negative
+            topOffset = abs(mainBounds.minY - otherBounds.maxY)
+        } else if mainBounds.maxY <= otherBounds.minY {
+            yIntersectType = .positive
+            bottomOffset = abs(mainBounds.maxY - otherBounds.minY)
+        } else if mainBounds.minY <= otherBounds.minY && mainBounds.maxY >= otherBounds.maxY {
+            yIntersectType = .inside
+            topOffset = abs(mainBounds.minY - otherBounds.minY)
+            bottomOffset = abs(mainBounds.maxY - otherBounds.maxY)
+        } else if mainBounds.minY > otherBounds.minY && mainBounds.maxY < otherBounds.maxY {
+            yIntersectType = .outside
+            topOffset = abs(mainBounds.minY - otherBounds.minY)
+            bottomOffset = abs(mainBounds.maxY - otherBounds.maxY)
+        } else if mainBounds.minY <= otherBounds.minY {
+            yIntersectType = .partialPositive
+            topOffset = abs(mainBounds.minY - otherBounds.maxY)
+            bottomOffset = abs(mainBounds.maxY - otherBounds.maxY)
+        } else {
+            yIntersectType = .partialNegative
+            topOffset = abs(mainBounds.minY - otherBounds.minY)
+            bottomOffset = abs(mainBounds.maxY - otherBounds.minY)
+        }
+        return .noOverlap(xIntersectType: xIntersectType, yIntersectType: yIntersectType,
+                          left: leftOffset, right: rightOffset, top: topOffset, bottom: bottomOffset)
+    }
+
+    private static func processIntersecting(mainBounds: CGRect, otherBounds: CGRect) -> ComponentPositionRelation {
+        let topTopDiff = mainBounds.minY - otherBounds.minY
+        let bottomBottomDiff = mainBounds.maxY - otherBounds.maxY
+        let leftLeftDiff = mainBounds.minX - otherBounds.minX
+        let rightRightDiff = mainBounds.maxX - otherBounds.maxX
+        if mainBounds.contains(otherBounds) {
             return .mainContainsOther(
                 left: abs(leftLeftDiff),
                 right: abs(rightRightDiff),
@@ -76,7 +152,7 @@ enum ComponentPositionRelation {
                 bottom: abs(bottomBottomDiff)
             )
         }
-        if bounds2.contains(bounds1) {
+        if otherBounds.contains(mainBounds) {
             return .otherContainsMain(
                 left: abs(leftLeftDiff),
                 right: abs(rightRightDiff),
@@ -85,15 +161,15 @@ enum ComponentPositionRelation {
             )
         }
         
-        let topBottomDiff = bounds1.minY - bounds2.maxY
-        let bottomTopDiff = bounds1.maxY - bounds2.minY
-        let leftRightDiff = bounds1.minX - bounds2.maxX
-        let rightLeftDiff = bounds1.maxX - bounds2.minX
+        let topBottomDiff = mainBounds.minY - otherBounds.maxY
+        let bottomTopDiff = mainBounds.maxY - otherBounds.minY
+        let leftRightDiff = mainBounds.minX - otherBounds.maxX
+        let rightLeftDiff = mainBounds.maxX - otherBounds.minX
         
-        let isLeftInside = bounds1.minX <= bounds2.minX && bounds1.maxX >= bounds2.minX
-        let isRightInside = bounds1.minX <= bounds2.maxX && bounds1.maxX >= bounds2.maxX
-        let isTopInside = bounds1.minY <= bounds2.minY && bounds1.maxY >= bounds2.minY
-        let isBottomInside = bounds1.minY <= bounds2.maxY && bounds1.maxY >= bounds2.maxY
+        let isLeftInside = mainBounds.minX <= otherBounds.minX && mainBounds.maxX >= otherBounds.minX
+        let isRightInside = mainBounds.minX <= otherBounds.maxX && mainBounds.maxX >= otherBounds.maxX
+        let isTopInside = mainBounds.minY <= otherBounds.minY && mainBounds.maxY >= otherBounds.minY
+        let isBottomInside = mainBounds.minY <= otherBounds.maxY && mainBounds.maxY >= otherBounds.maxY
         var horizontalInsideCount = 0
         var verticalInsideCount = 0
         if isLeftInside { horizontalInsideCount += 1 }
@@ -122,8 +198,8 @@ enum ComponentPositionRelation {
                     right: abs(isLeftSide ? leftRightDiff : rightRightDiff),
                     top: abs(topTopDiff),
                     bottom: abs(bottomBottomDiff),
-                    mainSize: bounds1.size,
-                    otherSize: bounds2.size
+                    mainSize: mainBounds.size,
+                    otherSize: otherBounds.size
                 )
             default: // side, top and bottom outside
                 let isLeftSide = isRightInside
@@ -133,8 +209,8 @@ enum ComponentPositionRelation {
                     right: abs(isLeftSide ? leftRightDiff : rightRightDiff),
                     top: abs(topTopDiff),
                     bottom: abs(bottomBottomDiff),
-                    mainSize: bounds1.size,
-                    otherSize: bounds2.size
+                    mainSize: mainBounds.size,
+                    otherSize: otherBounds.size
                 )
             }
         } else if horizontalInsideCount == 2 {
@@ -147,8 +223,8 @@ enum ComponentPositionRelation {
                     right: abs(rightRightDiff),
                     top: abs(isTopSide ? topTopDiff : bottomTopDiff),
                     bottom: abs(isTopSide ? topBottomDiff : bottomBottomDiff),
-                    mainSize: bounds1.size,
-                    otherSize: bounds2.size
+                    mainSize: mainBounds.size,
+                    otherSize: otherBounds.size
                 )
             case 2: // inside (should have been caught earlier)
                 return .mainContainsOther(
@@ -175,8 +251,8 @@ enum ComponentPositionRelation {
                     right: abs(rightRightDiff),
                     top: abs(isTopSide ? topTopDiff : bottomTopDiff),
                     bottom: abs(isTopSide ? topBottomDiff : bottomBottomDiff),
-                    mainSize: bounds1.size,
-                    otherSize: bounds2.size
+                    mainSize: mainBounds.size,
+                    otherSize: otherBounds.size
                 )
             case 2: // horizontal
                 return .partialOverlapHorizontal(
