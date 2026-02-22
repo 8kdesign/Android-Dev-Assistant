@@ -57,6 +57,7 @@ extension SpacingComparatorView {
             context.rotate(by: .degrees(-90))
         }
         let sideSize = isX ? size.height : size.width
+        let density = analyzeScreenHelper.layout.density
         for index in keys.indices {
             guard let key = keys[safe: index], let value = lines[key] else { continue }
             var line = Path()
@@ -64,8 +65,15 @@ extension SpacingComparatorView {
             line.addLine(to: CGPoint(x: sideSize, y: value))
             context.stroke(line, with: .color(Color(white: 0.2)), style: .init(lineWidth: 1))
             if let nextKey = keys[safe: index + 1] {
-                let text = Text("\(nextKey - key)")
-                    .font(.callout)
+                var message = ""
+                if let density {
+                    let dp = CGFloat(nextKey - key) / density
+                    message = String(format: "%.1f", dp)
+                } else {
+                    message = "\(nextKey - key)"
+                }
+                let text = Text(message)
+                    .font(.caption)
                     .foregroundColor(Color(white: 0.3))
                 if isX {
                     context.draw(
