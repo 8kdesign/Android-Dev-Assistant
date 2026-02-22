@@ -79,31 +79,31 @@ extension SpacingComparatorView {
                           left: left, right: right, top: top, bottom: bottom)
         case .mainContainsOther(let left, let right, let top, let bottom):
             return CGRect(
-                x: mainRect.minX + (left > 0 ? 50 : 0),
-                y: mainRect.minY + (top > 0 ? 50 : 0),
-                width: mainRect.width - (left > 0 ? 50 : 0) - (right > 0 ? 50 : 0),
-                height: mainRect.height - (top > 0 ? 50 : 0) - (bottom > 0 ? 50 : 0)
+                x: mainRect.minX + (left > 0 ? 20 : 0),
+                y: mainRect.minY + (top > 0 ? 20 : 0),
+                width: mainRect.width - (left > 0 ? 20 : 0) - (right > 0 ? 20 : 0),
+                height: mainRect.height - (top > 0 ? 20 : 0) - (bottom > 0 ? 20 : 0)
             )
         case .otherContainsMain(let left, let right, let top, let bottom):
             return CGRect(
-                x: mainRect.minX - (left > 0 ? 50 : 0),
-                y: mainRect.minY - (top > 0 ? 50 : 0),
-                width: mainRect.width + (left > 0 ? 50 : 0) + (right > 0 ? 50 : 0),
-                height: mainRect.height + (top > 0 ? 50 : 0) + (bottom > 0 ? 50 : 0)
+                x: mainRect.minX - (left > 0 ? (BOX_WIDTH / 2) : 0),
+                y: mainRect.minY - (top > 0 ? (BOX_WIDTH / 2) : 0),
+                width: mainRect.width + (left > 0 ? (BOX_WIDTH / 2) : 0) + (right > 0 ? (BOX_WIDTH / 2) : 0),
+                height: mainRect.height + (top > 0 ? (BOX_WIDTH / 2) : 0) + (bottom > 0 ? (BOX_WIDTH / 2) : 0)
             )
         case .partialOverlapHorizontal(_, _, _ ,_):
             return CGRect(
-                x: mainRect.minX - 50,
-                y: mainRect.minY + 50,
-                width: mainRect.width + 100,
-                height: mainRect.height - 100
+                x: mainRect.minX - (BOX_WIDTH / 2),
+                y: mainRect.minY + (BOX_WIDTH / 2),
+                width: mainRect.width + BOX_WIDTH,
+                height: mainRect.height - BOX_WIDTH
             )
         case .partialOverlapVertical(_, _, _, _):
             return CGRect(
-                x: mainRect.minX + 50,
-                y: mainRect.minY - 50,
-                width: mainRect.width - 100,
-                height: mainRect.height + 100
+                x: mainRect.minX + (BOX_WIDTH / 2),
+                y: mainRect.minY - (BOX_WIDTH / 2),
+                width: mainRect.width - BOX_WIDTH,
+                height: mainRect.height + BOX_WIDTH
             )
         case .partialOverlapCorner(let corner, let left, let right, let top, let bottom):
             return getOverlapCornerRect(size: size, mainRect: mainRect, corner: corner,
@@ -146,8 +146,8 @@ extension SpacingComparatorView {
             x1Position = mainRect.maxX + (right > 0 ? (BOX_WIDTH / 2) : 0)
             x2Position = x1Position + BOX_WIDTH
         case .outside:
-            x1Position = mainRect.minX - (left > 0 ? 20 : 0)
-            x2Position = mainRect.maxX + (right > 0 ? 20 : 0)
+            x1Position = mainRect.minX - (left > 0 ? (BOX_WIDTH / 2) : 0)
+            x2Position = mainRect.maxX + (right > 0 ? (BOX_WIDTH / 2) : 0)
         }
         var y1Position: CGFloat = 0
         var y2Position: CGFloat = 0
@@ -168,8 +168,8 @@ extension SpacingComparatorView {
             y1Position = mainRect.maxY + (bottom > 0 ? (BOX_WIDTH / 2) : 0)
             y2Position = y1Position + BOX_WIDTH
         case .outside:
-            y1Position = mainRect.minY - (top > 0 ? 20 : 0)
-            y2Position = mainRect.maxY + (bottom > 0 ? 20 : 0)
+            y1Position = mainRect.minY - (top > 0 ? (BOX_WIDTH / 2) : 0)
+            y2Position = mainRect.maxY + (bottom > 0 ? (BOX_WIDTH / 2) : 0)
         }
         return CGRect(x: x1Position, y: y1Position, width: (x2Position - x1Position), height: (y2Position - y1Position))
     }
