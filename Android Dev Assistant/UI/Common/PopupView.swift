@@ -11,6 +11,7 @@ struct PopupView<Content: View>: View {
     
     @EnvironmentObject var uiController: UIController
     var title: LocalizedStringResource
+    var interceptEscape: () -> Bool = { return false }
     var onExit: () -> () = {}
     @ViewBuilder var content: () -> Content
     @State var isReady: Bool = false
@@ -32,7 +33,7 @@ struct PopupView<Content: View>: View {
             .opacity(isReady ? 1 : 0)
             .background(
                 KeyCatcher(keyCode: 53) { isDown in
-                    if isDown {
+                    if isDown, !interceptEscape() {
                         close()
                     }
                 }

@@ -16,7 +16,7 @@ struct SpacingComparatorView: View {
         CanvasView(relation: positionRelation)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .aspectRatio(1, contentMode: .fit)
-            .background(Color(white: 0.12))
+            .background(Color(white: 0.13))
             .onAppear {
                 positionRelation = analyzeScreenHelper.compare()
             }.onChange(of: analyzeScreenHelper.compareComponent) { _ in

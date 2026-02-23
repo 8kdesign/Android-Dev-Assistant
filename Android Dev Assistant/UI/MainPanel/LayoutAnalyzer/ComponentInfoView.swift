@@ -23,6 +23,7 @@ struct ComponentInfoView: View {
                     AnalyzeTabView()
                     InfoListView()
                     Spacer(minLength: 0)
+                    Divider().opacity(0.3)
                     SpacingComparatorView()
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -30,8 +31,9 @@ struct ComponentInfoView: View {
                     VStack(spacing: 0) {
                         AnalyzeTabView()
                         InfoListView()
-                            .frame(maxWidth: .infinity)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
+                    Divider().opacity(0.3)
                     SpacingComparatorView()
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
             }
@@ -54,61 +56,62 @@ struct ComponentInfoView: View {
         ScrollView {
             if let component {
                 LazyVStack(spacing: 0) {
-                    Divider()
                     DataRow(key: "Id", value: component.resourceId) { copy(component.resourceId) }
-                    Divider()
+                    Divider().opacity(0.3)
                     DataRow(key: "Accessibility Class", value: component.accessibilityClass) { copy(component.accessibilityClass) }
-                    Divider()
+                    Divider().opacity(0.3)
                     if let boundsDp = component.boundsDp {
                         DataRow(key: "Size", value: "w:\(component.bounds.width) [\(String(format: "%.1f", boundsDp.width))dp], h: \(component.bounds.height) [\(String(format: "%.1f", boundsDp.height))dp]")
-                        Divider()
+                        Divider().opacity(0.3)
                         DataRow(key: "Absolute Position", value: "x: \(component.bounds.minX) [\(String(format: "%.1f", boundsDp.minX))dp], y: \(component.bounds.minY) [\(String(format: "%.1f", boundsDp.minY))dp]")
-                        Divider()
+                        Divider().opacity(0.3)
                     } else {
                         DataRow(key: "Size", value: "w:\(component.bounds.width), h: \(component.bounds.height)")
-                        Divider()
+                        Divider().opacity(0.3)
                         DataRow(key: "Absolute Position", value: "x: \(component.bounds.minX), y: \(component.bounds.minY)")
-                        Divider()
+                        Divider().opacity(0.3)
                     }
                     if let clickable = component.clickable {
                         DataRow(key: "Clickable", value: clickable)
-                        Divider()
+                        Divider().opacity(0.3)
                     }
                     if let longClickable = component.longClickable {
                         DataRow(key: "Long Clickable", value: longClickable)
-                        Divider()
+                        Divider().opacity(0.3)
                     }
                     if let scrollable = component.scrollable {
                         DataRow(key: "Scrollable", value: scrollable)
-                        Divider()
+                        Divider().opacity(0.3)
                     }
                     if let isEnabled = component.isEnabled {
                         DataRow(key: "Enabled", value: isEnabled)
-                        Divider()
+                        Divider().opacity(0.3)
                     }
                     if let text = component.text, !text.isEmpty {
                         DataRow(key: "Text", value: text) { copy(text) }
-                        Divider()
+                        Divider().opacity(0.3)
                     }
                     if let hint = component.hint, !hint.isEmpty {
                         DataRow(key: "Hint", value: hint) { copy(hint) }
-                        Divider()
+                        Divider().opacity(0.3)
                     }
                     if let contentDescription = component.contentDescription, !contentDescription.isEmpty {
                         DataRow(key: "Content Description", value: contentDescription) { copy(contentDescription) }
-                        Divider()
+                        Divider().opacity(0.3)
                     }
                     DataRow(key: "Parent", value: parentComponent?.getShortLabel() ?? "") {
                         if let parentComponent {
                             analyzeScreenHelper.addTab(component: parentComponent, needSet: true)
                         }
                     }
-                    Divider()
+                    Divider().opacity(0.3)
                     ChildrenRow()
-                    Divider()
-                }
+                }.background(Color(white: 0.15))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .padding(.all)
             }
         }.frame(maxWidth: .infinity)
+            .scrollIndicators(.never)
     }
     
     private func DataRow(key: LocalizedStringResource, value: String, action: (() -> ())? = nil) -> some View {
@@ -119,15 +122,15 @@ struct ComponentInfoView: View {
                 .foregroundStyle(.white)
                 .foregroundColor(.white)
                 .opacity(0.7)
-                .padding(.all, 5)
-            Divider()
+                .padding(.all, 10)
+            Divider().opacity(0.3)
             Text(value)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
                 .foregroundStyle(.white)
                 .foregroundColor(.white)
                 .opacity(0.7)
-                .padding(.all, 5)
+                .padding(.all, 10)
                 .background(.white.opacity(0.00001))
                 .onTapGesture {
                     action?()
@@ -143,8 +146,8 @@ struct ComponentInfoView: View {
                 .foregroundStyle(.white)
                 .foregroundColor(.white)
                 .opacity(0.7)
-                .padding(.all, 5)
-            Divider()
+                .padding(.all, 10)
+            Divider().opacity(0.3)
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(childrenComponents) { component in
                     Text(component.getShortLabel())
@@ -153,13 +156,13 @@ struct ComponentInfoView: View {
                         .foregroundStyle(.white)
                         .foregroundColor(.white)
                         .opacity(0.7)
-                        .padding(.all, 5)
+                        .padding(.all, 10)
                         .background(.white.opacity(0.00001))
                         .onTapGesture {
                             analyzeScreenHelper.addTab(component: component, needSet: true)
                         }.hoverOpacity()
                     if component != childrenComponents.last {
-                        Divider()
+                        Divider().opacity(0.3)
                     }
                 }
             }.frame(maxWidth: .infinity)

@@ -14,7 +14,7 @@ struct AnalyzeLayoutView: View {
     @State var showMenu: Bool = false
     
     var body: some View {
-        PopupView(title: "Read Layout") {
+        PopupView(title: "Read Layout", interceptEscape: interceptEscape) {
             let imageSize = analyzeScreenHelper.layout.image.size
             if imageSize.width < imageSize.height {
                 HStack (spacing: 0) {
@@ -60,3 +60,14 @@ struct AnalyzeLayoutView: View {
     
 }
 
+extension AnalyzeLayoutView {
+    
+    private func interceptEscape() -> Bool {
+        if showMenu {
+            showMenu = false
+            return true
+        }
+        return false
+    }
+    
+}
