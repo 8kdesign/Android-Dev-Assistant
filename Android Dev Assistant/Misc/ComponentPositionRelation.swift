@@ -160,7 +160,7 @@ class ComponentPositionRelation {
             xIntersectType = .inside
             leftOffset = abs(mainBounds.minX - otherBounds.minX)
             rightOffset = abs(mainBounds.maxX - otherBounds.maxX)
-        } else if mainBounds.minX > otherBounds.minX && mainBounds.maxX < otherBounds.maxX {
+        } else if mainBounds.minX >= otherBounds.minX && mainBounds.maxX <= otherBounds.maxX {
             xIntersectType = .outside
             leftOffset = abs(mainBounds.minX - otherBounds.minX)
             rightOffset = abs(mainBounds.maxX - otherBounds.maxX)

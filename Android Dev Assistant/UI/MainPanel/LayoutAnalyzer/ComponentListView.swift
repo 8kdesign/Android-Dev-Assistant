@@ -17,7 +17,7 @@ struct ComponentListView: View {
         VStack(spacing: 0) {
             AnalyzeTabView()
             ScrollViewReader { reader in
-                ScrollView([.horizontal,.vertical]) {
+                ScrollView([.vertical]) {
                     LazyVStack(alignment: .leading, spacing: 0) {
                         ForEach(components) { component in
                             ComponentItemView(component: component)
@@ -46,7 +46,7 @@ struct ComponentListView: View {
     private func ComponentItemView(component: ComponentItem) -> some View {
         Text(component.getLabel())
             .font(.callout)
-            .frame(width: 300 + CGFloat(maxDepth * 10), alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .lineLimit(1)
             .foregroundStyle(analyzeScreenHelper.selectedComponent == component ? .yellow : .white)
             .foregroundColor(analyzeScreenHelper.selectedComponent == component ? .yellow : .white)

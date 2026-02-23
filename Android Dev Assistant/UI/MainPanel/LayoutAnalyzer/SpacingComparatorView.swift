@@ -13,10 +13,9 @@ struct SpacingComparatorView: View {
     @State var positionRelation: ComponentPositionRelation? = nil
     
     var body: some View {
-        HStack(spacing: 0) {
-            CanvasView(relation: positionRelation)
-        }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .aspectRatio(1, contentMode: .fill)
+        CanvasView(relation: positionRelation)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .aspectRatio(1, contentMode: .fit)
             .background(Color(white: 0.12))
             .onAppear {
                 positionRelation = analyzeScreenHelper.compare()
