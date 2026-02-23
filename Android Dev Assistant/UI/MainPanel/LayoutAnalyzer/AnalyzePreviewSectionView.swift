@@ -19,7 +19,11 @@ struct AnalyzePreviewSectionView: View {
             ImageView()
             CanvasView()
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onChange(of: analyzeScreenHelper.selectedComponent) { value in
+            .onAppear {
+                if let value = analyzeScreenHelper.selectedComponent {
+                    highlightComponents = analyzeScreenHelper.layout.getHighlightComponents(parent: value)
+                }
+            }.onChange(of: analyzeScreenHelper.selectedComponent) { value in
                 if let value {
                     highlightComponents = analyzeScreenHelper.layout.getHighlightComponents(parent: value)
                 }

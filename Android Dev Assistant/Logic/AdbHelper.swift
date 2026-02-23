@@ -26,6 +26,7 @@ class AdbHelper: ObservableObject {
 
     var isInstalling: String? = nil
     @Published var screenshotImage: NSImage? = nil
+    @Published var lastAnalyzeItemHelper: AnalyzeScreenHelper? = nil
 
     init() {
         runOnLogicThread {
@@ -362,9 +363,14 @@ class AdbHelper: ObservableObject {
         }
     }
     
-    func getLayout(callback: @escaping @MainActor (ComponentLayoutItem) -> ()) {
+    func getLayout(resultCalback: @escaping @MainActor (AnalyzeScreenHelper) -> (), completionCallback: @escaping @MainActor () -> ()) {
         guard let adbPath, let selectedDevice else { return }
         runOnLogicThread {
+            defer {
+                Task { @MainActor in
+                    completionCallback()
+                }
+            }
             do {
                 let imageData = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "exec-out", "screencap", "-p"])
                 let image = NSImage(data: imageData)
@@ -373,7 +379,9 @@ class AdbHelper: ObservableObject {
                 let density = self.getDpScale(String(data: densityData, encoding: .utf8) ?? "")
                 let item = await ComponentLayoutItem(image: image, density: density)
                 Task { @MainActor in
-                    callback(item)
+                    let helper = AnalyzeScreenHelper(layout: item)
+                    self.lastAnalyzeItemHelper = helper
+                    resultCalback(helper)
                 }
                 _ = try await runCommand(
                     path: adbPath,

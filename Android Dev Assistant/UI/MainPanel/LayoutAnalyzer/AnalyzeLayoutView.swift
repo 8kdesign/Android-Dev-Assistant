@@ -9,12 +9,11 @@ import SwiftUI
 
 struct AnalyzeLayoutView: View {
     
-    @EnvironmentObject var uiController: UIController
     @StateObject var analyzeScreenHelper: AnalyzeScreenHelper
-    @State var showMenu: Bool = false
+    @Binding var showMenu: Bool
     
     var body: some View {
-        PopupView(title: "Read Layout", interceptEscape: interceptEscape) {
+        Group {
             let imageSize = analyzeScreenHelper.layout.image.size
             if imageSize.width < imageSize.height {
                 HStack (spacing: 0) {
@@ -54,18 +53,6 @@ struct AnalyzeLayoutView: View {
                 .opacity(showMenu ? 1 : 0)
                 .allowsHitTesting(showMenu)
         }
-    }
-    
-}
-
-extension AnalyzeLayoutView {
-    
-    private func interceptEscape() -> Bool {
-        if showMenu {
-            showMenu = false
-            return true
-        }
-        return false
     }
     
 }

@@ -29,9 +29,7 @@ struct MenuGridView: View {
                     }
                 }
                 MenuGridItem(name: "Read Layout", icon: "sidebar.squares.left", iconColor: .blue, requireAdb: true) {
-                    adbHelper.getLayout { item in
-                        uiController.showingPopup = .layout(item: item)
-                    }
+                    uiController.showingPopup = .layout
                 }
                 MenuGridItem(name: "Last Crash", icon: "exclamationmark.triangle.fill", iconColor: .orange, requireAdb: true) {
                     adbHelper.getLastCrashLogs {

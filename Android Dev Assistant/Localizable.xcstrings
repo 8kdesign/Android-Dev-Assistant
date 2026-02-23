@@ -89,6 +89,16 @@
         }
       }
     },
+    "Capture New" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捕捉新布局"
+          }
+        }
+      }
+    },
     "Children" : {
       "localizations" : {
         "zh-Hans" : {
@@ -428,6 +438,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "冷启"
+          }
+        }
+      }
+    },
+    "Resume Last" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复上个布局"
           }
         }
       }

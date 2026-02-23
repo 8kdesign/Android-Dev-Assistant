@@ -42,7 +42,7 @@ struct ContentView: View {
             case .settings: SettingsView()
             case .screenshot(let image): ScreenshotEditView(image: image)
             case .mockScreenSize: ResizeScreenView()
-            case .layout(let item): AnalyzeLayoutView(analyzeScreenHelper: AnalyzeScreenHelper(layout: item))
+            case .layout: AnalyzeLayoutPopupView()
             case .lastCrashLogs(let logs): LastCrashLogsView(logs: logs)
             default: EmptyView()
             }
