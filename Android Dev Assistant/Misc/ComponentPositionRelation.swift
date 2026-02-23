@@ -71,7 +71,7 @@ class ComponentPositionRelation {
             x2Position = mainRect.maxX + (right > 0 ? (componentBoxWidth / 2) : 0)
             x1Position = x2Position - componentBoxWidth
             xGridMap[0] = mainRect.minX
-            xGridMap[Int(left)] = x1Position
+            xGridMap[Int(mainSize.width - left)] = x1Position
             xGridMap[Int(mainSize.width)] = mainRect.maxX
             xGridMap[Int(mainSize.width + right)] = x2Position
         case .positive:
@@ -118,7 +118,7 @@ class ComponentPositionRelation {
             y2Position = mainRect.maxY + (bottom > 0 ? (componentBoxWidth / 2) : 0)
             y1Position = y2Position - componentBoxWidth
             yGridMap[0] = mainRect.minY
-            yGridMap[Int(top)] = y1Position
+            yGridMap[Int(mainSize.height - top)] = y1Position
             yGridMap[Int(mainSize.height)] = mainRect.maxY
             yGridMap[Int(mainSize.height + bottom)] = y2Position
         case .positive:
@@ -166,12 +166,12 @@ class ComponentPositionRelation {
             rightOffset = abs(mainBounds.maxX - otherBounds.maxX)
         } else if mainBounds.minX <= otherBounds.minX {
             xIntersectType = .partialPositive
-            leftOffset = abs(mainBounds.minX - otherBounds.maxX)
+            leftOffset = abs(mainBounds.maxX - otherBounds.minX)
             rightOffset = abs(mainBounds.maxX - otherBounds.maxX)
         } else {
             xIntersectType = .partialNegative
             leftOffset = abs(mainBounds.minX - otherBounds.minX)
-            rightOffset = abs(mainBounds.maxX - otherBounds.minX)
+            rightOffset = abs(mainBounds.minX - otherBounds.maxX)
         }
         if mainBounds.minY >= otherBounds.maxY {
             yIntersectType = .negative
@@ -189,12 +189,12 @@ class ComponentPositionRelation {
             bottomOffset = abs(mainBounds.maxY - otherBounds.maxY)
         } else if mainBounds.minY <= otherBounds.minY {
             yIntersectType = .partialPositive
-            topOffset = abs(mainBounds.minY - otherBounds.maxY)
+            topOffset = abs(mainBounds.maxY - otherBounds.minY)
             bottomOffset = abs(mainBounds.maxY - otherBounds.maxY)
         } else {
             yIntersectType = .partialNegative
             topOffset = abs(mainBounds.minY - otherBounds.minY)
-            bottomOffset = abs(mainBounds.maxY - otherBounds.minY)
+            bottomOffset = abs(mainBounds.minY - otherBounds.maxY)
         }
         return ComponentPositionRelation(
             xIntersectType: xIntersectType, yIntersectType: yIntersectType,
