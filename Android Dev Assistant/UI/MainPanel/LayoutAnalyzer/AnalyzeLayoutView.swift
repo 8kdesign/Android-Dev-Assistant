@@ -37,9 +37,7 @@ struct AnalyzeLayoutView: View {
                         switch analyzeScreenHelper.selectedTab {
                         case .list:
                             ComponentListView()
-                        case .fixed(_):
-                            ComponentInfoView()
-                        case .temp(_):
+                        case .fixed(_), .temp(_):
                             ComponentInfoView()
                         }
                     }.frame(maxWidth: .infinity, maxHeight: .infinity)

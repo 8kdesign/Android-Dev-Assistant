@@ -169,12 +169,12 @@
         }
       }
     },
-    "Disable" : {
+    "Disable Selection" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭"
+            "value" : "禁止选择"
           }
         }
       }
@@ -199,12 +199,12 @@
         }
       }
     },
-    "Enable" : {
+    "Enable Selection" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开启"
+            "value" : "允许选择"
           }
         }
       }

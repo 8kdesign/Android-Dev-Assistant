@@ -65,13 +65,13 @@ struct ComponentListView: View {
                     Button {
                         analyzeScreenHelper.disabledComponentList.remove(component)
                     } label: {
-                        Text("Enable")
+                        Text("Enable Selection")
                     }
                 } else {
                     Button {
                         analyzeScreenHelper.disabledComponentList.insert(component)
                     } label: {
-                        Text("Disable")
+                        Text("Disable Selection")
                     }
                 }
             }.hoverOpacity()

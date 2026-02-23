@@ -49,6 +49,22 @@ struct ComponentInfoView: View {
             } else {
                 self.childrenComponents = []
             }
+        }.contextMenu {
+            if let component {
+                if analyzeScreenHelper.disabledComponentList.contains(component) {
+                    Button {
+                        analyzeScreenHelper.disabledComponentList.remove(component)
+                    } label: {
+                        Text("Enable Selection")
+                    }
+                } else {
+                    Button {
+                        analyzeScreenHelper.disabledComponentList.insert(component)
+                    } label: {
+                        Text("Disable Selection")
+                    }
+                }
+            }
         }
     }
     
