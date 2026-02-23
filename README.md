@@ -40,10 +40,10 @@ Toggle between apk/device and repository mode with the tabs above.
 
 ### 📱 Apk/Device Mode
 
-In this mode, you can carry out apk and device-specific tasks, such as apk installation, view crash logs, and mock screen size.
+In this mode, you can perform apk and device-specific tasks, such as installing apk, viewing crash logs, and mocking screen sizes.
 
 <p align="center">
-<img width="1012" height="744" alt="image" src="https://github.com/user-attachments/assets/78f7db55-9c29-4f34-bf77-34dd9c54ae54" />
+<img width="1012" height="944" alt="image" src="https://github.com/user-attachments/assets/3e29278b-dca2-4e63-8ec2-9116d13051a3" />
 </p>
 
 To import an apk file, drag it to the left panel. Ideally, the apk should be in the original folder it was generated in, so that it can be replaced by the latest build every time. After importing, you can tap on the toggles below to install, force restart, or uninstall the app.
@@ -52,7 +52,7 @@ To import an apk file, drag it to the left panel. Ideally, the apk should be in 
 <img width="233" height="172" alt="image" src="https://github.com/user-attachments/assets/a5ca6f29-f4a9-494f-9759-4d07f474a38a" />
 </p>
 
-On the main panel, you will find tools for interacting with your device via ADB. If you have multiple devices connected, you can tap on the device name on top to open the menu to select your device.
+On the main panel, you will find tools for interacting with your device via ADB. If you have multiple devices connected, tap on the device name at the top to open the menu to select your device.
 
 <p align="center">
 <img width="640" height="200" alt="image" src="https://github.com/user-attachments/assets/e7dd448a-2e86-4ee1-a1a0-b20fa6964b77" />
@@ -66,7 +66,7 @@ The screenshot toggle allows you to quickly capture a screenshot. After capturin
 <img width="302" height="250" alt="image" src="https://github.com/user-attachments/assets/eb297d43-b340-4f17-b8f7-a5e3c5b19291" />
 </p>
 
-Click on the preview to bring up the editor, where you can crop or highlight a particular section of the image.
+Click the preview to bring up the editor, where you can crop or highlight a particular section of the image.
 
 <p align="center">
 <img width="826" height="533" alt="image" src="https://github.com/user-attachments/assets/7e8ed81b-12ba-40e4-b369-cfa789be125a" />
@@ -90,9 +90,17 @@ Even after your app has closed, the crash logs are still stored on the device fo
 <img width="826" height="533" alt="image" src="https://github.com/user-attachments/assets/9f192ac3-c446-4336-a18e-815e96393068" />
 </p>
 
+#### 4. Read Layout
+
+Capture the current screen layout and compare on-screen views. Click/right-click to select a component, then shift-click another component to compare their positions.
+
+<p align="center">
+<img width="812" height="713" alt="image" src="https://github.com/user-attachments/assets/647cfc2a-3b09-4ac3-89e4-6b300d63897d" />
+</p>
+
 ### 🗃️ Repository Mode
 
-In repository mode, you will be able to browse files across any commits and branches without switching.
+In repository mode, you can browse files across any commits and branches without switching.
 
 <p align="center">
 <img width="1012" height="744" alt="image" src="https://github.com/user-attachments/assets/f84031e2-b574-4d23-b03e-a9af678de2e5" />
@@ -110,7 +118,7 @@ Then, on the main panel, tap on the current branch to select the branch you want
 <img width="236" height="233" alt="image" src="https://github.com/user-attachments/assets/3e0b58e9-064b-4e0e-bf31-452e2ce733f7" />
 </p>
 
-Once the files are ready, the spinner should go away, and you will be able to use the search bar to look for any file in the project. Right-click to copy the entire file, or click on lines to select them before right-clicking them to copy a range of lines.
+Once the files are ready, the spinner should disappear, and you will be able to use the search bar to look for any file in the project. Right-click to copy the entire file, or click to select lines, then right-clicking to copy a range of lines.
 
 <p align="center">
 <img width="416" height="451" alt="image" src="https://github.com/user-attachments/assets/8a7235e7-5fca-44c9-ac77-2b966c96d7f0" />
