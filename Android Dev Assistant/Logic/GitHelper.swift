@@ -300,9 +300,11 @@ class GitHelper: ObservableObject {
         }
     }
     
-    func getFileData(repo: RepoItem, hash: String, file: String, callback: @escaping @MainActor (String?) -> ()) -> Task<(), Never>? {
+    func getFileData(repo: RepoItem, hash: String, file: String, callback: @escaping @LogicActor (String?) async -> ()) -> Task<(), Never>? {
         guard let gitPath else {
-            callback(nil)
+            runOnLogicThread {
+                await callback(nil)
+            }
             return nil
         }
         return runOnLogicThread {
@@ -311,23 +313,19 @@ class GitHelper: ObservableObject {
                 let string = String(data: result, encoding: .utf8)
                 if string?.starts(with: "fatal") == true {
                     if !Task.isCancelled {
-                        Task { @MainActor in
-                            callback(nil)
-                        }
+                        await callback(nil)
                     }
                     return
                 }
                 if !Task.isCancelled {
-                    Task { @MainActor in
-                        callback(string)
-                    }
+                    await callback(string)
                 }
             } catch {
                 if !Task.isCancelled {
                     Task { @MainActor in
-                        callback(nil)
                         LogHelper.shared.insertLog(string: error.localizedDescription)
                     }
+                    await callback(nil)
                 }
             }
         }

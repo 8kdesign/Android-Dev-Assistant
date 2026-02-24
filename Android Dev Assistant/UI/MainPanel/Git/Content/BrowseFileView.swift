@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import HighlightSwift
 
 struct BrowseFileView: View {
     
@@ -13,7 +14,7 @@ struct BrowseFileView: View {
     @EnvironmentObject var gitHelper: GitHelper
     
     @Binding var selectedFile: GitFileItem?
-    @State var content: (list: [String], error: LocalizedStringResource?)? = nil
+    @State var content: (list: [AttributedString], error: LocalizedStringResource?)? = nil
     @State var isContentLatest: Bool = false
     @State var firstIndexSelection: Int? = nil
     @State var secondIndexSelection: Int? = nil
@@ -80,7 +81,7 @@ struct BrowseFileView: View {
             }
     }
     
-    private func FileLineView(index: Int, line: String) -> some View {
+    private func FileLineView(index: Int, line: AttributedString) -> some View {
         return HStack(alignment: .top) {
             Text("\(index + 1)")
                 .frame(width: 50, alignment: .trailing)
@@ -147,12 +148,28 @@ extension BrowseFileView {
         selectIndex(index: nil)
         if let repo = repoHelper.selectedRepo, let hash = gitHelper.selectedCommit?.longHash, let file = selectedFile {
             contentJob = gitHelper.getFileData(repo: repo, hash: hash, file: file.path) { result in
-                if let result {
-                    content = (result.split(separator: "\n").map { String($0) }, nil)
-                } else {
-                    content = ([], "File not found")
+                guard let result else {
+                    Task { @MainActor in
+                        content = ([], "File not found")
+                        isContentLatest = true
+                    }
+                    return
                 }
-                isContentLatest = true
+                let highlight = Highlight()
+                let language = file.name.split(separator: ".").map { String($0) }.last
+                do {
+                    let attributeString = try await highlight.attributedText(result, language: language ?? "", colors: .dark(.github))
+                    let lines = splitAttributedString(inputString: attributeString, separator: "\n")
+                    Task { @MainActor in
+                        content = (lines, nil)
+                        isContentLatest = true
+                    }
+                } catch {
+                    Task { @MainActor in
+                        content = (result.split(separator: "\n").map { AttributedString($0) }, nil)
+                        isContentLatest = true
+                    }
+                }
             }
         } else {
             content = nil
@@ -191,7 +208,7 @@ extension BrowseFileView {
                 var lines = ""
                 for index in selectedRange {
                     if let line = list[safe: index] {
-                        lines += line + "\n"
+                        lines += String(line.characters) + "\n"
                     }
                 }
                 if lines.last == "\n" {
@@ -199,10 +216,23 @@ extension BrowseFileView {
                 }
                 copyToClipboard(lines as NSString)
             } else {
-                let lines = list.joined(separator: "\n")
+                let lines = list.map { String($0.characters) }.joined(separator: "\n")
                 copyToClipboard(lines as NSString)
             }
         }
+    }
+    
+    func splitAttributedString(inputString: AttributedString, separator: String) -> [AttributedString] {
+        let nsAttributedString = NSAttributedString(inputString)
+        let parts = nsAttributedString.string.components(separatedBy: separator)
+        var result = [NSAttributedString]()
+        var location = 0
+        for part in parts {
+            let range = NSRange(location: location, length: part.utf16.count)
+            result.append(nsAttributedString.attributedSubstring(from: range))
+            location += range.length + separator.utf16.count
+        }
+        return result.compactMap { AttributedString($0) }
     }
     
 }

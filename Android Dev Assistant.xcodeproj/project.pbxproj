@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5C73F67E2F45F91200F7F7E6 /* SwiftyXMLParser in Frameworks */ = {isa = PBXBuildFile; productRef = 5C73F67D2F45F91200F7F7E6 /* SwiftyXMLParser */; };
+		5C9EEAD52F4E559C003E704A /* HighlightSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5C9EEAD42F4E559C003E704A /* HighlightSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C73F67E2F45F91200F7F7E6 /* SwiftyXMLParser in Frameworks */,
+				5C9EEAD52F4E559C003E704A /* HighlightSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +73,7 @@
 			name = "Android Dev Assistant";
 			packageProductDependencies = (
 				5C73F67D2F45F91200F7F7E6 /* SwiftyXMLParser */,
+				5C9EEAD42F4E559C003E704A /* HighlightSwift */,
 			);
 			productName = "Android Dev Assistant";
 			productReference = 5C2071C62F2D7C680052131E /* Android Dev Assistant.app */;
@@ -103,6 +106,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				5C73F67C2F45F91200F7F7E6 /* XCRemoteSwiftPackageReference "SwiftyXMLParser" */,
+				5C9EEAD32F4E559C003E704A /* XCRemoteSwiftPackageReference "HighlightSwift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5C2071C72F2D7C680052131E /* Products */;
@@ -381,6 +385,14 @@
 				minimumVersion = 5.6.0;
 			};
 		};
+		5C9EEAD32F4E559C003E704A /* XCRemoteSwiftPackageReference "HighlightSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/appstefan/HighlightSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.9;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -388,6 +400,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5C73F67C2F45F91200F7F7E6 /* XCRemoteSwiftPackageReference "SwiftyXMLParser" */;
 			productName = SwiftyXMLParser;
+		};
+		5C9EEAD42F4E559C003E704A /* HighlightSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5C9EEAD32F4E559C003E704A /* XCRemoteSwiftPackageReference "HighlightSwift" */;
+			productName = HighlightSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
