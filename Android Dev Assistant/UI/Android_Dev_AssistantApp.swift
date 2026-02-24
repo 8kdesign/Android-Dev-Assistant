@@ -18,7 +18,8 @@ struct Android_Dev_AssistantApp: App {
     @StateObject var externalToolsHelper: ExternalToolsHelper = ExternalToolsHelper()
     @StateObject var repoHelper: RepoHelper = RepoHelper()
     @StateObject var gitHelper: GitHelper = GitHelper()
-    
+    @StateObject var versionHelper: VersionHelper = VersionHelper()
+
     var body: some Scene {
         Window("Android Dev Assistant", id: "main") {
             ContentView()
@@ -30,6 +31,7 @@ struct Android_Dev_AssistantApp: App {
                 .environmentObject(externalToolsHelper)
                 .environmentObject(repoHelper)
                 .environmentObject(gitHelper)
+                .environmentObject(versionHelper)
         }
     }
 }
