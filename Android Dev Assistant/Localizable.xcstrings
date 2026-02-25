@@ -342,6 +342,16 @@
         }
       }
     },
+    "New Version Available" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检测到新版本"
+          }
+        }
+      }
+    },
     "Not found" : {
       "localizations" : {
         "zh-Hans" : {

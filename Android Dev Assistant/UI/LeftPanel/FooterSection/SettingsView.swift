@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SettingsView: View {
     
+    @Environment(\.openURL) private var openURL
+    @EnvironmentObject var versionHelper: VersionHelper
     @EnvironmentObject var uiController: UIController
     @EnvironmentObject var adbHelper: AdbHelper
     @EnvironmentObject var apkHelper: ApkHelper
@@ -42,6 +44,35 @@ struct SettingsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
                 .opacity(0.7)
+            if !versionHelper.isUpToDate {
+                HStack(spacing: 10) {
+                    Image(systemName: "arrowshape.down.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .foregroundStyle(.white)
+                        .foregroundColor(.white)
+                        .opacity(0.7)
+                        .padding(.vertical, 5)
+                    Text("New Version Available")
+                        .foregroundStyle(.white)
+                        .foregroundColor(.white)
+                        .opacity(0.9)
+                }.padding(.vertical, 5)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(LinearGradient(
+                                colors: [.red, .pink, .orange],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing)
+                            )
+                    ).onTapGesture {
+                        openUpdateLink()
+                    }.hoverOpacity()
+                    .padding(.top, 10)
+            }
             Spacer()
             Text("by 8K")
                 .foregroundStyle(.white)
@@ -133,6 +164,16 @@ struct SettingsView: View {
             }.frame(maxWidth: .infinity)
                 .background(Color(white: 0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+    }
+    
+}
+
+extension SettingsView {
+    
+    private func openUpdateLink() {
+        if let url = URL(string: "https://github.com/8kdesign/Android-Dev-Assistant/releases/latest") {
+            openURL(url)
         }
     }
     

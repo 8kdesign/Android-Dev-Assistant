@@ -10,6 +10,7 @@ import SwiftUI
 
 struct BottomTogglesSection: View {
     
+    @EnvironmentObject var versionHelper: VersionHelper
     @EnvironmentObject var uiController: UIController
     
     var body: some View {
@@ -25,14 +26,21 @@ struct BottomTogglesSection: View {
         Button {
             uiController.showingPopup = .settings
         } label: {
-            Image(systemName: "gearshape.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 16, height: 16)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
-                .opacity(0.9)
-                .frame(width: 36, height: 36)
+            ZStack(alignment:.topTrailing) {
+                Image(systemName: "gearshape.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                    .opacity(0.9)
+                if !versionHelper.isUpToDate {
+                    Circle()
+                        .fill(.red)
+                        .frame(width: 8, height: 8)
+                        .offset(x: 2, y: -2)
+                }
+            }.frame(width: 36, height: 36)
                 .background(.white.opacity(0.00001))
         }.buttonStyle(.plain)
             .hoverOpacity()
