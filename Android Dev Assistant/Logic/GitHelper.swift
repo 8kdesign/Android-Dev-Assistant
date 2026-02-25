@@ -27,6 +27,7 @@ class GitHelper: ObservableObject {
             selectedCommitFileDiff = nil
         }
     }
+    var cachedFiles: [String: [GitFileItem]] = [:]
     var selectedCommitFileDiff: [FileDiff]? = nil {
         didSet {
             objectWillChange.send()
@@ -50,6 +51,7 @@ class GitHelper: ObservableObject {
         gitJob?.cancel()
         branches = []
         commits = []
+        cachedFiles = [:]
         selectCommit(commit: nil)
         if let repo = selectedRepo {
             getGitBranches(repo: repo) { list, currentBranch in
@@ -66,6 +68,7 @@ class GitHelper: ObservableObject {
         selectedBranch = branch
         gitJob?.cancel()
         commits = []
+        cachedFiles = [:]
         selectCommit(commit: nil)
         if let branch = selectedBranch, let selectedRepo {
             gitJob = getBranchCommits(repo: selectedRepo, branch: branch) { commits in
@@ -272,6 +275,10 @@ class GitHelper: ObservableObject {
             callback([])
             return nil
         }
+        if let files = cachedFiles[hash] {
+            callback(files)
+            return nil
+        }
         return runOnLogicThread {
             do {
                 let result = try await runCommand(
@@ -286,6 +293,9 @@ class GitHelper: ObservableObject {
                 }
                 if !Task.isCancelled {
                     Task { @MainActor in
+                        if !fileList.isEmpty {
+                            self.cachedFiles[hash] = fileList
+                        }
                         callback(fileList)
                     }
                 }

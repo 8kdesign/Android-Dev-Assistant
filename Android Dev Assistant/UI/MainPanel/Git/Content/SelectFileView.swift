@@ -13,7 +13,7 @@ struct SelectFileView: View {
     @EnvironmentObject var gitHelper: GitHelper
     
     @FocusState var focus: Bool
-    @Binding var files: [GitFileItem]?
+    @Binding var files: CommitFiles?
     @Binding var selectedFile: GitFileItem?
     @State var searchTerm: String = ""
     @State var searchResults: [GitFileItem]? = nil
@@ -134,7 +134,7 @@ extension SelectFileView {
         let existingFiles = files
         let lowercaseSearchTerm = searchTerm.lowercased()
         searchJob = runOnLogicThread {
-            let results = existingFiles?.filter { $0.name.lowercased().contains(lowercaseSearchTerm) }
+            let results = existingFiles?.files.filter { $0.name.lowercased().contains(lowercaseSearchTerm) }
             if !Task.isCancelled {
                 Task { @MainActor in
                     self.searchResults = results

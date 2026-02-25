@@ -12,7 +12,7 @@ struct GitFileSection: View {
     @EnvironmentObject var repoHelper: RepoHelper
     @EnvironmentObject var gitHelper: GitHelper
     
-    @State var files: [GitFileItem]? = nil
+    @State var files: CommitFiles? = nil
     @State var selectedFile: GitFileItem? = nil
     @State var filesJob: Task<(), Never>? = nil
     
@@ -43,7 +43,7 @@ extension GitFileSection {
         files = nil
         if let repo = repoHelper.selectedRepo, let hash = gitHelper.selectedCommit?.longHash {
             filesJob = gitHelper.getFiles(repo: repo, hash: hash) { list in
-                files = list
+                files = CommitFiles(id: hash, files: list)
             }
         }
     }

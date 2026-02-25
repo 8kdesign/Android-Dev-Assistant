@@ -24,3 +24,14 @@ struct GitFileItem: Identifiable, Equatable {
     }
     
 }
+
+struct CommitFiles: Equatable {
+    
+    var id: String
+    var files: [GitFileItem]
+    
+    static func == (lhs: CommitFiles, rhs: CommitFiles) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+}
