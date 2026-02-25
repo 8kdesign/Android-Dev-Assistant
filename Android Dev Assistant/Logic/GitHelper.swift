@@ -28,6 +28,7 @@ class GitHelper: ObservableObject {
         }
     }
     var cachedFiles: [String: [GitFileItem]] = [:]
+    var cacheQueue: [String] = []
     var selectedCommitFileDiff: [FileDiff]? = nil {
         didSet {
             objectWillChange.send()
@@ -294,7 +295,12 @@ class GitHelper: ObservableObject {
                 if !Task.isCancelled {
                     Task { @MainActor in
                         if !fileList.isEmpty {
+                            if self.cachedFiles.count >= 5 {
+                                let toRemoveHash = self.cacheQueue.removeFirst()
+                                self.cachedFiles.removeValue(forKey: toRemoveHash)
+                            }
                             self.cachedFiles[hash] = fileList
+                            self.cacheQueue.append(hash)
                         }
                         callback(fileList)
                     }
