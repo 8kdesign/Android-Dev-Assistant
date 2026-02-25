@@ -618,6 +618,16 @@
         }
       }
     },
+    "Unable to open file" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法打开文件"
+          }
+        }
+      }
+    },
     "Uninstall" : {
       "localizations" : {
         "zh-Hans" : {

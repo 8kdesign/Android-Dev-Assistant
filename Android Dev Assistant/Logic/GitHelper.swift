@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import Combine
 
 class GitHelper: ObservableObject {
@@ -316,7 +317,7 @@ class GitHelper: ObservableObject {
         }
     }
     
-    func getFileData(repo: RepoItem, hash: String, file: String, callback: @escaping @LogicActor (String?) async -> ()) -> Task<(), Never>? {
+    func getFileData(repo: RepoItem, hash: String, file: String, callback: @escaping @LogicActor (Any?) async -> ()) -> Task<(), Never>? {
         guard let gitPath else {
             runOnLogicThread {
                 await callback(nil)
@@ -326,6 +327,13 @@ class GitHelper: ObservableObject {
         return runOnLogicThread {
             do {
                 let result = try await runCommand(path: gitPath, arguments: ["-C", repo.path, "show", "\(hash):\(file)"])
+                if file.hasSuffix(".png") {
+                    let image = NSImage(data: result)
+                    if !Task.isCancelled {
+                        await callback(image)
+                    }
+                    return
+                }
                 let string = String(data: result, encoding: .utf8)
                 if string?.starts(with: "fatal") == true {
                     if !Task.isCancelled {

@@ -14,7 +14,7 @@ struct BrowseFileView: View {
     @EnvironmentObject var gitHelper: GitHelper
     
     @Binding var selectedFile: GitFileItem?
-    @State var content: (list: [AttributedString], error: LocalizedStringResource?)? = nil
+    @State var content: (list: [AttributedString], image: NSImage?, error: LocalizedStringResource?)? = nil
     @State var isContentLatest: Bool = false
     @State var firstIndexSelection: Int? = nil
     @State var secondIndexSelection: Int? = nil
@@ -46,6 +46,14 @@ struct BrowseFileView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .opacity(isContentLatest ? 1 : 0.3)
                         .blur(radius: isContentLatest ? 0 : 5)
+                } else if let image = content.image {
+                    VStack {
+                        Image(nsImage: image)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxWidth: .infinity)
+                    }.padding(.all)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 0) {
@@ -150,23 +158,35 @@ extension BrowseFileView {
             contentJob = gitHelper.getFileData(repo: repo, hash: hash, file: file.path) { result in
                 guard let result else {
                     Task { @MainActor in
-                        content = ([], "File not found")
+                        content = ([], nil, "File not found")
                         isContentLatest = true
                     }
                     return
                 }
-                let highlight = Highlight()
-                let language = file.name.split(separator: ".").map { String($0) }.last
-                do {
-                    let attributeString = try await highlight.attributedText(result, language: language ?? "", colors: .dark(.github))
-                    let lines = splitAttributedString(inputString: attributeString, separator: "\n")
+                if let string = result as? String {
+                    let highlight = Highlight()
+                    let language = file.name.split(separator: ".").map { String($0) }.last
+                    do {
+                        let attributeString = try await highlight.attributedText(string, language: language ?? "", colors: .dark(.github))
+                        let lines = splitAttributedString(inputString: attributeString, separator: "\n")
+                        Task { @MainActor in
+                            content = (lines, nil, nil)
+                            isContentLatest = true
+                        }
+                    } catch {
+                        Task { @MainActor in
+                            content = (string.split(separator: "\n").map { AttributedString($0) }, nil, nil)
+                            isContentLatest = true
+                        }
+                    }
+                } else if let image = result as? NSImage {
                     Task { @MainActor in
-                        content = (lines, nil)
+                        content = ([], image, nil)
                         isContentLatest = true
                     }
-                } catch {
+                } else {
                     Task { @MainActor in
-                        content = (result.split(separator: "\n").map { AttributedString($0) }, nil)
+                        content = ([], nil, "Unable to open file")
                         isContentLatest = true
                     }
                 }
