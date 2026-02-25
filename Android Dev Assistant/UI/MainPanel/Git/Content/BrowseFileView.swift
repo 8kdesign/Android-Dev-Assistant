@@ -184,21 +184,22 @@ extension BrowseFileView {
             selectedRange = nil
             return
         }
-        if let selectedRange, selectedRange.contains(index) {
+        let isShifting = NSEvent.modifierFlags.contains(.shift)
+        if let selectedRange, selectedRange.contains(index), !isShifting {
             firstIndexSelection = nil
             secondIndexSelection = nil
             self.selectedRange = nil
             return
         }
-        if firstIndexSelection == nil || secondIndexSelection != nil {
-            firstIndexSelection = index
-            secondIndexSelection = nil
-            selectedRange = nil
-        } else if secondIndexSelection == nil, let firstIndexSelection {
+        if isShifting, let firstIndexSelection {
             secondIndexSelection = index
             let minValue = min(firstIndexSelection, index)
             let maxValue = max(firstIndexSelection, index)
             selectedRange = minValue...maxValue
+        } else {
+            firstIndexSelection = index
+            secondIndexSelection = nil
+            selectedRange = nil
         }
     }
     
@@ -215,6 +216,8 @@ extension BrowseFileView {
                     lines.removeLast()
                 }
                 copyToClipboard(lines as NSString)
+            } else if let firstIndexSelection, let line = list[safe: firstIndexSelection] {
+                copyToClipboard(String(line.characters) as NSString)
             } else {
                 let lines = list.map { String($0.characters) }.joined(separator: "\n")
                 copyToClipboard(lines as NSString)
