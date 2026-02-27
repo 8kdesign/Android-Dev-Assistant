@@ -400,6 +400,53 @@ class AdbHelper: ObservableObject {
         }
     }
     
+    func listSharedPreferences(packageName: String, callback: @escaping @MainActor ([String]) -> ()) {
+        guard let adbPath, let selectedDevice else { return }
+        runOnLogicThread {
+            do {
+                let result = try await runCommand(
+                    path: adbPath,
+                    arguments: ["-s", selectedDevice, "shell", "run-as", packageName, "ls", "shared_prefs/"]
+                )
+                let files = String(data: result, encoding: .utf8)?
+                    .split(separator: "\n")
+                    .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty && $0.hasSuffix(".xml") }
+                    ?? []
+                Task { @MainActor in
+                    callback(files)
+                    LogHelper.shared.insertLog(string: "Listed shared preferences")
+                }
+            } catch {
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    func readSharedPreference(packageName: String, fileName: String, callback: @escaping @MainActor (String) -> ()) {
+        guard let adbPath, let selectedDevice else { return }
+        runOnLogicThread {
+            do {
+                let result = try await runCommand(
+                    path: adbPath,
+                    arguments: ["-s", selectedDevice, "shell", "run-as", packageName, "cat", "shared_prefs/\(fileName)"]
+                )
+                Task { @MainActor in
+                    if let content = String(data: result, encoding: .utf8) {
+                        callback(content)
+                    }
+                    LogHelper.shared.insertLog(string: "Read shared preference: \(fileName)")
+                }
+            } catch {
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
+                }
+            }
+        }
+    }
+
     @LogicActor private func getDpScale(_ output: String) -> CGFloat? {
         let patterns = [
             #"Override density:\s*(\d+)"#,

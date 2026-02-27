@@ -14,4 +14,5 @@ enum PopupScreen {
     case mockScreenSize
     case layout
     case lastCrashLogs(logs: String)
+    case sharedPreferences(packageName: String)
 }

@@ -39,6 +39,11 @@ struct MenuGridView: View {
                 MenuGridItem(name: "TalkBack", icon: "text.bubble.fill", iconColor: Color(red: 0.5, green: 0.2, blue: 1), requireAdb: true) {
                     adbHelper.toggleTalkback()
                 }
+                MenuGridItem(name: "Shared Prefs", icon: "tray.full.fill", iconColor: .green, requireAdb: true) {
+                    if let packageName = apkHelper.apks[safe: apkHelper.selectedIndex]?.packageName {
+                        uiController.showingPopup = .sharedPreferences(packageName: packageName)
+                    }
+                }
             }.padding([.horizontal, .bottom])
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }

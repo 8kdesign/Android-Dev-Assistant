@@ -44,6 +44,7 @@ struct ContentView: View {
             case .mockScreenSize: ResizeScreenView()
             case .layout: AnalyzeLayoutPopupView()
             case .lastCrashLogs(let logs): LastCrashLogsView(logs: logs)
+            case .sharedPreferences(let packageName): SharedPreferencesView(packageName: packageName)
             default: EmptyView()
             }
             ToastView()
