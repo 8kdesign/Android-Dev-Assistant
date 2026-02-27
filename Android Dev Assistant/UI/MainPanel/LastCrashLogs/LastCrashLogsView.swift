@@ -20,35 +20,7 @@ struct LastCrashLogsView: View {
             ScrollView {
                 LazyVStack {
                     ForEach(Array(parsedLogs.enumerated()), id: \.offset) { index, item in
-                        VStack(spacing: 10) {
-                            HStack {
-                                Text(item.0.formatted(date: .numeric, time: .complete))
-                                    .font(.title3)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .lineLimit(1)
-                                    .truncationMode(.tail)
-                                    .foregroundStyle(.green)
-                                    .foregroundColor(.green)
-                                Button {
-                                    copyToClipboard(item.1 as NSString)
-                                    toastHelper.addToast("Copied to clipboard", style: .clipboard)
-                                } label: {
-                                    Image(systemName: "list.clipboard")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 16, height: 16)
-                                        .foregroundStyle(.green)
-                                        .foregroundColor(.green)
-                                }.buttonStyle(.plain)
-                                    .hoverOpacity()
-                            }.frame(maxWidth: .infinity)
-                            Text(item.1)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .multilineTextAlignment(.leading)
-                                .foregroundStyle(.white)
-                                .foregroundColor(.white)
-                                .textSelection(.enabled)
-                        }.padding(.all)
+                        LogItem(item: item)
                     }
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -56,6 +28,38 @@ struct LastCrashLogsView: View {
         }.onAppear {
             parseLogs()
         }
+    }
+    
+    private func LogItem(item: (Date, String)) -> some View {
+        VStack(spacing: 10) {
+            HStack {
+                Text(item.0.formatted(date: .numeric, time: .complete))
+                    .font(.title3)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .foregroundStyle(.yellow)
+                    .foregroundColor(.yellow)
+                Button {
+                    copyToClipboard(item.1 as NSString)
+                    toastHelper.addToast("Copied to clipboard", style: .clipboard)
+                } label: {
+                    Image(systemName: "list.clipboard")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .foregroundStyle(.yellow)
+                        .foregroundColor(.yellow)
+                }.buttonStyle(.plain)
+                    .hoverOpacity()
+            }.frame(maxWidth: .infinity)
+            Text(item.1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .multilineTextAlignment(.leading)
+                .foregroundStyle(.white)
+                .foregroundColor(.white)
+                .textSelection(.enabled)
+        }.padding(.all)
     }
     
 }
@@ -78,7 +82,7 @@ extension LastCrashLogsView {
                         let message = String(line[messageRange])
                         if time.timeIntervalSince1970 - lastDate.timeIntervalSince1970 > 2 {
                             if lastDate.timeIntervalSince1970 > 0 {
-                                logSets.append((lastDate, lastMessage))
+                                logSets.append((lastDate, String(lastMessage.trimmingCharacters(in: .whitespacesAndNewlines).prefix(5000))))
                             }
                             lastDate = time
                             lastMessage = ""
@@ -88,7 +92,7 @@ extension LastCrashLogsView {
                 }
             }
             if !lastMessage.isEmpty {
-                logSets.append((lastDate, String(lastMessage.trimmingCharacters(in: .whitespacesAndNewlines).prefix(50000))))
+                logSets.append((lastDate, String(lastMessage.trimmingCharacters(in: .whitespacesAndNewlines).prefix(5000))))
             }
             logSets.sort(by: { $0.0 > $1.0 })
             let finalResult = logSets
