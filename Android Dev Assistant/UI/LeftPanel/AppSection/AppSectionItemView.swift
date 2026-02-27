@@ -25,7 +25,7 @@ struct AppSectionItemView: View {
             if (isSelected) {
                 TogglesView()
             }
-        }.background(Color(white: 0.15))
+        }.background(Color(white: 0.17))
             .clipShape(RoundedRectangle(cornerRadius: 15))
             .alert("Confirm uninstall?", isPresented: $confirmUninstall) {
                 Button("Cancel", role: .cancel) {}
@@ -60,7 +60,7 @@ struct AppSectionItemView: View {
                 .opacity(0.5)
         }.padding(.all)
             .frame(maxWidth: .infinity)
-            .background(Color(white: 0.12))
+            .background(Color(white: 0.2))
             .opacity(isSelected ? 1 : 0.3)
             .onTapGesture {
                 select()

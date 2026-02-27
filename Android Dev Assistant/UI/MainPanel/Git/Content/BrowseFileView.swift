@@ -142,7 +142,7 @@ struct BrowseFileView: View {
         }.padding(.horizontal, 15)
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity)
-            .background(RoundedRectangle(cornerRadius: 10).fill(Color(white: 0.12)))
+            .background(RoundedRectangle(cornerRadius: 10).fill(Color(white: 0.15)))
             .padding(.horizontal, 15)
     }
     

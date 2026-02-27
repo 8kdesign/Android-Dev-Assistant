@@ -59,7 +59,7 @@ struct ScreenshotEditImageView: View {
                 ).frame(maxWidth: .infinity, maxHeight: .infinity)
             CropCanvasView(image: image)
                 .allowsHitTesting(false)
-        }
+        }.background(Color(white: 0.05))
     }
     
     private func CropCanvasView(image: NSImage) -> some View {

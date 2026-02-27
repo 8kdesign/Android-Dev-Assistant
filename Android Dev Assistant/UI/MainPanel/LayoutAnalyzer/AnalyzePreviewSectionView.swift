@@ -19,6 +19,7 @@ struct AnalyzePreviewSectionView: View {
             ImageView()
             CanvasView()
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(white: 0.05))
             .onAppear {
                 if let value = analyzeScreenHelper.selectedComponent {
                     highlightComponents = analyzeScreenHelper.layout.getHighlightComponents(parent: value)

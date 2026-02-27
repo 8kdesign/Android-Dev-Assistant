@@ -21,7 +21,7 @@ struct HeaderTabView: View {
                 .foregroundColor(.white)
                 .padding(.vertical, 12)
                 .padding(.horizontal, 22)
-                .background(Capsule().fill(isRepoTab ? .white.opacity(0.00001) : Color(white: 0.15)))
+                .background(Capsule().fill(isRepoTab ? .white.opacity(0.00001) : Color(white: 0.2)))
                 .onTapGesture {
                     isRepoTab = false
                 }.hoverOpacity()
@@ -33,7 +33,7 @@ struct HeaderTabView: View {
                 .foregroundColor(.white)
                 .padding(.vertical, 12)
                 .padding(.horizontal, 22)
-                .background(Capsule().fill(isRepoTab ? Color(white: 0.15) : .white.opacity(0.00001)))
+                .background(Capsule().fill(isRepoTab ? Color(white: 0.2) : .white.opacity(0.00001)))
                 .onTapGesture {
                     isRepoTab = true
                 }.hoverOpacity()

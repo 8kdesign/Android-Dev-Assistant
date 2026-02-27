@@ -44,7 +44,7 @@ struct MenuGridItem: View {
                         .offset(x: 5, y: 5)
                 }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
             }.frame(height: 80)
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(white: 0.13)))
+                .background(RoundedRectangle(cornerRadius: 10).fill(Color(white: 0.15)))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         }.buttonStyle(.plain)
             .disabled(requireAdb && isAdbDisabled())

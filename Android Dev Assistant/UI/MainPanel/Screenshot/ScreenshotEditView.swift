@@ -92,7 +92,7 @@ struct ScreenshotEditView: View {
             Spacer()
         }.padding(.all)
             .frame(maxWidth: .infinity)
-            .background(Color(white: 0.1))
+            .background(Color(white: 0.15))
     }
     
     private func FooterItemView(name: LocalizedStringResource, icon: String, action: @escaping () -> ()) -> some View {

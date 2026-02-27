@@ -59,7 +59,7 @@ struct AnalyzeLayoutPopupView: View {
                 .foregroundColor(.white)
                 .opacity(0.7)
         }.frame(maxWidth: 150, maxHeight: 150)
-            .background(RoundedRectangle(cornerRadius: 15).fill(Color(white: 0.12)))
+            .background(RoundedRectangle(cornerRadius: 15).fill(Color(white: 0.15)))
             .onTapGesture {
                 action()
             }.hoverOpacity()

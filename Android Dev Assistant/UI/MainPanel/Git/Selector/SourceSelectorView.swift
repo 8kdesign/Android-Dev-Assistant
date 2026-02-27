@@ -30,7 +30,7 @@ struct SourceSelectorView: View {
             }
         }.frame(maxHeight: .infinity)
             .frame(width: 200)
-            .background(Color(white: 0.12))
+            .background(Color(white: 0.15))
             .clipShape(RoundedRectangle(cornerRadius: 15))
             .padding([.vertical, .leading])
             .onChange(of: searchTerm) { _ in
@@ -74,7 +74,7 @@ struct SourceSelectorView: View {
                 .opacity(0.7)
         }.padding(.all, 15)
             .frame(maxWidth: .infinity, maxHeight: 60)
-            .background(isSelectingBranch ? Color(white: 0.2) : Color(white: 0.12))
+            .background(isSelectingBranch ? Color(white: 0.2) : Color(white: 0.15))
             .onTapGesture {
                 withAnimation(.snappy(duration: 0.2)) {
                     isSelectingBranch.toggle()

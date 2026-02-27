@@ -27,7 +27,7 @@ struct LogsSection: View {
         }.frame(maxWidth: .infinity)
             .frame(height: 100)
             .rotationEffect(.degrees(180))
-            .background(Color(white: 0.05))
+            .background(Color(white: 0.12))
             .scrollIndicators(.never)
     }
     

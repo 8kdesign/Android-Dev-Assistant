@@ -104,8 +104,9 @@ struct SettingsView: View {
             .foregroundColor(.black)
             .lineLimit(1)
             .truncationMode(.tail)
-            .padding(.all, 10)
-            .background(RoundedRectangle(cornerRadius: 10).fill(.white.opacity(0.8)))
+            .padding(.vertical, 7)
+            .padding(.horizontal, 10)
+            .background(RoundedRectangle(cornerRadius: 5).fill(.white.opacity(0.8)))
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.top, 10)
     }

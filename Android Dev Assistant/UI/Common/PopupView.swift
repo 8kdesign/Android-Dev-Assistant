@@ -24,13 +24,13 @@ struct PopupView<Content: View>: View {
                 Divider().opacity(0.7)
                 content()
             }.frame(maxWidth: 800, maxHeight: 900, alignment: .top)
-                .background(Color(white: 0.05))
+                .background(Color(white: 0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 30))
                 .onTapGesture {}
                 .padding(.all, 50)
                 .scaleEffect(x: isReady ? 1 : 0.3, y: isReady ? 1 : 0.3)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(white: 0.2).opacity(0.7))
+            .background(Color(white: 0.01).opacity(0.9))
             .opacity(isReady ? 1 : 0)
             .background(
                 KeyCatcher(keyCode: 53) { isDown in
@@ -74,7 +74,7 @@ struct PopupView<Content: View>: View {
                 .fill(.clear)
                 .frame(width: 50, height: 50)
         }.frame(maxWidth: .infinity)
-            .background(Color(white: 0.07))
+            .background(Color(white: 0.13))
     }
     
 }
