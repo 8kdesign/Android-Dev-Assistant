@@ -400,22 +400,27 @@ class AdbHelper: ObservableObject {
         }
     }
     
-    func listPackages(callback: @escaping @MainActor ([String]) -> ()) {
+    func listPackages(callback: @escaping @MainActor ([(package: String, debuggable: Bool)]) -> ()) {
         guard let adbPath, let selectedDevice else { return }
         runOnLogicThread {
             do {
+                let script = "for p in $(pm list packages -3 | cut -d: -f2); do dumpsys package $p | grep -q 'DEBUGGABLE' && echo D:$p || echo N:$p; done"
                 let result = try await runCommand(
                     path: adbPath,
-                    arguments: ["-s", selectedDevice, "shell", "pm", "list", "packages", "-3"]
+                    arguments: ["-s", selectedDevice, "shell", script]
                 )
                 let packages = String(data: result, encoding: .utf8)?
                     .split(separator: "\n")
-                    .compactMap { line -> String? in
+                    .compactMap { line -> (package: String, debuggable: Bool)? in
                         let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
-                        guard trimmed.hasPrefix("package:") else { return nil }
-                        return String(trimmed.dropFirst("package:".count))
+                        if trimmed.hasPrefix("D:") {
+                            return (String(trimmed.dropFirst(2)), true)
+                        } else if trimmed.hasPrefix("N:") {
+                            return (String(trimmed.dropFirst(2)), false)
+                        }
+                        return nil
                     }
-                    .sorted()
+                    .sorted { $0.package < $1.package }
                     ?? []
                 Task { @MainActor in
                     callback(packages)

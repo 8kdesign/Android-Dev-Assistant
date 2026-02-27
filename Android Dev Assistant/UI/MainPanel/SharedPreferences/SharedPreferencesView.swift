@@ -10,7 +10,7 @@ struct SharedPreferencesView: View {
 
     @EnvironmentObject var adbHelper: AdbHelper
     @EnvironmentObject var toastHelper: ToastHelper
-    @State var packages: [String]? = nil
+    @State var packages: [(package: String, debuggable: Bool)]? = nil
     @State var selectedPackage: String? = nil
     @State var files: [String]? = nil
     @State var selectedFile: String? = nil
@@ -67,10 +67,13 @@ struct SharedPreferencesView: View {
 
 extension SharedPreferencesView {
 
-    private var filteredPackages: [String] {
+    private var filteredPackages: [(package: String, debuggable: Bool)] {
         guard let packages else { return [] }
-        if searchText.isEmpty { return packages }
-        return packages.filter { $0.localizedCaseInsensitiveContains(searchText) }
+        let filtered = searchText.isEmpty ? packages : packages.filter { $0.package.localizedCaseInsensitiveContains(searchText) }
+        return filtered.sorted { lhs, rhs in
+            if lhs.debuggable != rhs.debuggable { return lhs.debuggable }
+            return lhs.package < rhs.package
+        }
     }
 
     @ViewBuilder
@@ -95,9 +98,9 @@ extension SharedPreferencesView {
                     Divider().opacity(0.3)
                     ScrollView {
                         LazyVStack(spacing: 0) {
-                            ForEach(filteredPackages, id: \.self) { package in
-                                PackageItemView(package: package)
-                                if package != filteredPackages.last {
+                            ForEach(Array(filteredPackages.enumerated()), id: \.element.package) { index, item in
+                                PackageItemView(package: item.package, debuggable: item.debuggable)
+                                if index < filteredPackages.count - 1 {
                                     Divider().opacity(0.3).padding(.leading, 46)
                                 }
                             }
@@ -112,8 +115,8 @@ extension SharedPreferencesView {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
-    
-    private func PackageItemView(package: String) -> some View {
+
+    private func PackageItemView(package: String, debuggable: Bool) -> some View {
         Button {
             withAnimation(.easeInOut(duration: 0.15)) {
                 selectedPackage = package
@@ -132,14 +135,18 @@ extension SharedPreferencesView {
                     .truncationMode(.middle)
                     .foregroundStyle(.white)
                     .foregroundColor(.white)
-                Image(systemName: "chevron.right")
-                    .foregroundStyle(.secondary)
+                if debuggable {
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(.secondary)
+                }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .background(.white.opacity(0.00001))
         }.buttonStyle(.plain)
-        .hoverOpacity()
+        .disabled(!debuggable)
+        .opacity(debuggable ? 1 : 0.3)
+        .hoverOpacity(debuggable ? HOVER_OPACITY : 1)
     }
 
 }
@@ -174,7 +181,7 @@ extension SharedPreferencesView {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
-    
+
     private func FileItemView(file: String) -> some View {
         Button {
             withAnimation(.easeInOut(duration: 0.15)) {
