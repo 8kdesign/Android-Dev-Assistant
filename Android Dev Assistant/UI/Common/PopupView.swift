@@ -12,6 +12,7 @@ struct PopupView<Content: View>: View {
     @EnvironmentObject var uiController: UIController
     var title: LocalizedStringResource
     var interceptEscape: () -> Bool = { return false }
+    var interceptBack: () -> Bool = { return false }
     var onExit: () -> () = {}
     @ViewBuilder var content: () -> Content
     @State var isReady: Bool = false
@@ -49,7 +50,9 @@ struct PopupView<Content: View>: View {
     private func HeaderView() -> some View {
         HStack {
             Button {
-                close()
+                if !interceptBack() {
+                    close()
+                }
             } label: {
                 Image(systemName: "chevron.left")
                     .resizable()

@@ -40,9 +40,7 @@ struct MenuGridView: View {
                     adbHelper.toggleTalkback()
                 }
                 MenuGridItem(name: "Shared Prefs", icon: "tray.full.fill", iconColor: .green, requireAdb: true) {
-                    if let packageName = apkHelper.apks[safe: apkHelper.selectedIndex]?.packageName {
-                        uiController.showingPopup = .sharedPreferences(packageName: packageName)
-                    }
+                    uiController.showingPopup = .sharedPreferences
                 }
             }.padding([.horizontal, .bottom])
         }.frame(maxWidth: .infinity, maxHeight: .infinity)

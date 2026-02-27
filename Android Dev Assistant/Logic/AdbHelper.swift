@@ -400,6 +400,35 @@ class AdbHelper: ObservableObject {
         }
     }
     
+    func listPackages(callback: @escaping @MainActor ([String]) -> ()) {
+        guard let adbPath, let selectedDevice else { return }
+        runOnLogicThread {
+            do {
+                let result = try await runCommand(
+                    path: adbPath,
+                    arguments: ["-s", selectedDevice, "shell", "pm", "list", "packages", "-3"]
+                )
+                let packages = String(data: result, encoding: .utf8)?
+                    .split(separator: "\n")
+                    .compactMap { line -> String? in
+                        let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                        guard trimmed.hasPrefix("package:") else { return nil }
+                        return String(trimmed.dropFirst("package:".count))
+                    }
+                    .sorted()
+                    ?? []
+                Task { @MainActor in
+                    callback(packages)
+                    LogHelper.shared.insertLog(string: "Listed packages")
+                }
+            } catch {
+                Task { @MainActor in
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
+                }
+            }
+        }
+    }
+
     func listSharedPreferences(packageName: String, callback: @escaping @MainActor ([String]) -> ()) {
         guard let adbPath, let selectedDevice else { return }
         runOnLogicThread {

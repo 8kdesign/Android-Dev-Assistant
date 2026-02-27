@@ -10,45 +10,143 @@ struct SharedPreferencesView: View {
 
     @EnvironmentObject var adbHelper: AdbHelper
     @EnvironmentObject var toastHelper: ToastHelper
-    var packageName: String
+    @State var packages: [String]? = nil
+    @State var selectedPackage: String? = nil
     @State var files: [String]? = nil
     @State var selectedFile: String? = nil
     @State var xmlContent: String? = nil
     @State var entries: [SharedPrefEntry] = []
+    @State var searchText: String = ""
+
+    private func goBack() -> Bool {
+        if selectedFile != nil {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                selectedFile = nil
+                xmlContent = nil
+                entries = []
+            }
+            return true
+        }
+        if selectedPackage != nil {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                selectedPackage = nil
+                files = nil
+                searchText = ""
+            }
+            return true
+        }
+        return false
+    }
 
     var body: some View {
         PopupView(title: "Shared Preferences", interceptEscape: {
-            if selectedFile != nil {
-                withAnimation(.easeInOut(duration: 0.15)) {
-                    selectedFile = nil
-                    xmlContent = nil
-                    entries = []
-                }
-                return true
-            }
-            return false
+            goBack()
+        }, interceptBack: {
+            goBack()
         }) {
-            if let selectedFile {
-                DetailView(fileName: selectedFile)
+            if selectedPackage != nil {
+                if let selectedFile {
+                    DetailView(fileName: selectedFile)
+                } else {
+                    FileListView()
+                }
             } else {
-                ListView()
+                PackageListView()
             }
         }
         .onAppear {
-            adbHelper.listSharedPreferences(packageName: packageName) { result in
-                files = result
+            adbHelper.listPackages { result in
+                packages = result
             }
         }
     }
 
 }
 
-// MARK: - List View
+// MARK: - Package List View
+
+extension SharedPreferencesView {
+
+    private var filteredPackages: [String] {
+        guard let packages else { return [] }
+        if searchText.isEmpty { return packages }
+        return packages.filter { $0.localizedCaseInsensitiveContains(searchText) }
+    }
+
+    @ViewBuilder
+    private func PackageListView() -> some View {
+        if let packages {
+            if packages.isEmpty {
+                Text("No packages found")
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                VStack(spacing: 0) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundStyle(.secondary)
+                        TextField("Search packages", text: $searchText)
+                            .textFieldStyle(.plain)
+                            .foregroundStyle(.white)
+                            .foregroundColor(.white)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    Divider().opacity(0.3)
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(filteredPackages, id: \.self) { package in
+                                Button {
+                                    withAnimation(.easeInOut(duration: 0.15)) {
+                                        selectedPackage = package
+                                    }
+                                    adbHelper.listSharedPreferences(packageName: package) { result in
+                                        files = result
+                                    }
+                                } label: {
+                                    HStack(spacing: 10) {
+                                        Image(systemName: "shippingbox")
+                                            .foregroundStyle(.green)
+                                            .foregroundColor(.green)
+                                        Text(package)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                            .lineLimit(1)
+                                            .truncationMode(.middle)
+                                            .foregroundStyle(.white)
+                                            .foregroundColor(.white)
+                                        Image(systemName: "chevron.right")
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 12)
+                                    .background(.white.opacity(0.00001))
+                                }
+                                .buttonStyle(.plain)
+                                .hoverOpacity(HOVER_OPACITY)
+                                if package != filteredPackages.last {
+                                    Divider().opacity(0.3).padding(.leading, 46)
+                                }
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .scrollIndicators(.never)
+                }
+            }
+        } else {
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+}
+
+// MARK: - File List View
 
 extension SharedPreferencesView {
 
     @ViewBuilder
-    private func ListView() -> some View {
+    private func FileListView() -> some View {
         if let files {
             if files.isEmpty {
                 Text("No shared preferences found")
@@ -62,9 +160,11 @@ extension SharedPreferencesView {
                                 withAnimation(.easeInOut(duration: 0.15)) {
                                     selectedFile = file
                                 }
-                                adbHelper.readSharedPreference(packageName: packageName, fileName: file) { content in
-                                    xmlContent = content
-                                    entries = parseXml(content)
+                                if let selectedPackage {
+                                    adbHelper.readSharedPreference(packageName: selectedPackage, fileName: file) { content in
+                                        xmlContent = content
+                                        entries = parseXml(content)
+                                    }
                                 }
                             } label: {
                                 HStack(spacing: 10) {
@@ -233,11 +333,9 @@ extension SharedPreferencesView {
     }
 
     private func parseSingleLineEntry(_ line: String) -> SharedPrefEntry? {
-        // <string name="key">value</string>
         if let match = matchTag(line, tag: "string") {
             return SharedPrefEntry(key: match.key, value: match.value, type: "string")
         }
-        // <int name="key" value="123" />
         if let match = matchSelfClosing(line, tag: "int") {
             return SharedPrefEntry(key: match.key, value: match.value, type: "int")
         }
