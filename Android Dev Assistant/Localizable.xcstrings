@@ -209,6 +209,16 @@
         }
       }
     },
+    "Empty or unreadable preference file" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未能找到内容"
+          }
+        }
+      }
+    },
     "Enable Selection" : {
       "localizations" : {
         "zh-Hans" : {
@@ -348,6 +358,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "检测到新版本"
+          }
+        }
+      }
+    },
+    "No packages found" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未能找到应用"
+          }
+        }
+      }
+    },
+    "No shared preferences found" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未能找到SharedPreferences"
           }
         }
       }
@@ -525,6 +555,16 @@
         }
       }
     },
+    "Search packages" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索应用"
+          }
+        }
+      }
+    },
     "Select View" : {
       "localizations" : {
         "zh-Hans" : {
@@ -541,6 +581,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设置"
+          }
+        }
+      }
+    },
+    "Shared Prefs" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SharedPrefs"
           }
         }
       }

@@ -39,7 +39,7 @@ struct SharedPreferencesView: View {
     }
 
     var body: some View {
-        PopupView(title: "Shared Preferences", interceptEscape: {
+        PopupView(title: "Shared Prefs", interceptEscape: {
             goBack()
         }, interceptBack: {
             goBack()
@@ -89,40 +89,14 @@ extension SharedPreferencesView {
                             .textFieldStyle(.plain)
                             .foregroundStyle(.white)
                             .foregroundColor(.white)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
+                    }.padding(.horizontal, 20)
+                    .padding(.vertical, 15)
+                    .background(Color(white: 0.07))
                     Divider().opacity(0.3)
                     ScrollView {
                         LazyVStack(spacing: 0) {
                             ForEach(filteredPackages, id: \.self) { package in
-                                Button {
-                                    withAnimation(.easeInOut(duration: 0.15)) {
-                                        selectedPackage = package
-                                    }
-                                    adbHelper.listSharedPreferences(packageName: package) { result in
-                                        files = result
-                                    }
-                                } label: {
-                                    HStack(spacing: 10) {
-                                        Image(systemName: "shippingbox")
-                                            .foregroundStyle(.green)
-                                            .foregroundColor(.green)
-                                        Text(package)
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                            .lineLimit(1)
-                                            .truncationMode(.middle)
-                                            .foregroundStyle(.white)
-                                            .foregroundColor(.white)
-                                        Image(systemName: "chevron.right")
-                                            .foregroundStyle(.secondary)
-                                    }
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 12)
-                                    .background(.white.opacity(0.00001))
-                                }
-                                .buttonStyle(.plain)
-                                .hoverOpacity(HOVER_OPACITY)
+                                PackageItemView(package: package)
                                 if package != filteredPackages.last {
                                     Divider().opacity(0.3).padding(.leading, 46)
                                 }
@@ -137,6 +111,35 @@ extension SharedPreferencesView {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+    }
+    
+    private func PackageItemView(package: String) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                selectedPackage = package
+            }
+            adbHelper.listSharedPreferences(packageName: package) { result in
+                files = result
+            }
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "shippingbox")
+                    .foregroundStyle(.gray)
+                    .foregroundColor(.gray)
+                Text(package)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(.white.opacity(0.00001))
+        }.buttonStyle(.plain)
+        .hoverOpacity()
     }
 
 }
@@ -156,36 +159,7 @@ extension SharedPreferencesView {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         ForEach(files, id: \.self) { file in
-                            Button {
-                                withAnimation(.easeInOut(duration: 0.15)) {
-                                    selectedFile = file
-                                }
-                                if let selectedPackage {
-                                    adbHelper.readSharedPreference(packageName: selectedPackage, fileName: file) { content in
-                                        xmlContent = content
-                                        entries = parseXml(content)
-                                    }
-                                }
-                            } label: {
-                                HStack(spacing: 10) {
-                                    Image(systemName: "doc.text")
-                                        .foregroundStyle(.green)
-                                        .foregroundColor(.green)
-                                    Text(file)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .lineLimit(1)
-                                        .truncationMode(.middle)
-                                        .foregroundStyle(.white)
-                                        .foregroundColor(.white)
-                                    Image(systemName: "chevron.right")
-                                        .foregroundStyle(.secondary)
-                                }
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 12)
-                                .background(.white.opacity(0.00001))
-                            }
-                            .buttonStyle(.plain)
-                            .hoverOpacity(HOVER_OPACITY)
+                            FileItemView(file: file)
                             if file != files.last {
                                 Divider().opacity(0.3).padding(.leading, 46)
                             }
@@ -199,6 +173,39 @@ extension SharedPreferencesView {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+    }
+    
+    private func FileItemView(file: String) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                selectedFile = file
+            }
+            if let selectedPackage {
+                adbHelper.readSharedPreference(packageName: selectedPackage, fileName: file) { content in
+                    xmlContent = content
+                    entries = parseXml(content)
+                }
+            }
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "doc.text")
+                    .foregroundStyle(.gray)
+                    .foregroundColor(.gray)
+                Text(file)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(.white.opacity(0.00001))
+        }
+        .buttonStyle(.plain)
+        .hoverOpacity()
     }
 
 }
@@ -217,44 +224,18 @@ extension SharedPreferencesView {
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
-            VStack(spacing: 0) {
-                HStack {
-                    Text("\(entries.count) entries")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    Button {
-                        if let xmlContent {
-                            copyToClipboard(xmlContent as NSString)
-                            toastHelper.addToast("Copied to clipboard", style: .clipboard)
-                        }
-                    } label: {
-                        Image(systemName: "list.clipboard")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 14, height: 14)
-                            .foregroundStyle(.green)
-                            .foregroundColor(.green)
-                    }
-                    .buttonStyle(.plain)
-                    .hoverOpacity()
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                Divider().opacity(0.3)
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(Array(entries.enumerated()), id: \.offset) { index, entry in
-                            EntryRow(entry: entry)
-                            if index < entries.count - 1 {
-                                Divider().opacity(0.2).padding(.leading, 16)
-                            }
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(Array(entries.enumerated()), id: \.offset) { index, entry in
+                        EntryRow(entry: entry)
+                        if index < entries.count - 1 {
+                            Divider().opacity(0.2).padding(.leading, 16)
                         }
                     }
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .scrollIndicators(.never)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .scrollIndicators(.never)
         }
     }
 
@@ -264,8 +245,8 @@ extension SharedPreferencesView {
             HStack(alignment: .top) {
                 Text(entry.key)
                     .font(.system(.body, design: .monospaced))
-                    .foregroundStyle(.green)
-                    .foregroundColor(.green)
+                    .foregroundStyle(.yellow)
+                    .foregroundColor(.yellow)
                     .textSelection(.enabled)
                 Spacer()
                 Text(entry.type)
@@ -273,7 +254,7 @@ extension SharedPreferencesView {
                     .foregroundStyle(.black)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
-                    .background(entry.typeColor.opacity(0.8))
+                    .background(.gray)
                     .clipShape(RoundedRectangle(cornerRadius: 4))
             }
             Text(entry.value)
@@ -296,18 +277,6 @@ struct SharedPrefEntry {
     let key: String
     let value: String
     let type: String
-
-    var typeColor: Color {
-        switch type {
-        case "string": return .green
-        case "int": return .blue
-        case "long": return .cyan
-        case "float": return .orange
-        case "boolean": return .purple
-        case "set": return .yellow
-        default: return .gray
-        }
-    }
 }
 
 extension SharedPreferencesView {
