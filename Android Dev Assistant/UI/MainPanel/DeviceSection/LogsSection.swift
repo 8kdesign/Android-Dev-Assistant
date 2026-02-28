@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct LogsSection: View {
-    
+
     @EnvironmentObject var logHelper: LogHelper
-    
+    @EnvironmentObject var theme: ThemeManager
+
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 5) {
@@ -19,16 +20,15 @@ struct LogsSection: View {
                         .font(.caption)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .multilineTextAlignment(.leading)
-                        .foregroundStyle(.white)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.primary)
                         .rotationEffect(.degrees(180))
                 }
             }.padding(.all)
         }.frame(maxWidth: .infinity)
             .frame(height: 100)
             .rotationEffect(.degrees(180))
-            .background(Color(white: 0.12))
+            .background(theme.backgroundSecondary)
             .scrollIndicators(.never)
     }
-    
+
 }

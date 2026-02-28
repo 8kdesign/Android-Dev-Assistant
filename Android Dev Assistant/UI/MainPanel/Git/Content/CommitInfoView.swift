@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct CommitInfoView: View {
-    
+
+    @EnvironmentObject var theme: ThemeManager
     @Binding var selectedFile: GitFileItem?
     var diff: [FileDiff]
-    
+
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 10) {
@@ -20,7 +21,7 @@ struct CommitInfoView: View {
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .scrollIndicators(.never)
     }
-    
+
     private func ListView(diff: [FileDiff]) -> some View {
         ForEach(Array(diff.enumerated()), id: \.offset) { index, item in
             VStack(spacing: 0) {
@@ -29,11 +30,10 @@ struct CommitInfoView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.head)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                     .padding(.horizontal, 15)
                     .padding(.vertical, 10)
-                    .background(Color(white: 0.2))
+                    .background(theme.surfaceHighlighted)
                 if !(item.added.isEmpty && item.removed.isEmpty) {
                     VStack(spacing: 5) {
                         if !item.added.isEmpty {
@@ -48,15 +48,14 @@ struct CommitInfoView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .lineLimit(1)
                                 .truncationMode(.tail)
-                                .foregroundStyle(.white)
-                                .foregroundColor(.white)
+                                .foregroundStyle(.primary)
                                 .opacity(0.5)
                         }
                     }.padding(.horizontal, 15)
                         .padding(.vertical, 10)
                 }
             }.frame(maxWidth: 600)
-                .background(Color(white: 0.15))
+                .background(theme.backgroundTertiary)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .onTapGesture {
                     selectedFile = GitFileItem(path: item.file)
@@ -64,7 +63,7 @@ struct CommitInfoView: View {
                 .padding(.horizontal, 15)
         }
     }
-    
+
     private func ListDataView(list: [String], isAdd: Bool) -> some View {
         VStack(spacing: 5) {
             ForEach(Array(list.enumerated()), id: \.offset) { index, item in
@@ -74,10 +73,9 @@ struct CommitInfoView: View {
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .foregroundStyle(isAdd ? Color(red: 0.6, green: 1, blue: 0.65) : Color(red: 1, green: 0.6, blue: 0.6))
-                    .foregroundColor(.white)
                     .opacity(0.5)
             }
         }.frame(maxWidth: .infinity)
     }
-    
+
 }

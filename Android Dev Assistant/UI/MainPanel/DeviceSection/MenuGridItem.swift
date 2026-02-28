@@ -8,15 +8,16 @@
 import SwiftUI
 
 struct MenuGridItem: View {
-    
+
     @EnvironmentObject var adbHelper: AdbHelper
     @EnvironmentObject var externalToolsHelper: ExternalToolsHelper
+    @EnvironmentObject var theme: ThemeManager
     var name: LocalizedStringResource
     var icon: String
     var iconColor: Color
     var requireAdb: Bool
     var action: () -> ()
-    
+
     var body: some View {
         Button {
             action()
@@ -28,8 +29,7 @@ struct MenuGridItem: View {
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .truncationMode(.tail)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                     .opacity(0.7)
                     .padding(.all, 10)
                 VStack {
@@ -39,25 +39,24 @@ struct MenuGridItem: View {
                         .frame(width: 45, height: 45)
                         .rotationEffect(.degrees(-30))
                         .foregroundStyle(iconColor)
-                        .foregroundColor(iconColor)
                         .opacity(0.3)
                         .offset(x: 5, y: 5)
                 }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
             }.frame(height: 80)
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(white: 0.15)))
+                .background(RoundedRectangle(cornerRadius: 10).fill(theme.backgroundTertiary))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         }.buttonStyle(.plain)
             .disabled(requireAdb && isAdbDisabled())
             .opacity(requireAdb && isAdbDisabled() ? 0.3 : 1)
             .hoverOpacity(requireAdb && isAdbDisabled() ? 1 : HOVER_OPACITY)
     }
-    
+
 }
 
 extension MenuGridItem {
-    
+
     private func isAdbDisabled() -> Bool {
         return adbHelper.isInstalling != nil || adbHelper.selectedDevice == nil || externalToolsHelper.isExternalToolAdbBlocking
     }
-    
+
 }

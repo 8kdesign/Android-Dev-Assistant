@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct AnalyzeLayoutView: View {
-    
+
+    @EnvironmentObject var theme: ThemeManager
     @StateObject var analyzeScreenHelper: AnalyzeScreenHelper
     @Binding var showMenu: Bool
-    
+
     var body: some View {
         Group {
             let imageSize = analyzeScreenHelper.layout.image.size
@@ -27,7 +28,7 @@ struct AnalyzeLayoutView: View {
         }.environmentObject(analyzeScreenHelper)
     }
 
-    
+
     private func ControlsView() -> some View {
         ZStack {
             VStack(spacing: 0) {
@@ -43,16 +44,15 @@ struct AnalyzeLayoutView: View {
                 } else {
                     ProgressView()
                         .progressViewStyle(.circular)
-                        .accentColor(.white)
-                        .tint(.white)
+                        .tint(.primary)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(white: 0.1))
+                .background(theme.background)
             ComponentSelectorListView(showMenu: $showMenu)
                 .opacity(showMenu ? 1 : 0)
                 .allowsHitTesting(showMenu)
         }
     }
-    
+
 }

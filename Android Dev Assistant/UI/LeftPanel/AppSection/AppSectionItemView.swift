@@ -8,15 +8,16 @@
 import SwiftUI
 
 struct AppSectionItemView: View {
-    
+
     @EnvironmentObject var apkHelper: ApkHelper
     @EnvironmentObject var adbHelper: AdbHelper
     @EnvironmentObject var externalToolsHelper: ExternalToolsHelper
+    @EnvironmentObject var theme: ThemeManager
 
     var item: ApkItem
     var isSelected: Bool
     var select: () -> ()
-    
+
     @State var confirmUninstall: Bool = false
 
     var body: some View {
@@ -25,7 +26,7 @@ struct AppSectionItemView: View {
             if (isSelected) {
                 TogglesView()
             }
-        }.background(Color(white: 0.17))
+        }.background(theme.surface)
             .clipShape(RoundedRectangle(cornerRadius: 15))
             .alert("Confirm uninstall?", isPresented: $confirmUninstall) {
                 Button("Cancel", role: .cancel) {}
@@ -34,39 +35,36 @@ struct AppSectionItemView: View {
                 }
             }
     }
-    
+
     private func ContentView() -> some View {
         VStack(spacing: 5) {
             Text(item.name)
                 .lineLimit(1)
                 .truncationMode(.tail)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
             Text(item.versionName ?? "-")
                 .lineLimit(1)
                 .truncationMode(.tail)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .opacity(0.3)
             Text(item.packageName ?? item.path)
                 .lineLimit(1)
                 .truncationMode(.head)
                 .font(.callout)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .opacity(0.5)
         }.padding(.all)
             .frame(maxWidth: .infinity)
-            .background(Color(white: 0.2))
+            .background(theme.surfaceHighlighted)
             .opacity(isSelected ? 1 : 0.3)
             .onTapGesture {
                 select()
             }
     }
-    
+
     private func TogglesView() -> some View {
         ScrollView(.horizontal) {
             HStack(spacing: 5) {
@@ -79,5 +77,5 @@ struct AppSectionItemView: View {
             }.padding(.all, 10)
         }.frame(maxWidth: .infinity, alignment: .leading)
     }
-    
+
 }

@@ -8,20 +8,20 @@
 import SwiftUI
 
 struct HeaderTabView: View {
-    
+
+    @EnvironmentObject var theme: ThemeManager
     @Binding var isRepoTab: Bool
-    
+
     var body: some View {
         HStack(spacing: 0) {
             Image(systemName: "smartphone")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 16, height: 16)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .padding(.vertical, 12)
                 .padding(.horizontal, 22)
-                .background(Capsule().fill(isRepoTab ? .white.opacity(0.00001) : Color(white: 0.2)))
+                .background(Capsule().fill(isRepoTab ? .primary.opacity(0.00001) : theme.surfaceHighlighted))
                 .onTapGesture {
                     isRepoTab = false
                 }.hoverOpacity()
@@ -29,15 +29,14 @@ struct HeaderTabView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 16, height: 16)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .padding(.vertical, 12)
                 .padding(.horizontal, 22)
-                .background(Capsule().fill(isRepoTab ? Color(white: 0.2) : .white.opacity(0.00001)))
+                .background(Capsule().fill(isRepoTab ? theme.surfaceHighlighted : .primary.opacity(0.00001)))
                 .onTapGesture {
                     isRepoTab = true
                 }.hoverOpacity()
-        }.background(Capsule().fill(Color(white: 0.1)))
+        }.background(Capsule().fill(theme.background))
             .padding(.horizontal)
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity, alignment: .leading)

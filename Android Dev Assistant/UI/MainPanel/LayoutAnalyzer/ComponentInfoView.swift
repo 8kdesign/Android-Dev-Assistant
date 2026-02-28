@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct ComponentInfoView: View {
-    
+
     @EnvironmentObject var toastHelper: ToastHelper
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
+    @EnvironmentObject var theme: ThemeManager
     @State var component: ComponentItem? = nil
     @State var parentComponent: ComponentItem? = nil
     @State var childrenComponents: [ComponentItem] = []
@@ -67,7 +68,7 @@ struct ComponentInfoView: View {
             }
         }
     }
-    
+
     private func InfoListView() -> some View {
         ScrollView {
             if let component {
@@ -122,45 +123,42 @@ struct ComponentInfoView: View {
                     }
                     Divider().opacity(0.3)
                     ChildrenRow()
-                }.background(Color(white: 0.15))
+                }.background(theme.backgroundTertiary)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .padding(.all)
             }
         }.frame(maxWidth: .infinity)
             .scrollIndicators(.never)
     }
-    
+
     private func DataRow(key: LocalizedStringResource, value: String, action: (() -> ())? = nil) -> some View {
         HStack(alignment: .top, spacing: 0) {
             Text(key)
                 .frame(width: 80, alignment: .leading)
                 .multilineTextAlignment(.leading)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .opacity(0.7)
                 .padding(.all, 10)
             Divider().opacity(0.3)
             Text(value)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .opacity(0.7)
                 .padding(.all, 10)
-                .background(.white.opacity(0.00001))
+                .background(.primary.opacity(0.00001))
                 .onTapGesture {
                     action?()
                 }.hoverOpacity(action == nil ? 1 : HOVER_OPACITY)
         }.frame(maxWidth: .infinity)
     }
-    
+
     private func ChildrenRow() -> some View {
         HStack(alignment: .top, spacing: 0) {
             Text("Children")
                 .frame(width: 80, alignment: .leading)
                 .multilineTextAlignment(.leading)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .opacity(0.7)
                 .padding(.all, 10)
             Divider().opacity(0.3)
@@ -169,11 +167,10 @@ struct ComponentInfoView: View {
                     Text(component.getShortLabel())
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .multilineTextAlignment(.leading)
-                        .foregroundStyle(.white)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.primary)
                         .opacity(0.7)
                         .padding(.all, 10)
-                        .background(.white.opacity(0.00001))
+                        .background(.primary.opacity(0.00001))
                         .onTapGesture {
                             analyzeScreenHelper.addTab(component: component, needSet: true)
                         }.hoverOpacity()
@@ -188,10 +185,10 @@ struct ComponentInfoView: View {
 }
 
 extension ComponentInfoView {
-    
+
     private func copy(_ string: String) {
         copyToClipboard(string as NSString)
         toastHelper.addToast("Copied to clipboard", style: .clipboard)
     }
-    
+
 }

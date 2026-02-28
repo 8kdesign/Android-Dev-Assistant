@@ -9,8 +9,9 @@ import SwiftUI
 
 struct ScreenshotEditImageView: View {
     
+    @EnvironmentObject var theme: ThemeManager
     var image: NSImage
-    
+
     @Binding var leftCrop: CGFloat
     @Binding var rightCrop: CGFloat
     @Binding var topCrop: CGFloat
@@ -59,7 +60,7 @@ struct ScreenshotEditImageView: View {
                 ).frame(maxWidth: .infinity, maxHeight: .infinity)
             CropCanvasView(image: image)
                 .allowsHitTesting(false)
-        }.background(Color(white: 0.05))
+        }.background(theme.backgroundDeep)
     }
     
     private func CropCanvasView(image: NSImage) -> some View {

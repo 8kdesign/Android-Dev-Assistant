@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct ContentView: View {
-    
+
     @EnvironmentObject var uiController: UIController
     @EnvironmentObject var externalTool: ExternalToolsHelper
+    @EnvironmentObject var theme: ThemeManager
     @State var isRepoTab = UserDefaultsHelper.getLastSelectedTabIsRepo()
-    
+
     var body: some View {
         ZStack {
             HStack(spacing: 0) {
@@ -25,7 +26,7 @@ struct ContentView: View {
                     }
                     BottomTogglesSection()
                 }.frame(maxWidth: 250, maxHeight: .infinity)
-                    .background(Color(white: 0.12))
+                    .background(theme.backgroundSecondary)
                 Divider().opacity(0.7)
                 VStack(spacing: 0) {
                     if (isRepoTab) {
@@ -49,7 +50,7 @@ struct ContentView: View {
             }
             ToastView()
         }.frame(minWidth: 900, maxWidth: .infinity, minHeight: 800, maxHeight: .infinity)
-            .background(Color(white: 0.1))
-            .preferredColorScheme(.dark)
+            .background(theme.background)
+            .preferredColorScheme(theme.colorScheme)
     }
 }

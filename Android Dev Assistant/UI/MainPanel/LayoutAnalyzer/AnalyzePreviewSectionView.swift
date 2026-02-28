@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct AnalyzePreviewSectionView: View {
-    
+
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
+    @EnvironmentObject var theme: ThemeManager
     @Binding var showMenu: Bool
     @State var imageSize: CGSize = .zero
     @State var highlightComponents: [ComponentItem] = []
@@ -19,7 +20,7 @@ struct AnalyzePreviewSectionView: View {
             ImageView()
             CanvasView()
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(white: 0.05))
+            .background(theme.backgroundDeep)
             .onAppear {
                 if let value = analyzeScreenHelper.selectedComponent {
                     highlightComponents = analyzeScreenHelper.layout.getHighlightComponents(parent: value)
@@ -30,7 +31,7 @@ struct AnalyzePreviewSectionView: View {
                 }
             }
     }
-    
+
     private func ImageView() -> some View {
         Image(nsImage: analyzeScreenHelper.layout.image)
             .resizable()
@@ -57,7 +58,7 @@ struct AnalyzePreviewSectionView: View {
             }).frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.all, 20)
     }
-    
+
     private func CanvasView() -> some View {
         Canvas { context, size in
             highlightComponents.forEach { component in
@@ -84,11 +85,11 @@ struct AnalyzePreviewSectionView: View {
         }.frame(maxWidth: imageSize.width + 40, maxHeight: imageSize.height + 40)
             .allowsHitTesting(false)
     }
-    
+
 }
 
 extension AnalyzePreviewSectionView {
-    
+
     func onSelectComponent(point: CGPoint) {
         guard imageSize.width > 0, imageSize.height > 0 else { return }
         if showMenu {
@@ -108,5 +109,5 @@ extension AnalyzePreviewSectionView {
             analyzeScreenHelper.addTab(component: components.last, needSet: true)
         }
     }
-    
+
 }

@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct ComponentSelectorListView: View {
-    
+
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
+    @EnvironmentObject var theme: ThemeManager
     @Binding var showMenu: Bool
     @State var isSelectCompare: Bool = false
 
@@ -21,10 +22,9 @@ struct ComponentSelectorListView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                     .padding(.all, 15)
-                    .background(Color(white: 0.15))
+                    .background(theme.backgroundTertiary)
                 Divider()
                 ScrollView {
                     if showMenu {
@@ -38,7 +38,7 @@ struct ComponentSelectorListView: View {
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
                     .scrollIndicators(.never)
             }.frame(maxWidth: .infinity, maxHeight: 300)
-                .background(Color(white: 0.12))
+                .background(theme.backgroundSecondary)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .onTapGesture {}
                 .padding(.all, 50)
@@ -52,18 +52,17 @@ struct ComponentSelectorListView: View {
                 isSelectCompare = value && analyzeScreenHelper.selectedComponent != nil && NSEvent.modifierFlags.contains(.shift)
             }
     }
-    
+
     private func ComponentListItemView(component: ComponentItem) -> some View {
         Text(component.getShortLabel())
             .font(.callout)
             .frame(maxWidth: .infinity, alignment: .leading)
             .lineLimit(1)
             .truncationMode(.tail)
-            .foregroundStyle(.white)
-            .foregroundColor(.white)
+            .foregroundStyle(.primary)
             .opacity(0.7)
             .padding(.all, 15)
-            .background(.white.opacity(0.000001))
+            .background(.primary.opacity(0.000001))
             .onTapGesture {
                 if !isSelectCompare {
                     analyzeScreenHelper.addTab(component: component, needSet: true)
@@ -79,5 +78,5 @@ struct ComponentSelectorListView: View {
                 }
             }
     }
-    
+
 }

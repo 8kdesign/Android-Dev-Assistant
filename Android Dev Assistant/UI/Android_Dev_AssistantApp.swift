@@ -19,6 +19,7 @@ struct Android_Dev_AssistantApp: App {
     @StateObject var repoHelper: RepoHelper = RepoHelper()
     @StateObject var gitHelper: GitHelper = GitHelper()
     @StateObject var versionHelper: VersionHelper = VersionHelper()
+    @StateObject var themeManager: ThemeManager = ThemeManager()
 
     var body: some Scene {
         Window("Android Dev Assistant", id: "main") {
@@ -32,6 +33,7 @@ struct Android_Dev_AssistantApp: App {
                 .environmentObject(repoHelper)
                 .environmentObject(gitHelper)
                 .environmentObject(versionHelper)
+                .environmentObject(themeManager)
         }
     }
 }

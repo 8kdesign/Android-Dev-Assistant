@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct ToastView: View {
-    
+
     @EnvironmentObject var toastHelper: ToastHelper
+    @EnvironmentObject var theme: ThemeManager
     @State var toasts: [Toast] = []
-    
+
     var body: some View {
         ZStack {
             ScrollView(.vertical) {
@@ -29,7 +30,7 @@ struct ToastView: View {
                 }
             }
     }
-    
+
     private func ToastItemView(toast: Toast) -> some View {
         VStack {
             HStack(spacing: 10) {
@@ -38,15 +39,13 @@ struct ToastView: View {
                     .scaledToFit()
                     .frame(width: 14, height: 14)
                     .foregroundStyle(.white)
-                    .foregroundColor(.white)
                 Text(toast.message)
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .foregroundStyle(.white)
-                    .foregroundColor(.white)
             }.padding(.all)
-                .background(Capsule().fill(toast.style.getColor()))
+                .background(Capsule().fill(toast.style.getColor(theme: theme)))
         }.frame(maxWidth: .infinity, alignment: .trailing)
     }
-    
+
 }

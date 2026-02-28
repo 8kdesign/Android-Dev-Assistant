@@ -10,6 +10,7 @@ struct SharedPreferencesView: View {
 
     @EnvironmentObject var adbHelper: AdbHelper
     @EnvironmentObject var toastHelper: ToastHelper
+    @EnvironmentObject var theme: ThemeManager
     @State var packages: [(package: String, debuggable: Bool)]? = nil
     @State var selectedPackage: String? = nil
     @State var files: [String]? = nil
@@ -90,11 +91,10 @@ extension SharedPreferencesView {
                             .foregroundStyle(.secondary)
                         TextField("Search packages", text: $searchText)
                             .textFieldStyle(.plain)
-                            .foregroundStyle(.white)
-                            .foregroundColor(.white)
+                            .foregroundStyle(.primary)
                     }.padding(.horizontal, 20)
                     .padding(.vertical, 15)
-                    .background(Color(white: 0.07))
+                    .background(theme.backgroundInput)
                     Divider().opacity(0.3)
                     ScrollView {
                         LazyVStack(spacing: 0) {
@@ -133,8 +133,7 @@ extension SharedPreferencesView {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.middle)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                 if debuggable {
                     Image(systemName: "chevron.right")
                         .foregroundStyle(.secondary)
@@ -142,7 +141,7 @@ extension SharedPreferencesView {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(.white.opacity(0.00001))
+            .background(.primary.opacity(0.00001))
         }.buttonStyle(.plain)
         .disabled(!debuggable)
         .opacity(debuggable ? 1 : 0.3)
@@ -202,14 +201,13 @@ extension SharedPreferencesView {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.middle)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                 Image(systemName: "chevron.right")
                     .foregroundStyle(.secondary)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(.white.opacity(0.00001))
+            .background(.primary.opacity(0.00001))
         }
         .buttonStyle(.plain)
         .hoverOpacity()
@@ -266,8 +264,7 @@ extension SharedPreferencesView {
             }
             Text(entry.value)
                 .font(.system(.callout, design: .monospaced))
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .opacity(0.8)
                 .textSelection(.enabled)
                 .frame(maxWidth: .infinity, alignment: .leading)

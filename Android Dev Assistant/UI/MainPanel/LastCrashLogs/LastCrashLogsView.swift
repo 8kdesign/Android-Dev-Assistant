@@ -56,8 +56,7 @@ struct LastCrashLogsView: View {
             Text(item.1)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .textSelection(.enabled)
         }.padding(.all)
     }

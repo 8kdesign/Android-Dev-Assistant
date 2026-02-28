@@ -8,15 +8,16 @@
 import SwiftUI
 
 struct PopupView<Content: View>: View {
-    
+
     @EnvironmentObject var uiController: UIController
+    @EnvironmentObject var theme: ThemeManager
     var title: LocalizedStringResource
     var interceptEscape: () -> Bool = { return false }
     var interceptBack: () -> Bool = { return false }
     var onExit: () -> () = {}
     @ViewBuilder var content: () -> Content
     @State var isReady: Bool = false
-    
+
     var body: some View {
         VStack {
             VStack(spacing: 0) {
@@ -24,13 +25,13 @@ struct PopupView<Content: View>: View {
                 Divider().opacity(0.7)
                 content()
             }.frame(maxWidth: 800, maxHeight: 900, alignment: .top)
-                .background(Color(white: 0.1))
+                .background(theme.background)
                 .clipShape(RoundedRectangle(cornerRadius: 30))
                 .onTapGesture {}
                 .padding(.all, 50)
                 .scaleEffect(x: isReady ? 1 : 0.3, y: isReady ? 1 : 0.3)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(white: 0.01).opacity(0.9))
+            .background(theme.overlayBackground)
             .opacity(isReady ? 1 : 0)
             .background(
                 KeyCatcher(keyCode: 53) { isDown in
@@ -46,7 +47,7 @@ struct PopupView<Content: View>: View {
                 }
             }
     }
-    
+
     private func HeaderView() -> some View {
         HStack {
             Button {
@@ -59,28 +60,26 @@ struct PopupView<Content: View>: View {
                     .scaledToFit()
                     .frame(width: 16, height: 16)
                     .padding(.all, 17)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
-                    .background(.white.opacity(0.00001))
+                    .foregroundStyle(.primary)
+                    .background(.primary.opacity(0.00001))
             }.buttonStyle(.plain)
                 .hoverOpacity()
             Spacer()
             Text(title)
                 .font(.title3)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
             Spacer()
             Rectangle()
                 .fill(.clear)
                 .frame(width: 50, height: 50)
         }.frame(maxWidth: .infinity)
-            .background(Color(white: 0.13))
+            .background(theme.backgroundElevated)
     }
-    
+
 }
 
 extension PopupView {
-    
+
     private func close() {
         if !isReady { return }
         withAnimation(.easeInOut(duration: 0.1)) {
@@ -91,5 +90,5 @@ extension PopupView {
             onExit()
         }
     }
-    
+
 }

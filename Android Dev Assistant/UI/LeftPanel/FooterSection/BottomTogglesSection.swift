@@ -9,10 +9,10 @@ import Foundation
 import SwiftUI
 
 struct BottomTogglesSection: View {
-    
+
     @EnvironmentObject var versionHelper: VersionHelper
     @EnvironmentObject var uiController: UIController
-    
+
     var body: some View {
         HStack {
             SettingsToggle()
@@ -21,7 +21,7 @@ struct BottomTogglesSection: View {
         }.padding(.all)
             .frame(maxWidth: .infinity)
     }
-    
+
     private func SettingsToggle() -> some View {
         Button {
             uiController.showingPopup = .settings
@@ -31,8 +31,7 @@ struct BottomTogglesSection: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 16, height: 16)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                     .opacity(0.9)
                 if !versionHelper.isUpToDate {
                     Circle()
@@ -41,11 +40,11 @@ struct BottomTogglesSection: View {
                         .offset(x: 2, y: -2)
                 }
             }.frame(width: 36, height: 36)
-                .background(.white.opacity(0.00001))
+                .background(.primary.opacity(0.00001))
         }.buttonStyle(.plain)
             .hoverOpacity()
     }
-    
+
     private func FolderToggle() -> some View {
         Button {
             runOnLogicThread {
@@ -60,13 +59,12 @@ struct BottomTogglesSection: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 16, height: 16)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .opacity(0.9)
                 .frame(width: 36, height: 36)
-                .background(.white.opacity(0.00001))
+                .background(.primary.opacity(0.00001))
         }.buttonStyle(.plain)
             .hoverOpacity()
     }
-    
+
 }

@@ -9,10 +9,11 @@ import SwiftUI
 import HighlightSwift
 
 struct BrowseFileView: View {
-    
+
     @EnvironmentObject var repoHelper: RepoHelper
     @EnvironmentObject var gitHelper: GitHelper
-    
+    @EnvironmentObject var theme: ThemeManager
+
     @Binding var selectedFile: GitFileItem?
     @State var content: (list: [AttributedString], image: NSImage?, error: LocalizedStringResource?)? = nil
     @State var isContentLatest: Bool = false
@@ -34,14 +35,12 @@ struct BrowseFileView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 24, height: 24)
-                            .foregroundStyle(.white)
-                            .foregroundColor(.white)
+                            .foregroundStyle(.primary)
                         Text(error)
                             .font(.title3)
                             .frame(maxWidth: .infinity, alignment: .center)
                             .multilineTextAlignment(.center)
-                            .foregroundStyle(.white)
-                            .foregroundColor(.white)
+                            .foregroundStyle(.primary)
                     }.padding(.all)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .opacity(isContentLatest ? 1 : 0.3)
@@ -69,8 +68,7 @@ struct BrowseFileView: View {
                 VStack {
                     ProgressView()
                         .progressViewStyle(.circular)
-                        .accentColor(.white)
-                        .tint(.white)
+                        .tint(.primary)
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -88,13 +86,12 @@ struct BrowseFileView: View {
                 getFileContent()
             }
     }
-    
+
     private func FileLineView(index: Int, line: AttributedString) -> some View {
         return HStack(alignment: .top) {
             Text("\(index + 1)")
                 .frame(width: 50, alignment: .trailing)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .padding(.all, 5)
                 .opacity(0.5)
             Divider()
@@ -102,23 +99,21 @@ struct BrowseFileView: View {
             Text(line)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .padding(.all, 5)
-        }.background(selectedRange?.contains(index) == true || firstIndexSelection == index ? .red.opacity(0.1) : .white.opacity(0.000001))
+        }.background(selectedRange?.contains(index) == true || firstIndexSelection == index ? .red.opacity(0.1) : .primary.opacity(0.000001))
             .onTapGesture {
                 selectIndex(index: index)
             }.hoverOpacity()
     }
-    
+
     private func FileItemView(file: GitFileItem) -> some View {
         HStack(spacing: 15) {
             Image(systemName: "xmark.circle")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 16, height: 16)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .opacity(0.7)
                 .onTapGesture {
                     selectedFile = nil
@@ -129,27 +124,25 @@ struct BrowseFileView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                 Text(file.path)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                     .opacity(0.3)
             }
         }.padding(.horizontal, 15)
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity)
-            .background(RoundedRectangle(cornerRadius: 10).fill(Color(white: 0.15)))
+            .background(RoundedRectangle(cornerRadius: 10).fill(theme.backgroundTertiary))
             .padding(.horizontal, 15)
     }
-    
+
 }
 
 extension BrowseFileView {
-    
+
     private func getFileContent() {
         contentJob?.cancel()
         isContentLatest = false
@@ -196,7 +189,7 @@ extension BrowseFileView {
             isContentLatest = true
         }
     }
-    
+
     private func selectIndex(index: Int?) {
         guard let index else {
             firstIndexSelection = nil
@@ -222,7 +215,7 @@ extension BrowseFileView {
             selectedRange = nil
         }
     }
-    
+
     private func copyLines() {
         if let list = content?.list {
             if let selectedRange {
@@ -244,7 +237,7 @@ extension BrowseFileView {
             }
         }
     }
-    
+
     func splitAttributedString(inputString: AttributedString, separator: String) -> [AttributedString] {
         let nsAttributedString = NSAttributedString(inputString)
         let parts = nsAttributedString.string.components(separatedBy: separator)
@@ -257,5 +250,5 @@ extension BrowseFileView {
         }
         return result.compactMap { AttributedString($0) }
     }
-    
+
 }

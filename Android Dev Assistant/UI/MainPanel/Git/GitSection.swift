@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct GitSection: View {
-    
+
     @EnvironmentObject var repoHelper: RepoHelper
     @EnvironmentObject var gitHelper: GitHelper
     @State private var rotated = false
@@ -21,15 +21,13 @@ struct GitSection: View {
                         .font(.title2.bold())
                         .lineLimit(1)
                         .truncationMode(.tail)
-                        .foregroundStyle(.white)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.primary)
                     Image(systemName: "arrow.triangle.2.circlepath")
                         .resizable()
                         .scaledToFit()
                         .bold()
                         .frame(width: 16, height: 16)
-                        .foregroundStyle(.white)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.primary)
                         .opacity(0.7)
                         .rotationEffect(.degrees(rotated ? 360 : 0))
                         .onTapGesture {
@@ -50,5 +48,5 @@ struct GitSection: View {
             }
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    
+
 }

@@ -13,6 +13,7 @@ struct ScreenshotEditView: View {
     
     @EnvironmentObject var uiController: UIController
     @EnvironmentObject var toastHelper: ToastHelper
+    @EnvironmentObject var theme: ThemeManager
     
     var image: NSImage?
     @State var holdImage: NSImage?
@@ -74,7 +75,7 @@ struct ScreenshotEditView: View {
             ModeSwitchView()
         }.padding(.all)
             .frame(maxWidth: 300, maxHeight: .infinity)
-            .background(Color(white: 0.1))
+            .background(theme.background)
     }
     
     private func BottomControlsView(image: NSImage) -> some View {
@@ -92,7 +93,7 @@ struct ScreenshotEditView: View {
             Spacer()
         }.padding(.all)
             .frame(maxWidth: .infinity)
-            .background(Color(white: 0.15))
+            .background(theme.backgroundTertiary)
     }
     
     private func FooterItemView(name: LocalizedStringResource, icon: String, action: @escaping () -> ()) -> some View {
@@ -105,15 +106,13 @@ struct ScreenshotEditView: View {
                     .scaledToFit()
                     .frame(width: 16, height: 16)
                     .padding(.all, 12)
-                    .background(Circle().fill(Color(white: 0.15)))
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .background(Circle().fill(theme.backgroundTertiary))
+                    .foregroundStyle(.primary)
                 Text(name)
                     .font(.callout)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                     .opacity(0.7)
             }.frame(width: 80)
         }.buttonStyle(.plain)
@@ -126,8 +125,7 @@ struct ScreenshotEditView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 16, height: 16)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .opacity(isHighlight ? 0.5 : 1)
             Toggle(isOn: $isHighlight, label: {})
                 .toggleStyle(.switch)
@@ -136,8 +134,7 @@ struct ScreenshotEditView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 16, height: 16)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .opacity(isHighlight ? 1 : 0.5)
         }
     }

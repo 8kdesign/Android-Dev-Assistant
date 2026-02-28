@@ -9,24 +9,24 @@ import Foundation
 import SwiftUI
 
 class Toast: Identifiable {
-    
+
     var id = UUID()
     var message: LocalizedStringResource
     var expiryDate: Date
     var style: ToastStyle
-    
+
     init(message: LocalizedStringResource, expiryDate: Date, style: ToastStyle) {
         self.message = message
         self.expiryDate = expiryDate
         self.style = style
     }
-    
+
     enum ToastStyle {
         case normal
         case error
         case success
         case clipboard;
-        
+
         func getIcon() -> String {
             switch self {
             case .normal: return "info.circle"
@@ -35,15 +35,15 @@ class Toast: Identifiable {
             case .clipboard: return "list.bullet.clipboard"
             }
         }
-        
-        func getColor() -> Color {
+
+        func getColor(theme: ThemeManager) -> Color {
             switch self {
             case .success: return Color(red: 0, green: 0.7, blue: 0)
             case .error: return Color(red: 0.7, green: 0, blue: 0)
-            default: return Color(white: 0.25)
+            default: return theme.toastNormal
             }
         }
-        
+
     }
-    
+
 }

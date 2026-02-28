@@ -48,12 +48,11 @@ struct ComponentListView: View {
             .font(.callout)
             .frame(maxWidth: .infinity, alignment: .leading)
             .lineLimit(1)
-            .foregroundStyle(analyzeScreenHelper.selectedComponent == component ? .yellow : .white)
-            .foregroundColor(analyzeScreenHelper.selectedComponent == component ? .yellow : .white)
+            .foregroundStyle(analyzeScreenHelper.selectedComponent == component ? .yellow : .primary)
             .padding(.all, 10)
             .opacity(analyzeScreenHelper.disabledComponentList.contains(component) ? 0.3 : 1)
             .strikethrough(analyzeScreenHelper.disabledComponentList.contains(component))
-            .background(.white.opacity(0.00001))
+            .background(.primary.opacity(0.00001))
             .onTapGesture {
                 if analyzeScreenHelper.selectedComponent == component {
                     analyzeScreenHelper.addTab(component: component, needSet: true)

@@ -8,16 +8,17 @@
 import SwiftUI
 
 struct SettingsView: View {
-    
+
     @Environment(\.openURL) private var openURL
     @EnvironmentObject var versionHelper: VersionHelper
     @EnvironmentObject var uiController: UIController
     @EnvironmentObject var adbHelper: AdbHelper
     @EnvironmentObject var apkHelper: ApkHelper
-    
+    @EnvironmentObject var theme: ThemeManager
+
     let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "X"
     @State var enableCleanScreenshot: Bool = UserDefaultsHelper.getScreenshotCleanerEnabled()
-    
+
     var body: some View {
         PopupView(title: "Settings") {
             HStack(spacing: 0) {
@@ -28,19 +29,17 @@ struct SettingsView: View {
             UserDefaultsHelper.setScreenshotCleanerEnabled(value)
         }
     }
-    
+
     private func InfoView() -> some View {
         VStack(spacing: 10) {
             Text("Android Dev Assistant")
                 .font(.title2)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
             Text("v\(appVersion)")
                 .font(.body)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
                 .opacity(0.7)
@@ -51,12 +50,10 @@ struct SettingsView: View {
                         .scaledToFit()
                         .frame(width: 16, height: 16)
                         .foregroundStyle(.white)
-                        .foregroundColor(.white)
                         .opacity(0.7)
                         .padding(.vertical, 5)
                     Text("New Version Available")
                         .foregroundStyle(.white)
-                        .foregroundColor(.white)
                         .opacity(0.9)
                 }.padding(.vertical, 5)
                     .padding(.horizontal, 10)
@@ -75,19 +72,20 @@ struct SettingsView: View {
             }
             Spacer()
             Text("by 8K")
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
                 .opacity(0.3)
         }.padding(.all, 30)
             .frame(maxWidth: 200, maxHeight: .infinity, alignment: .top)
-            .background(Color(white: 0.08))
+            .background(theme.backgroundInfoPanel)
     }
-    
+
     private func TogglesView() -> some View {
         ScrollView {
             LazyVStack(spacing: 15) {
+                HeaderItemView(title: "Appearance")
+                SwitchItemView(title: "Dark mode", isEnabled: $theme.isDarkMode)
                 HeaderItemView(title: "Screenshots")
                 SwitchItemView(title: "Auto cleanup screenshots", isEnabled: $enableCleanScreenshot)
                 HeaderItemView(title: "Folders")
@@ -96,43 +94,40 @@ struct SettingsView: View {
             }.padding(.all, 20)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    
+
     private func HeaderItemView(title: LocalizedStringResource) -> some View {
         Text(title)
             .font(.body)
-            .foregroundStyle(.black)
-            .foregroundColor(.black)
+            .foregroundStyle(theme.badgeText)
             .lineLimit(1)
             .truncationMode(.tail)
             .padding(.vertical, 7)
             .padding(.horizontal, 10)
-            .background(RoundedRectangle(cornerRadius: 5).fill(.white.opacity(0.8)))
+            .background(RoundedRectangle(cornerRadius: 5).fill(theme.badgeBackground))
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.top, 10)
     }
-    
+
     private func SwitchItemView(title: LocalizedStringResource, isEnabled: Binding<Bool>) -> some View {
         HStack {
             Text(title)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .lineLimit(1)
                 .truncationMode(.tail)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
             Spacer()
             Toggle(isOn: isEnabled, label: {})
                 .toggleStyle(.switch)
         }.frame(maxWidth: .infinity)
     }
-    
+
     private func FolderItemView(title: LocalizedStringResource, path: String?) -> some View {
         VStack(spacing: 10) {
             Text(title)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .lineLimit(1)
                 .truncationMode(.tail)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .padding(.horizontal, 10)
                 .opacity(0.7)
             HStack(spacing: 0) {
@@ -140,8 +135,7 @@ struct SettingsView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                     .opacity(0.7)
                     .padding(.all)
                     .textSelection(path == nil ? .disabled : .disabled)
@@ -155,27 +149,26 @@ struct SettingsView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 16, height: 16)
-                        .foregroundStyle(.white)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.primary)
                         .opacity(0.7)
                         .padding(.all, 16)
-                        .background(Color(white: 0.15))
+                        .background(theme.backgroundTertiary)
                 }.buttonStyle(.plain)
                     .hoverOpacity()
             }.frame(maxWidth: .infinity)
-                .background(Color(white: 0.12))
+                .background(theme.backgroundSecondary)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         }
     }
-    
+
 }
 
 extension SettingsView {
-    
+
     private func openUpdateLink() {
         if let url = URL(string: "https://github.com/8kdesign/Android-Dev-Assistant/releases/latest") {
             openURL(url)
         }
     }
-    
+
 }

@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct SelectFileView: View {
-    
+
     @EnvironmentObject var repoHelper: RepoHelper
     @EnvironmentObject var gitHelper: GitHelper
-    
+    @EnvironmentObject var theme: ThemeManager
+
     @FocusState var focus: Bool
     @Binding var files: CommitFiles?
     @Binding var selectedFile: GitFileItem?
@@ -51,7 +52,7 @@ struct SelectFileView: View {
                 searchTerm = ""
             }
     }
-    
+
     private func SearchBarView() -> some View {
         HStack {
             HStack {
@@ -59,14 +60,12 @@ struct SelectFileView: View {
                     .textFieldStyle(.plain)
                     .frame(maxWidth: .infinity)
                     .focused($focus)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                 Image(systemName: "xmark.circle")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                     .opacity(searchTerm.isEmpty ? 0.3 : 0.7)
                     .onTapGesture {
                         searchTerm = ""
@@ -74,7 +73,7 @@ struct SelectFileView: View {
                     }.hoverOpacity(searchTerm.isEmpty ? 1 : HOVER_OPACITY)
             }.padding(.horizontal, 20)
                 .frame(height: 40)
-                .background(Capsule().fill(Color(white: 0.15)))
+                .background(Capsule().fill(theme.backgroundTertiary))
                 .frame(maxWidth: 300, alignment: .leading)
                 .padding(.all)
                 .opacity(searchResults == nil ? 0.3 : 1)
@@ -83,8 +82,7 @@ struct SelectFileView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 16, height: 16)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .opacity(searchResults == nil ? 1 : 0)
                 .rotationEffect(.degrees(spinnerAngle))
                 .fixedSize()
@@ -96,7 +94,7 @@ struct SelectFileView: View {
                 }
         }.frame(maxWidth: .infinity, alignment: .leading)
     }
-    
+
     private func FileItemView(file: GitFileItem) -> some View {
         HStack(spacing: 15) {
             VStack(spacing: 5) {
@@ -105,30 +103,28 @@ struct SelectFileView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                 Text(file.path)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                    .foregroundStyle(.white)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                     .opacity(0.3)
             }
         }.padding(.horizontal, 15)
             .padding(.vertical, 10)
             .frame(maxWidth: 600)
-            .background(RoundedRectangle(cornerRadius: 10).fill(Color(white: 0.15)))
+            .background(RoundedRectangle(cornerRadius: 10).fill(theme.backgroundTertiary))
             .onTapGesture {
                 selectedFile = file
             }.hoverOpacity()
             .padding(.horizontal, 15)
     }
-    
+
 }
 
 extension SelectFileView {
-    
+
     private func search() {
         searchJob?.cancel()
         let existingFiles = files
@@ -142,5 +138,5 @@ extension SelectFileView {
             }
         }
     }
-    
+
 }

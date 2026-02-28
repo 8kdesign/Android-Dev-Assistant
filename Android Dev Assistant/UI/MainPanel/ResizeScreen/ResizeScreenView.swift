@@ -11,6 +11,7 @@ struct ResizeScreenView: View {
     
     @EnvironmentObject var uiController: UIController
     @EnvironmentObject var adbHelper: AdbHelper
+    @EnvironmentObject var theme: ThemeManager
     @State var originalSize: ScreenSize? = nil
     @State var mockScreenType: MockScreenType = .NORMAL
     
@@ -40,12 +41,11 @@ struct ResizeScreenView: View {
                 .frame(maxWidth: .infinity, alignment: .center)
                 .lineLimit(1)
                 .truncationMode(.tail)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .opacity(0.7)
         }.padding(.all, 15)
             .frame(maxWidth: .infinity)
-            .background(RoundedRectangle(cornerRadius: 15).fill(Color(white: 0.15)))
+            .background(RoundedRectangle(cornerRadius: 15).fill(theme.backgroundTertiary))
             .opacity(mockScreenType == type ? 1 : 0.3)
             .onTapGesture {
                 setCurrentMockType(type)
@@ -63,7 +63,7 @@ struct ResizeScreenView: View {
                 context.stroke(
                     Path(roundedRect: CGRect(x: horizontalPadding, y: verticalPadding, width: width, height: height),
                          cornerRadius: CGFloat(size.height) / 15),
-                    with: .color(.white),
+                    with: .color(.primary),
                     style: .init(lineWidth: 2)
                 )
             }

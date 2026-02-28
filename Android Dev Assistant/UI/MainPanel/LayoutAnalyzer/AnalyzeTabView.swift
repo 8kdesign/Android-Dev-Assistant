@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct AnalyzeTabView: View {
-    
+
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
+    @EnvironmentObject var theme: ThemeManager
 
     var body: some View {
         ScrollView(.horizontal) {
@@ -26,34 +27,32 @@ struct AnalyzeTabView: View {
         }.frame(height: 40)
             .frame(maxWidth: .infinity)
             .scrollIndicators(.never)
-            .background(Color(white: 0.15))
+            .background(theme.backgroundTertiary)
     }
-    
+
     private func ListTabView() -> some View {
         Image(systemName: "list.bullet.indent")
             .resizable()
             .scaledToFit()
             .frame(width: 16, height: 16)
-            .foregroundStyle(.white)
-            .foregroundColor(.white)
+            .foregroundStyle(.primary)
             .padding(.horizontal)
             .frame(height:35)
             .opacity(analyzeScreenHelper.selectedTab == .list ? 1 : 0.3)
-            .background(analyzeScreenHelper.selectedTab == .list ? Color(white: 0.1) : Color(white: 0.13))
+            .background(analyzeScreenHelper.selectedTab == .list ? theme.background : theme.backgroundElevated)
             .onTapGesture {
                 analyzeScreenHelper.selectedTab = .list
             }.hoverOpacity()
             .clipShape(UnevenRoundedRectangle(cornerRadii: .init(topLeading: 5, topTrailing: 5)))
     }
-    
+
     private func TempTabView(component: ComponentItem) -> some View {
         HStack{
             Image(systemName: "pin")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 16, height: 16)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .onTapGesture {
                     analyzeScreenHelper.fixTab(tab: .temp(component: component))
                 }.hoverOpacity()
@@ -62,26 +61,24 @@ struct AnalyzeTabView: View {
                 .frame(maxWidth: 100, alignment: .leading)
                 .lineLimit(1)
                 .truncationMode(.tail)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
         }.padding(.horizontal)
             .frame(height:35)
             .opacity(analyzeScreenHelper.selectedTab == .temp(component: component) ? 1 : 0.3)
-            .background(analyzeScreenHelper.selectedTab == .temp(component: component) ? Color(white: 0.1) : Color(white: 0.13))
+            .background(analyzeScreenHelper.selectedTab == .temp(component: component) ? theme.background : theme.backgroundElevated)
             .onTapGesture {
                 analyzeScreenHelper.selectedTab = .temp(component: component)
             }.hoverOpacity()
             .clipShape(UnevenRoundedRectangle(cornerRadii: .init(topLeading: 5, topTrailing: 5)))
     }
-    
+
     private func FixedTabView(component: ComponentItem) -> some View {
         HStack{
             Image(systemName: "pin.fill")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 16, height: 16)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .onTapGesture {
                     analyzeScreenHelper.unfixTab(tab: .fixed(component: component))
                 }.hoverOpacity()
@@ -90,17 +87,16 @@ struct AnalyzeTabView: View {
                 .frame(maxWidth: 100, alignment: .leading)
                 .lineLimit(1)
                 .truncationMode(.tail)
-                .foregroundStyle(.white)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
         }.padding(.horizontal)
             .frame(height:35)
             .opacity(analyzeScreenHelper.selectedTab == .fixed(component: component) ? 1 : 0.3)
-            .background(analyzeScreenHelper.selectedTab == .fixed(component: component) ? Color(white: 0.1) : Color(white: 0.13))
+            .background(analyzeScreenHelper.selectedTab == .fixed(component: component) ? theme.background : theme.backgroundElevated)
             .onTapGesture {
                 analyzeScreenHelper.selectedTab = .fixed(component: component)
             }.hoverOpacity()
             .clipShape(UnevenRoundedRectangle(cornerRadii: .init(topLeading: 5, topTrailing: 5)))
     }
-    
-    
+
+
 }

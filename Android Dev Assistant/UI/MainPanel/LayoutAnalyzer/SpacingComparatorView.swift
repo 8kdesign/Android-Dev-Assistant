@@ -10,13 +10,14 @@ import SwiftUI
 struct SpacingComparatorView: View {
     
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
+    @EnvironmentObject var theme: ThemeManager
     @State var positionRelation: ComponentPositionRelation? = nil
     
     var body: some View {
         CanvasView(relation: positionRelation)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .aspectRatio(1, contentMode: .fit)
-            .background(Color(white: 0.13))
+            .background(theme.backgroundElevated)
             .onAppear {
                 positionRelation = analyzeScreenHelper.compare()
             }.onChange(of: analyzeScreenHelper.compareComponent) { _ in
@@ -64,7 +65,7 @@ extension SpacingComparatorView {
             var line = Path()
             line.move(to: CGPoint(x: 0, y: value))
             line.addLine(to: CGPoint(x: sideSize, y: value))
-            context.stroke(line, with: .color(Color(white: 0.3)), style: .init(lineWidth: 1))
+            context.stroke(line, with: .color(theme.gridLine), style: .init(lineWidth: 1))
             if let nextKey = keys[safe: index + 1] {
                 var message = ""
                 if let density {
@@ -75,7 +76,7 @@ extension SpacingComparatorView {
                 }
                 let text = Text(message)
                     .font(.caption)
-                    .foregroundColor(Color(white: 0.5))
+                    .foregroundColor(theme.gridText)
                 if isX {
                     context.draw(
                         text,
