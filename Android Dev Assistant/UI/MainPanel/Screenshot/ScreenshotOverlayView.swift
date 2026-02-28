@@ -25,7 +25,7 @@ struct ScreenshotOverlayView: View {
                     } label: {
                         ImageView(image: image)
                             .padding(.all, 5)
-                            .background(.white)
+                            .background(.primary)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     }.hoverOpacity()
                         .padding(.all, 20)
