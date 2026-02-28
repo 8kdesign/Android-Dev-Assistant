@@ -39,7 +39,7 @@ struct MenuGridItem: View {
                         .frame(width: 45, height: 45)
                         .rotationEffect(.degrees(-30))
                         .foregroundStyle(iconColor)
-                        .opacity(0.3)
+                        .opacity(theme.isDarkMode ? 0.3 : 0.7)
                         .offset(x: 5, y: 5)
                 }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
             }.frame(height: 80)

@@ -20,7 +20,7 @@ struct MenuGridView: View {
                 MenuGridItem(name: "Screenshot", icon: "camera.viewfinder", iconColor: .gray, requireAdb: true) {
                     adbHelper.screenshot()
                 }
-                MenuGridItem(name: "Mock Screen", icon: "rectangle.expand.vertical", iconColor: .yellow, requireAdb: true) {
+                MenuGridItem(name: "Mock Screen", icon: "rectangle.expand.vertical", iconColor: .red, requireAdb: true) {
                     uiController.showingPopup = .mockScreenSize
                 }
                 MenuGridItem(name: "Scrcpy", icon: "smartphone", iconColor: .teal, requireAdb: true) {

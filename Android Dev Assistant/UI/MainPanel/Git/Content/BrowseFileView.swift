@@ -84,6 +84,8 @@ struct BrowseFileView: View {
                 getFileContent()
             }.onAppear {
                 getFileContent()
+            }.onChange(of: theme.isDarkMode) { _ in
+                getFileContent()
             }
     }
 
@@ -160,7 +162,7 @@ extension BrowseFileView {
                     let highlight = Highlight()
                     let language = file.name.split(separator: ".").map { String($0) }.last
                     do {
-                        let attributeString = try await highlight.attributedText(string, language: language ?? "", colors: .dark(.github))
+                        let attributeString = try await highlight.attributedText(string, language: language ?? "", colors: theme.isDarkMode ? .dark(.github) : .light(.github))
                         let lines = splitAttributedString(inputString: attributeString, separator: "\n")
                         Task { @MainActor in
                             content = (lines, nil, nil)

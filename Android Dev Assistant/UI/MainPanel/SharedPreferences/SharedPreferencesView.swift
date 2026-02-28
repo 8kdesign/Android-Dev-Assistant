@@ -128,7 +128,6 @@ extension SharedPreferencesView {
             HStack(spacing: 10) {
                 Image(systemName: "shippingbox")
                     .foregroundStyle(.gray)
-                    .foregroundColor(.gray)
                 Text(package)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
@@ -196,7 +195,6 @@ extension SharedPreferencesView {
             HStack(spacing: 10) {
                 Image(systemName: "doc.text")
                     .foregroundStyle(.gray)
-                    .foregroundColor(.gray)
                 Text(file)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
@@ -250,13 +248,12 @@ extension SharedPreferencesView {
             HStack(alignment: .top) {
                 Text(entry.key)
                     .font(.system(.body, design: .monospaced))
-                    .foregroundStyle(.yellow)
-                    .foregroundColor(.yellow)
+                    .foregroundStyle(theme.accent)
                     .textSelection(.enabled)
                 Spacer()
                 Text(entry.type)
                     .font(.caption2)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(theme.background)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
                     .background(.gray)

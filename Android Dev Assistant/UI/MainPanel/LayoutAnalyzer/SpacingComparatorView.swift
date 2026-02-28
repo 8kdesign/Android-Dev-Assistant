@@ -38,8 +38,8 @@ struct SpacingComparatorView: View {
                 drawLines(context: &context, size: size, lines: info.yGridMap, isX: false)
             }
             let mainPath = Path(mainRect)
-            context.fill(mainPath, with: .color(.yellow.opacity(0.3)))
-            context.stroke(mainPath, with: .color(.yellow), style: .init(lineWidth: 2))
+            context.fill(mainPath, with: .color(theme.accent.opacity(0.3)))
+            context.stroke(mainPath, with: .color(theme.accent), style: .init(lineWidth: 2))
             if let otherRect = info?.otherRect {
                 context.stroke(Path(otherRect), with: .color(.red), style: .init(lineWidth: 2))
             }

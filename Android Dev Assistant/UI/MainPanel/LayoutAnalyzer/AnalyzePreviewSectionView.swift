@@ -70,7 +70,7 @@ struct AnalyzePreviewSectionView: View {
                 let height = bounds.height * scale
                 let scaledRect = CGRect(x: x, y: y, width: width, height: height)
                 let isSelectedComponent = component == analyzeScreenHelper.selectedComponent
-                context.stroke(Path(scaledRect), with: .color(.yellow.opacity(isSelectedComponent ? 1 : 0.5)), style: .init(lineWidth: isSelectedComponent ? 2 : 1))
+                context.stroke(Path(scaledRect), with: .color(theme.accent.opacity(isSelectedComponent ? 1 : 0.5)), style: .init(lineWidth: isSelectedComponent ? 2 : 1))
             }
             if let component = analyzeScreenHelper.compareComponent {
                 let bounds = component.bounds

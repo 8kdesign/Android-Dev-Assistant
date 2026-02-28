@@ -49,6 +49,16 @@
         }
       }
     },
+    "Appearance" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "定制"
+          }
+        }
+      }
+    },
     "Auto cleanup screenshots" : {
       "localizations" : {
         "zh-Hans" : {
@@ -175,6 +185,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "特定"
+          }
+        }
+      }
+    },
+    "Dark mode" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "深色模式"
           }
         }
       }

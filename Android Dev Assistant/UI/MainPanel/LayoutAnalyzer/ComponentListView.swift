@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ComponentListView: View {
     
+    @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var analyzeScreenHelper: AnalyzeScreenHelper
     @State var components: [ComponentItem] = []
     @State var maxDepth = 0
@@ -48,7 +49,7 @@ struct ComponentListView: View {
             .font(.callout)
             .frame(maxWidth: .infinity, alignment: .leading)
             .lineLimit(1)
-            .foregroundStyle(analyzeScreenHelper.selectedComponent == component ? .yellow : .primary)
+            .foregroundStyle(analyzeScreenHelper.selectedComponent == component ? theme.accent : .primary)
             .padding(.all, 10)
             .opacity(analyzeScreenHelper.disabledComponentList.contains(component) ? 0.3 : 1)
             .strikethrough(analyzeScreenHelper.disabledComponentList.contains(component))

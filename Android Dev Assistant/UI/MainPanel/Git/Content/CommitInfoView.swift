@@ -72,10 +72,22 @@ struct CommitInfoView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                    .foregroundStyle(isAdd ? Color(red: 0.6, green: 1, blue: 0.65) : Color(red: 1, green: 0.6, blue: 0.6))
+                    .foregroundStyle(getColor(isAdd: isAdd))
                     .opacity(0.5)
             }
         }.frame(maxWidth: .infinity)
     }
 
+}
+
+extension CommitInfoView {
+    
+    private func getColor(isAdd: Bool) -> Color {
+        if theme.isDarkMode {
+            return isAdd ? Color(red: 0.6, green: 1, blue: 0.65) : Color(red: 1, green: 0.6, blue: 0.6)
+        } else {
+            return isAdd ? Color(red: 0, green: 0.5, blue: 0) : Color(red: 0.5, green: 0, blue: 0)
+        }
+    }
+    
 }

@@ -53,6 +53,9 @@ class ThemeManager: ObservableObject {
     var surfaceHighlighted: Color { Color(white: isDarkMode ? 0.2 : 0.80) }
 
     // MARK: - Misc
+    
+    /// Accent for app
+    var accent: Color { isDarkMode ? .yellow : .orange }
 
     /// Toast normal style background
     var toastNormal: Color { Color(white: isDarkMode ? 0.25 : 0.78) }

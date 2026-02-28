@@ -10,6 +10,7 @@ import AppKit
 
 struct LastCrashLogsView: View {
     
+    @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var uiController: UIController
     @EnvironmentObject var toastHelper: ToastHelper
     var logs: String
@@ -38,8 +39,7 @@ struct LastCrashLogsView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                    .foregroundStyle(.yellow)
-                    .foregroundColor(.yellow)
+                    .foregroundStyle(theme.accent)
                 Button {
                     copyToClipboard(item.1 as NSString)
                     toastHelper.addToast("Copied to clipboard", style: .clipboard)
@@ -48,8 +48,7 @@ struct LastCrashLogsView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 16, height: 16)
-                        .foregroundStyle(.yellow)
-                        .foregroundColor(.yellow)
+                        .foregroundStyle(theme.accent)
                 }.buttonStyle(.plain)
                     .hoverOpacity()
             }.frame(maxWidth: .infinity)
