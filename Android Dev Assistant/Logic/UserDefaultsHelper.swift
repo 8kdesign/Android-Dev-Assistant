@@ -12,7 +12,7 @@ fileprivate let defaults = UserDefaults.standard
 fileprivate let SCREENSHOT_EDIT_IS_HIGHLIGHT_KEY = "screenshot_edit_is_highlight"
 fileprivate let DISABLE_SCREENSHOT_CLEANER_KEY = "screenshot_cleaner"
 fileprivate let LAST_SELECTED_TAB_IS_REPO = "last_selected_tab_is_repo"
-fileprivate let DARK_MODE_ENABLED_KEY = "dark_mode_enabled"
+fileprivate let DARK_MODE_DISABLED_KEY = "dark_mode_disabled"
 
 class UserDefaultsHelper {
     
@@ -41,11 +41,11 @@ class UserDefaultsHelper {
     }
 
     static func setDarkModeEnabled(_ isEnabled: Bool) {
-        defaults.set(!isEnabled, forKey: DARK_MODE_ENABLED_KEY)
+        defaults.set(!isEnabled, forKey: DARK_MODE_DISABLED_KEY)
     }
 
     static func getDarkModeEnabled() -> Bool {
-        return !defaults.bool(forKey: DARK_MODE_ENABLED_KEY)
+        return !defaults.bool(forKey: DARK_MODE_DISABLED_KEY)
     }
 
 }
