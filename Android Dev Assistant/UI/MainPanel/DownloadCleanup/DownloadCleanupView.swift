@@ -16,8 +16,35 @@ struct DownloadCleanupView: View {
     @State var isDeleting = false
     @State var showDeleteConfirmation = false
 
-    private var sortedItems: [DownloadApkItem] {
-        (items ?? []).sorted { $0.date > $1.date }
+    private var groupedByDate: [(label: String, items: [DownloadApkItem])] {
+        guard let items else { return [] }
+        let calendar = Calendar.current
+        let now = Date()
+        let dayFormatter = DateFormatter()
+        dayFormatter.dateStyle = .medium
+        dayFormatter.timeStyle = .none
+        // Group by calendar day
+        let byDay = Dictionary(grouping: items) { item in
+            calendar.startOfDay(for: item.date)
+        }
+        // Sort days newest first
+        let sortedDays = byDay.keys.sorted(by: >)
+        return sortedDays.map { day in
+            let label: String
+            if calendar.isDateInToday(day) {
+                label = String(localized: "Today")
+            } else if calendar.isDateInYesterday(day) {
+                label = String(localized: "Yesterday")
+            } else if let weekAgo = calendar.date(byAdding: .day, value: -7, to: now), day >= weekAgo {
+                label = dayFormatter.string(from: day)
+            } else if let monthAgo = calendar.date(byAdding: .month, value: -1, to: now), day >= monthAgo {
+                label = dayFormatter.string(from: day)
+            } else {
+                label = String(localized: "Older")
+            }
+            let dayItems = byDay[day]!.sorted { $0.date > $1.date }
+            return (label: label, items: dayItems)
+        }
     }
 
     var body: some View {
@@ -97,16 +124,32 @@ extension DownloadCleanupView {
     private func ApkListView() -> some View {
         ScrollView {
             LazyVStack(spacing: 0) {
-                ForEach(Array(sortedItems.enumerated()), id: \.element.id) { index, item in
-                    ApkItemRow(item: item)
-                    if index < sortedItems.count - 1 {
-                        Divider().opacity(0.2).padding(.leading, 52)
+                ForEach(Array(groupedByDate.enumerated()), id: \.offset) { groupIndex, group in
+                    DateHeaderView(label: group.label)
+                    ForEach(Array(group.items.enumerated()), id: \.element.id) { index, item in
+                        ApkItemRow(item: item)
+                        if index < group.items.count - 1 {
+                            Divider().opacity(0.2).padding(.leading, 52)
+                        }
+                    }
+                    if groupIndex < groupedByDate.count - 1 {
+                        Divider().opacity(0.3)
                     }
                 }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .scrollIndicators(.never)
+    }
+
+    private func DateHeaderView(label: String) -> some View {
+        Text(label)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.top, 10)
+            .padding(.bottom, 4)
     }
 
     private func ApkItemRow(item: DownloadApkItem) -> some View {
