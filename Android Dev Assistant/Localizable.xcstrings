@@ -122,7 +122,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "对比失败：不同文件"
+            "value" : "对比失败：未能找到文件"
           }
         }
       }

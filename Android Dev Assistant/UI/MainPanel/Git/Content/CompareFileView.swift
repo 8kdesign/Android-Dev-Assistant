@@ -204,7 +204,7 @@ struct CompareFileView: View {
         switch line.type {
         case .added: bgColor = .green.opacity(0.15)
         case .removed: bgColor = .red.opacity(0.15)
-        case .placeholder: bgColor = theme.backgroundDeep
+        case .placeholder: bgColor = theme.backgroundInfoPanel
         case .unchanged: bgColor = .clear
         }
 
