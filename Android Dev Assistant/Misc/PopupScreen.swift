@@ -15,4 +15,12 @@ enum PopupScreen {
     case layout
     case lastCrashLogs(logs: String)
     case sharedPreferences
+    case downloadCleanup
+}
+
+struct DownloadApkItem: Identifiable {
+    let id = UUID()
+    let path: String
+    let fileName: String
+    let date: Date
 }

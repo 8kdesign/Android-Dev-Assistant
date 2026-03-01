@@ -481,6 +481,73 @@ class AdbHelper: ObservableObject {
         }
     }
 
+    func listDownloadApks(callback: @escaping @MainActor ([DownloadApkItem]) -> ()) {
+        guard let adbPath, let selectedDevice else { return }
+        runOnLogicThread {
+            do {
+                // List APK files in /sdcard/Download with details
+                // Use find + ls to get modification epoch, compatible with Android toybox
+                let script = "find /sdcard/Download -name '*.apk' -type f 2>/dev/null | while read f; do echo \"$(ls -ld --full-time \"$f\" 2>/dev/null | awk '{print $6\" \"$7}')|$f\"; done"
+                let result = try await runCommand(
+                    path: adbPath,
+                    arguments: ["-s", selectedDevice, "shell", script]
+                )
+                let output = String(data: result, encoding: .utf8) ?? ""
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+                var items: [DownloadApkItem] = []
+                for line in output.split(separator: "\n") {
+                    let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !trimmed.isEmpty else { continue }
+                    let parts = trimmed.split(separator: "|", maxSplits: 1)
+                    guard parts.count == 2 else { continue }
+                    let dateStr = String(parts[0]).trimmingCharacters(in: .whitespaces)
+                    let path = String(parts[1])
+                    let fileName = (path as NSString).lastPathComponent
+                    // Parse date, truncate fractional seconds if present
+                    let cleanDate = String(dateStr.prefix(19))
+                    let date = dateFormatter.date(from: cleanDate) ?? Date.distantPast
+                    items.append(DownloadApkItem(
+                        path: path,
+                        fileName: fileName,
+                        date: date
+                    ))
+                }
+                Task { @MainActor in
+                    callback(items)
+                    LogHelper.shared.insertLog(string: "Listed download APKs")
+                }
+            } catch {
+                Task { @MainActor in
+                    callback([])
+                    LogHelper.shared.insertLog(string: error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    func deleteDownloadFiles(paths: [String], callback: @escaping @MainActor (Int) -> ()) {
+        guard let adbPath, let selectedDevice else { return }
+        runOnLogicThread {
+            var deleted = 0
+            for path in paths {
+                do {
+                    let _ = try await runCommand(path: adbPath, arguments: ["-s", selectedDevice, "shell", "rm", path])
+                    deleted += 1
+                } catch {
+                    Task { @MainActor in
+                        LogHelper.shared.insertLog(string: "Failed to delete: \(path)")
+                    }
+                }
+            }
+            Task { @MainActor in
+                callback(deleted)
+                LogHelper.shared.insertLog(string: "Deleted \(deleted) file(s)")
+            }
+        }
+    }
+
     @LogicActor private func getDpScale(_ output: String) -> CGFloat? {
         let patterns = [
             #"Override density:\s*(\d+)"#,

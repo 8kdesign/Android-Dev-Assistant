@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xcodebuild -scheme \"Android Dev Assistant\" -destination 'platform=macOS' build)"
+    ]
+  }
+}
