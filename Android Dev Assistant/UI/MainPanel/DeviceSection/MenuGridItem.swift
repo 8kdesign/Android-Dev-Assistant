@@ -24,7 +24,7 @@ struct MenuGridItem: View {
         } label: {
             ZStack(alignment: .top) {
                 Text(name)
-                    .font(.title3)
+                    .font(.body.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)

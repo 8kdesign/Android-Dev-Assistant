@@ -65,6 +65,16 @@
         }
       }
     },
+    "APK Cleaner" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清理APK"
+          }
+        }
+      }
+    },
     "Appearance" : {
       "localizations" : {
         "zh-Hans" : {
@@ -131,16 +141,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "子view"
-          }
-        }
-      }
-    },
-    "Cleaner" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "清理APK"
           }
         }
       }

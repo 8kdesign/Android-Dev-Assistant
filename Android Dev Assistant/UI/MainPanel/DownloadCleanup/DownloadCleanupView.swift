@@ -48,7 +48,7 @@ struct DownloadCleanupView: View {
     }
 
     var body: some View {
-        PopupView(title: "Cleaner") {
+        PopupView(title: "APK Cleaner") {
             if let items {
                 if items.isEmpty {
                     Text("No APK files found in Downloads")

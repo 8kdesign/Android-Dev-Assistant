@@ -42,7 +42,7 @@ struct MenuGridView: View {
                 MenuGridItem(name: "Shared Prefs", icon: "tray.full.fill", iconColor: .green, requireAdb: true) {
                     uiController.showingPopup = .sharedPreferences
                 }
-                MenuGridItem(name: "Cleaner", icon: "trash.circle.fill", iconColor: .pink, requireAdb: true) {
+                MenuGridItem(name: "APK Cleaner", icon: "trash.circle.fill", iconColor: .pink, requireAdb: true) {
                     uiController.showingPopup = .downloadCleanup
                 }
             }.padding([.horizontal, .bottom])
