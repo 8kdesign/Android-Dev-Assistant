@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AppKit
 import HighlightSwift
 
 struct BrowseFileView: View {
@@ -134,6 +135,15 @@ struct BrowseFileView: View {
                     .foregroundStyle(.primary)
                     .opacity(0.3)
             }
+            Image(systemName: "arrow.left.arrow.right")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 14, height: 14)
+                .foregroundStyle(.primary)
+                .opacity(0.7)
+                .onTapGesture {
+                    openCompareWindow()
+                }.hoverOpacity()
         }.padding(.horizontal, 15)
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity)
@@ -144,6 +154,27 @@ struct BrowseFileView: View {
 }
 
 extension BrowseFileView {
+
+    private func openCompareWindow() {
+        guard let file = selectedFile, let commit = gitHelper.selectedCommit else { return }
+        let compareView = CompareFileView(file: file, currentCommit: commit)
+            .environmentObject(gitHelper)
+            .environmentObject(repoHelper)
+            .environmentObject(theme)
+        let hostingView = NSHostingView(rootView: compareView)
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 900, height: 600),
+            styleMask: [.titled, .closable, .resizable, .miniaturizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.isReleasedWhenClosed = false
+        window.contentView = hostingView
+        window.title = "Compare: \(file.name)"
+        window.appearance = NSAppearance(named: theme.isDarkMode ? .darkAqua : .aqua)
+        window.center()
+        window.makeKeyAndOrderFront(nil)
+    }
 
     private func getFileContent() {
         contentJob?.cancel()

@@ -10,6 +10,28 @@
     "@%@" : {
       "shouldTranslate" : false
     },
+    "%@ - %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ - %2$@"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
     "%lld" : {
       "shouldTranslate" : false
     },
@@ -95,12 +117,32 @@
         }
       }
     },
+    "Binary files differ" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对比失败：不同文件"
+          }
+        }
+      }
+    },
     "Branch" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "分支"
+          }
+        }
+      }
+    },
+    "Branch:" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分支："
           }
         }
       }
@@ -151,6 +193,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "可点击"
+          }
+        }
+      }
+    },
+    "Commit:" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commit："
           }
         }
       }
@@ -331,6 +383,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未能找到文件"
+          }
+        }
+      }
+    },
+    "Files are identical" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件相同"
           }
         }
       }
@@ -667,6 +729,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "搜索应用"
+          }
+        }
+      }
+    },
+    "Select a branch" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择分支"
+          }
+        }
+      }
+    },
+    "Select a commit" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择commit"
+          }
+        }
+      }
+    },
+    "Select a commit to compare" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择要对比的commit"
           }
         }
       }

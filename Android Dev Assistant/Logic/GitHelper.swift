@@ -152,7 +152,7 @@ class GitHelper: ObservableObject {
         }
     }
     
-    private func getBranchCommits(repo: RepoItem, branch: String, offset: Int = 0, callback: @escaping @MainActor ([CommitItem]) -> ()) -> Task<(), Never>? {
+    func getBranchCommits(repo: RepoItem, branch: String, offset: Int = 0, callback: @escaping @MainActor ([CommitItem]) -> ()) -> Task<(), Never>? {
         guard let gitPath else {
             callback([])
             return nil
@@ -317,6 +317,31 @@ class GitHelper: ObservableObject {
         }
     }
     
+    func getFileDiff(repo: RepoItem, fromHash: String, toHash: String, file: String, callback: @escaping @LogicActor (String) async -> ()) -> Task<(), Never>? {
+        guard let gitPath else {
+            runOnLogicThread {
+                await callback("")
+            }
+            return nil
+        }
+        return runOnLogicThread {
+            do {
+                let result = try await runCommand(path: gitPath, arguments: ["-C", repo.path, "diff", "-U999999", "--no-color", fromHash, toHash, "--", file])
+                let string = String(data: result, encoding: .utf8) ?? ""
+                if !Task.isCancelled {
+                    await callback(string)
+                }
+            } catch {
+                if !Task.isCancelled {
+                    Task { @MainActor in
+                        LogHelper.shared.insertLog(string: error.localizedDescription)
+                    }
+                    await callback("")
+                }
+            }
+        }
+    }
+
     func getFileData(repo: RepoItem, hash: String, file: String, callback: @escaping @LogicActor (Any?) async -> ()) -> Task<(), Never>? {
         guard let gitPath else {
             runOnLogicThread {
