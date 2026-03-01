@@ -36,7 +36,7 @@ struct HeaderTabView: View {
                 .onTapGesture {
                     isRepoTab = true
                 }.hoverOpacity()
-        }.background(Capsule().fill(theme.background))
+        }.background(Capsule().fill(theme.backgroundInput))
             .padding(.horizontal)
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity, alignment: .leading)
