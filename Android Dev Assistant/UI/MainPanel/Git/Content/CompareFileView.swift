@@ -282,8 +282,13 @@ extension CompareFileView {
                 rightBranchCommits = commits
                 if !rightInitialSetupDone {
                     rightInitialSetupDone = true
-                    if commits.contains(where: { $0.id == currentCommit.id }) {
-                        rightCommit = currentCommit
+                    if let index = commits.firstIndex(where: { $0.id == currentCommit.id }) {
+                        // Default to the previous (older) commit if available, else current
+                        if index + 1 < commits.count {
+                            rightCommit = commits[index + 1]
+                        } else {
+                            rightCommit = currentCommit
+                        }
                     }
                 }
             }
