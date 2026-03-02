@@ -137,16 +137,6 @@
         }
       }
     },
-    "Branch:" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "分支："
-          }
-        }
-      }
-    },
     "by 8K" : {
       "localizations" : {
         "zh-Hans" : {
@@ -193,16 +183,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "可点击"
-          }
-        }
-      }
-    },
-    "Commit:" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Commit："
           }
         }
       }
@@ -733,7 +713,18 @@
         }
       }
     },
-    "Select a branch" : {
+    "Select a commit to compare" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择对比的commit"
+          }
+        }
+      }
+    },
+    "Select Branch" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -743,22 +734,13 @@
         }
       }
     },
-    "Select a commit" : {
+    "Select Commit" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择commit"
-          }
-        }
-      }
-    },
-    "Select a commit to compare" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选择要对比的commit"
+            "value" : "选择Commit"
           }
         }
       }

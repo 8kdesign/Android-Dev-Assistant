@@ -28,16 +28,27 @@ struct CompareFileView: View {
     let file: GitFileItem
     let currentCommit: CommitItem
 
-    @State private var compareBranch: String? = nil
-    @State private var compareBranchCommits: [CommitItem] = []
-    @State private var compareCommit: CommitItem? = nil
+    // Left side
+    @State private var leftBranch: String? = nil
+    @State private var leftBranchCommits: [CommitItem] = []
+    @State private var leftCommit: CommitItem? = nil
+    @State private var leftCommitsJob: Task<(), Never>? = nil
+
+    // Right side
+    @State private var rightBranch: String? = nil
+    @State private var rightBranchCommits: [CommitItem] = []
+    @State private var rightCommit: CommitItem? = nil
+    @State private var rightCommitsJob: Task<(), Never>? = nil
+
+    // Content
     @State private var leftLines: [DiffLine] = []
     @State private var rightLines: [DiffLine] = []
     @State private var isLoading: Bool = false
     @State private var isIdentical: Bool = false
     @State private var isBinary: Bool = false
-    @State private var diffJob: Task<(), Never>? = nil
-    @State private var commitsJob: Task<(), Never>? = nil
+    @State private var contentJob: Task<(), Never>? = nil
+    @State private var leftInitialSetupDone: Bool = false
+    @State private var rightInitialSetupDone: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -50,6 +61,22 @@ struct CompareFileView: View {
         .frame(minWidth: 800, minHeight: 500)
         .background(theme.background)
         .preferredColorScheme(theme.colorScheme)
+        .onChange(of: leftBranch) { _ in
+            fetchBranchCommits(isLeft: true)
+        }
+        .onChange(of: rightBranch) { _ in
+            fetchBranchCommits(isLeft: false)
+        }
+        .onChange(of: leftCommit) { _ in
+            fetchContent()
+        }
+        .onChange(of: rightCommit) { _ in
+            fetchContent()
+        }
+        .onAppear {
+            leftBranch = gitHelper.selectedBranch
+            rightBranch = gitHelper.selectedBranch
+        }
     }
 
     private func HeaderView() -> some View {
@@ -73,48 +100,36 @@ struct CompareFileView: View {
     }
 
     private func PickerView() -> some View {
-        HStack(spacing: 10) {
-            Text("Branch:")
-                .font(.callout)
-                .foregroundStyle(.primary)
-            Picker("", selection: $compareBranch) {
-                Text("Select a branch").tag(nil as String?)
-                ForEach(gitHelper.branches, id: \.self) { branch in
-                    Text(branch)
-                        .lineLimit(1)
-                        .tag(branch as String?)
-                }
-            }
-            .labelsHidden()
-            .frame(width: 250, alignment: .leading)
-            Text("Commit:")
-                .font(.callout)
-                .foregroundStyle(.primary)
-            Picker("", selection: $compareCommit) {
-                Text("Select a commit").tag(nil as CommitItem?)
-                ForEach(compareBranchCommits.filter { $0.id != currentCommit.id }) { commit in
-                    Text("\(commit.shortHash) - \(commit.message)")
-                        .lineLimit(1)
-                        .tag(commit as CommitItem?)
-                }
-            }
-            .labelsHidden()
-            .frame(width: 400, alignment: .leading)
-            .disabled(compareBranch == nil)
-            Spacer()
+        HStack(spacing: 0) {
+            SidePickerView(branch: $leftBranch, commit: $leftCommit, commits: leftBranchCommits)
+            Divider().frame(height: 40)
+            SidePickerView(branch: $rightBranch, commit: $rightCommit, commits: rightBranchCommits)
         }
-        .padding(.horizontal, 15)
-        .padding(.vertical, 8)
         .background(theme.backgroundSecondary)
-        .onChange(of: compareBranch) { _ in
-            fetchBranchCommits()
+    }
+
+    private func SidePickerView(branch: Binding<String?>, commit: Binding<CommitItem?>, commits: [CommitItem]) -> some View {
+        HStack(spacing: 8) {
+            Picker("", selection: branch) {
+                Text("").tag(nil as String?)
+                ForEach(gitHelper.branches, id: \.self) { b in
+                    Text(b).lineLimit(1).tag(b as String?)
+                }
+            }
+            .labelsHidden()
+            Picker("", selection: commit) {
+                Text("").tag(nil as CommitItem?)
+                ForEach(commits) { c in
+                    Text("\(c.shortHash) - \(c.message)").lineLimit(1).tag(c as CommitItem?)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            .labelsHidden()
+            .disabled(branch.wrappedValue == nil)
         }
-        .onChange(of: compareCommit) { _ in
-            fetchDiff()
-        }
-        .onAppear {
-            compareBranch = gitHelper.selectedBranch
-        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity)
     }
 
     @ViewBuilder
@@ -165,14 +180,14 @@ struct CompareFileView: View {
     private func DiffView() -> some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                Text("\(compareBranch ?? "") \(compareCommit?.shortHash ?? "")")
+                Text("\(leftBranch ?? "") \(leftCommit?.shortHash ?? "")")
                     .font(.caption.bold())
                     .foregroundStyle(.primary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 6)
                     .background(theme.backgroundElevated)
                 Divider().frame(height: 24)
-                Text("\(gitHelper.selectedBranch ?? "") \(currentCommit.shortHash)")
+                Text("\(rightBranch ?? "") \(rightCommit?.shortHash ?? "")")
                     .font(.caption.bold())
                     .foregroundStyle(.primary)
                     .frame(maxWidth: .infinity)
@@ -187,10 +202,14 @@ struct CompareFileView: View {
                         HStack(spacing: 0) {
                             if let line = leftLines[safe: index] {
                                 DiffLineRow(line: line)
+                            } else {
+                                Color.clear.frame(maxWidth: .infinity, minHeight: 1)
                             }
                             Divider()
                             if let line = rightLines[safe: index] {
                                 DiffLineRow(line: line)
+                            } else {
+                                Color.clear.frame(maxWidth: .infinity, minHeight: 1)
                             }
                         }.frame(maxWidth: .infinity)
                     }
@@ -239,67 +258,105 @@ struct CompareFileView: View {
 
 extension CompareFileView {
 
-    private func fetchBranchCommits() {
-        commitsJob?.cancel()
-        compareCommit = nil
-        compareBranchCommits = []
-        leftLines = []
-        rightLines = []
-        isIdentical = false
-        isBinary = false
-
-        guard let repo = repoHelper.selectedRepo,
-              let branch = compareBranch else { return }
-
-        commitsJob = gitHelper.getBranchCommits(repo: repo, branch: branch) { commits in
-            compareBranchCommits = commits
+    private func fetchBranchCommits(isLeft: Bool) {
+        if isLeft {
+            leftCommitsJob?.cancel()
+            leftCommit = nil
+            leftBranchCommits = []
+            guard let repo = repoHelper.selectedRepo, let branch = leftBranch else { return }
+            leftCommitsJob = gitHelper.getBranchCommits(repo: repo, branch: branch) { commits in
+                leftBranchCommits = commits
+                if !leftInitialSetupDone {
+                    leftInitialSetupDone = true
+                    if commits.contains(where: { $0.id == currentCommit.id }) {
+                        leftCommit = currentCommit
+                    }
+                }
+            }
+        } else {
+            rightCommitsJob?.cancel()
+            rightCommit = nil
+            rightBranchCommits = []
+            guard let repo = repoHelper.selectedRepo, let branch = rightBranch else { return }
+            rightCommitsJob = gitHelper.getBranchCommits(repo: repo, branch: branch) { commits in
+                rightBranchCommits = commits
+                if !rightInitialSetupDone {
+                    rightInitialSetupDone = true
+                    if commits.contains(where: { $0.id == currentCommit.id }) {
+                        rightCommit = currentCommit
+                    }
+                }
+            }
         }
     }
 
-    private func fetchDiff() {
-        diffJob?.cancel()
+    private func fetchContent() {
+        contentJob?.cancel()
         leftLines = []
         rightLines = []
         isIdentical = false
         isBinary = false
 
-        guard let repo = repoHelper.selectedRepo,
-              let compareCommit else { return }
+        guard let repo = repoHelper.selectedRepo else { return }
 
-        isLoading = true
-
-        diffJob = gitHelper.getFileDiff(
-            repo: repo,
-            fromHash: compareCommit.longHash,
-            toHash: currentCommit.longHash,
-            file: file.path
-        ) { diffOutput in
-            let trimmed = diffOutput.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            if trimmed.isEmpty || trimmed.hasPrefix("fatal:") {
+        if let leftHash = leftCommit?.longHash, let rightHash = rightCommit?.longHash {
+            // Both selected — diff mode
+            isLoading = true
+            contentJob = gitHelper.getFileDiff(
+                repo: repo,
+                fromHash: leftHash,
+                toHash: rightHash,
+                file: file.path
+            ) { diffOutput in
+                let trimmed = diffOutput.trimmingCharacters(in: .whitespacesAndNewlines)
+                if trimmed.isEmpty || trimmed.hasPrefix("fatal:") {
+                    Task { @MainActor in
+                        isIdentical = trimmed.isEmpty
+                        isLoading = false
+                    }
+                    return
+                }
+                if trimmed.contains("Binary files") && trimmed.contains("differ") {
+                    Task { @MainActor in
+                        isBinary = true
+                        isLoading = false
+                    }
+                    return
+                }
+                let result = Self.parseDiff(trimmed)
                 Task { @MainActor in
-                    isIdentical = trimmed.isEmpty
+                    leftLines = result.left
+                    rightLines = result.right
+                    if result.left.isEmpty && result.right.isEmpty {
+                        isIdentical = true
+                    }
                     isLoading = false
                 }
-                return
             }
-
-            if trimmed.contains("Binary files") && trimmed.contains("differ") {
+        } else if let hash = leftCommit?.longHash ?? rightCommit?.longHash {
+            // Single side — plain file view
+            let isLeft = leftCommit != nil
+            isLoading = true
+            contentJob = gitHelper.getFileData(repo: repo, hash: hash, file: file.path) { result in
+                guard let result, let string = result as? String else {
+                    Task { @MainActor in
+                        isLoading = false
+                    }
+                    return
+                }
+                let lines = string.components(separatedBy: "\n").enumerated().map { index, text in
+                    DiffLine(lineNumber: index + 1, text: text, type: .unchanged)
+                }
                 Task { @MainActor in
-                    isBinary = true
+                    if isLeft {
+                        leftLines = lines
+                        rightLines = []
+                    } else {
+                        leftLines = []
+                        rightLines = lines
+                    }
                     isLoading = false
                 }
-                return
-            }
-
-            let result = Self.parseDiff(trimmed)
-            Task { @MainActor in
-                leftLines = result.left
-                rightLines = result.right
-                if result.left.isEmpty && result.right.isEmpty {
-                    isIdentical = true
-                }
-                isLoading = false
             }
         }
     }
