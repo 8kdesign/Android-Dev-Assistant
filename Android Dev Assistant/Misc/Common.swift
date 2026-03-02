@@ -18,9 +18,10 @@ let HOVER_OPACITY = 0.8
 
 enum CommonError: Error {
     case notFound
+    case timeout
 }
 
-@LogicActor func runCommand(path: String?, arguments: [String], environment: [String: String]? = nil, directory: URL? = nil) async throws -> Data {
+@LogicActor func runCommand(path: String?, arguments: [String], environment: [String: String]? = nil, directory: URL? = nil, timeout: TimeInterval = 0) async throws -> Data {
     guard let path else { throw CommonError.notFound }
     let process = Process()
     process.executableURL = URL(fileURLWithPath: path)
@@ -33,6 +34,17 @@ enum CommonError: Error {
     process.standardOutput = pipe
     process.standardError = pipe
     try process.run()
+    if timeout > 0 {
+        let deadline = Date().addingTimeInterval(timeout)
+        while process.isRunning && Date() < deadline {
+            try await Task.sleep(nanoseconds: 100_000_000)
+        }
+        if process.isRunning {
+            process.terminate()
+            pipe.fileHandleForReading.closeFile()
+            throw CommonError.timeout
+        }
+    }
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
     process.waitUntilExit()
     return data

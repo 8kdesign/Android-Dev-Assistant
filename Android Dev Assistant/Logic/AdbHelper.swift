@@ -385,11 +385,12 @@ class AdbHelper: ObservableObject {
                 }
                 _ = try await runCommand(
                     path: adbPath,
-                    arguments: ["-s", selectedDevice, "shell", "uiautomator", "dump", "/sdcard/ui.xml"]
+                    arguments: ["-s", selectedDevice, "shell", "uiautomator", "dump", "/sdcard/ui.xml"],
+                    timeout: 15
                 )
                 let data = try await runCommand(
                     path: adbPath,
-                    arguments: ["shell", "cat", "/sdcard/ui.xml"]
+                    arguments: ["-s", selectedDevice, "shell", "cat", "/sdcard/ui.xml"]
                 )
                 await item.loadData(data: data)
             } catch {
