@@ -227,7 +227,7 @@ extension LogcatView {
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
             ScrollView {
-                LazyVStack(spacing: 0) {
+                LazyVStack(spacing: 5) {
                     ForEach(displayedLines) { line in
                         LogcatRowView(line: line, accentColor: theme.accent)
                             .equatable()
@@ -254,16 +254,16 @@ struct LogcatRowView: View, Equatable {
     var body: some View {
         HStack(alignment: .top, spacing: 6) {
             Text(line.level)
-                .font(.system(.caption, design: .monospaced).bold())
+                .font(.system(.callout, design: .monospaced).bold())
                 .foregroundStyle(levelColor)
                 .frame(width: 14)
             Text(line.tag)
-                .font(.system(.caption, design: .monospaced))
+                .font(.system(.callout, design: .monospaced))
                 .foregroundStyle(accentColor)
                 .lineLimit(1)
                 .frame(width: 120, alignment: .leading)
             Text(line.message)
-                .font(.system(.caption, design: .monospaced))
+                .font(.system(.callout, design: .monospaced))
                 .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
