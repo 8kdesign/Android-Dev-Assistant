@@ -48,6 +48,7 @@ struct ContentView: View {
             case .sharedPreferences: SharedPreferencesView()
             case .downloadCleanup: DownloadCleanupView()
             case .logcat: LogcatView()
+            case .networkIntercept: NetworkInterceptView()
             default: EmptyView()
             }
             ToastView()

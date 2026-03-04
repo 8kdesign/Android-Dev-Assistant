@@ -45,6 +45,9 @@ struct MenuGridView: View {
                 MenuGridItem(name: "Logcat", icon: "list.bullet.rectangle", iconColor: .cyan, requireAdb: true) {
                     uiController.showingPopup = .logcat
                 }
+                MenuGridItem(name: "Network", icon: "antenna.radiowaves.left.and.right", iconColor: .indigo, requireAdb: true) {
+                    uiController.showingPopup = .networkIntercept
+                }
                 MenuGridItem(name: "APK Cleaner", icon: "trash.circle.fill", iconColor: .pink, requireAdb: true) {
                     uiController.showingPopup = .downloadCleanup
                 }

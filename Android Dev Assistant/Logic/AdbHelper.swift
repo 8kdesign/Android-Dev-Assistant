@@ -26,6 +26,7 @@ class AdbHelper: ObservableObject {
 
     var isInstalling: String? = nil
     var logcatProcess: Process? = nil
+    var networkProcess: Process? = nil
     @Published var screenshotImage: NSImage? = nil
     @Published var lastAnalyzeItemHelper: AnalyzeScreenHelper? = nil
 
@@ -692,6 +693,102 @@ class AdbHelper: ObservableObject {
             process.terminate()
         }
         logcatProcess = nil
+    }
+
+    // MARK: - Network Intercept
+
+    func startNetworkStream(onLines: @escaping @MainActor ([String]) -> ()) {
+        stopNetworkStream()
+        guard let adbPath, let selectedDevice else { return }
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: adbPath)
+        // Use logcat to filter OkHttp, Retrofit, Volley, and network-related tags
+        process.arguments = [
+            "-s", selectedDevice, "logcat", "-v", "threadtime", "-T", "0",
+            "-s",
+            "OkHttp:*",
+            "okhttp.OkHttpClient:*",
+            "Retrofit:*",
+            "Volley:*",
+            "NetworkRequest:*",
+            "NetworkMonitor:*",
+            "ConnectivityManager:*",
+            "NetworkDispatcher:*",
+            "HttpEngine:*",
+            "cronet:*",
+            "chromium:*",
+            "NetdEventListenerService:*",
+            "NetworkSecurityConfig:*"
+        ]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        let state = LogcatStreamState()
+        let newline = UInt8(ascii: "\n")
+        pipe.fileHandleForReading.readabilityHandler = { handle in
+            let chunk = handle.availableData
+            guard !chunk.isEmpty else {
+                pipe.fileHandleForReading.readabilityHandler = nil
+                state.lock.lock()
+                let remaining = state.accumulated
+                state.accumulated = []
+                state.lock.unlock()
+                if !remaining.isEmpty {
+                    Task { @MainActor in
+                        onLines(remaining)
+                    }
+                }
+                return
+            }
+            state.buffer.append(chunk)
+            var lines: [String] = []
+            var start = state.buffer.startIndex
+            while start < state.buffer.endIndex, let idx = state.buffer[start...].firstIndex(of: newline) {
+                if let line = String(data: state.buffer[start..<idx], encoding: .utf8) {
+                    lines.append(line)
+                }
+                start = state.buffer.index(after: idx)
+            }
+            if start > state.buffer.startIndex {
+                state.buffer.removeSubrange(state.buffer.startIndex..<start)
+            }
+            guard !lines.isEmpty else { return }
+
+            state.lock.lock()
+            state.accumulated.append(contentsOf: lines)
+            let shouldSchedule = !state.flushPending
+            let shouldFlushNow = state.accumulated.count >= 1000
+            if shouldSchedule && !shouldFlushNow { state.flushPending = true }
+            let immediateFlush: [String]? = shouldFlushNow ? state.accumulated : nil
+            if shouldFlushNow { state.accumulated = []; state.flushPending = false }
+            state.lock.unlock()
+
+            if let batch = immediateFlush {
+                Task { @MainActor in onLines(batch) }
+            } else if shouldSchedule {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    state.lock.lock()
+                    let batch = state.accumulated
+                    state.accumulated = []
+                    state.flushPending = false
+                    state.lock.unlock()
+                    if !batch.isEmpty { onLines(batch) }
+                }
+            }
+        }
+
+        do {
+            try process.run()
+            self.networkProcess = process
+        } catch {
+            LogHelper.shared.insertLog(string: error.localizedDescription)
+        }
+    }
+
+    func stopNetworkStream() {
+        if let process = networkProcess, process.isRunning {
+            process.terminate()
+        }
+        networkProcess = nil
     }
 
     @LogicActor private func getDpScale(_ output: String) -> CGFloat? {

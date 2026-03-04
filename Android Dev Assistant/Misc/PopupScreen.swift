@@ -17,6 +17,7 @@ enum PopupScreen {
     case sharedPreferences
     case downloadCleanup
     case logcat
+    case networkIntercept
 }
 
 struct DownloadApkItem: Identifiable {

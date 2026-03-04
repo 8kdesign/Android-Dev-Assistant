@@ -35,6 +35,16 @@
     "%lld" : {
       "shouldTranslate" : false
     },
+    "%lld entries" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld条"
+          }
+        }
+      }
+    },
     "%lld lines" : {
       "localizations" : {
         "zh-Hans" : {
@@ -253,6 +263,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "复制"
+          }
+        }
+      }
+    },
+    "Copy Full Line" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制全部"
+          }
+        }
+      }
+    },
+    "Copy URL" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制链接"
           }
         }
       }
@@ -530,6 +560,16 @@
         }
       }
     },
+    "Network" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "网络日志"
+          }
+        }
+      }
+    },
     "New Version Available" : {
       "localizations" : {
         "zh-Hans" : {
@@ -556,6 +596,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未能找到日志"
+          }
+        }
+      }
+    },
+    "No network logs found" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未能找到网络日志"
           }
         }
       }

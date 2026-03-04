@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(xcodebuild -scheme \"Android Dev Assistant\" -destination 'platform=macOS' build)",
-      "Bash(xcodebuild -scheme \"Android Dev Assistant\" -configuration Debug build)",
-      "Bash(echo \"EXIT: $?\")"
-    ]
-  }
-}
