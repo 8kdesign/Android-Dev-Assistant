@@ -21,6 +21,7 @@ struct LogcatView: View {
     @State private var streamGeneration: Int = 0
     @State private var nextLineId: Int = 0
     @State private var isActive: Bool = true
+    @State private var isPaused: Bool = false
 
     private static let maxLines = 1000
     private static let logRegex = try? NSRegularExpression(
@@ -112,7 +113,7 @@ struct LogcatView: View {
 extension LogcatView {
 
     private func FilterBar() -> some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 15) {
             HStack(spacing: 8) {
                 Image(systemName: "shippingbox")
                     .foregroundStyle(.secondary)
@@ -124,7 +125,7 @@ extension LogcatView {
                     }
                 } label: {
                     HStack {
-                        Text(selectedPackage.isEmpty ? "All processes" : selectedPackage)
+                        Text(selectedPackage.isEmpty ? String(localized: "All processes") : selectedPackage)
                             .lineLimit(1)
                         Spacer()
                         Image(systemName: "chevron.up.chevron.down")
@@ -158,26 +159,40 @@ extension LogcatView {
                         .hoverOpacity()
                 }
             }
+            Divider()
             HStack(spacing: 8) {
                 Button {
                     startStream()
                 } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "trash")
-                    }
-                    .font(.callout)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(RoundedRectangle(cornerRadius: 6).fill(.red.opacity(0.15)))
-                    .foregroundStyle(.red)
+                    Image(systemName: "trash")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 12, height: 12)
+                        .padding(.horizontal, 15)
+                        .padding(.vertical, 5)
+                        .background(RoundedRectangle(cornerRadius: 6).fill(.red.opacity(0.15)))
+                        .foregroundStyle(.red)
+                }.buttonStyle(.plain)
+                    .hoverOpacity()
+                Button {
+                    isPaused.toggle()
+                } label: {
+                    Image(systemName: isPaused ? "play.fill" : "pause.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 12, height: 12)
+                        .padding(.horizontal, 15)
+                        .padding(.vertical, 5)
+                        .background(RoundedRectangle(cornerRadius: 6).fill(.gray.opacity(0.15)))
+                        .foregroundStyle(.gray)
                 }.buttonStyle(.plain)
                     .hoverOpacity()
                 Circle()
-                    .fill(.green)
+                    .fill(isPaused ? .orange : .green)
                     .frame(width: 8, height: 8)
-                Text("Live")
+                Text(isPaused ? "Paused" : "Live")
                     .font(.callout)
-                    .foregroundStyle(.green)
+                    .foregroundStyle(isPaused ? .orange : .green)
                 Spacer()
                 Text("\(displayedLines.count) lines")
                     .font(.callout)
@@ -293,7 +308,7 @@ struct LogcatLine: Identifiable {
 extension LogcatView {
 
     private func appendLines(_ rawLines: [String]) {
-        guard isActive, let regex = Self.logRegex else { return }
+        guard isActive, !isPaused, let regex = Self.logRegex else { return }
         let tag = tagFilter.trimmingCharacters(in: .whitespacesAndNewlines)
         let hasPackageFilter = !packagePids.isEmpty
         let hasTagFilter = !tag.isEmpty

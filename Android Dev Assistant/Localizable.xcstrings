@@ -620,6 +620,16 @@
         }
       }
     },
+    "Paused" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已暂停"
+          }
+        }
+      }
+    },
     "Phone 16:9" : {
       "localizations" : {
         "zh-Hans" : {
