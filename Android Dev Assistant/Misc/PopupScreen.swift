@@ -16,6 +16,7 @@ enum PopupScreen {
     case lastCrashLogs(logs: String)
     case sharedPreferences
     case downloadCleanup
+    case logcat
 }
 
 struct DownloadApkItem: Identifiable {

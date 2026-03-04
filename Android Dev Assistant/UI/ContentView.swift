@@ -47,6 +47,7 @@ struct ContentView: View {
             case .lastCrashLogs(let logs): LastCrashLogsView(logs: logs)
             case .sharedPreferences: SharedPreferencesView()
             case .downloadCleanup: DownloadCleanupView()
+            case .logcat: LogcatView()
             default: EmptyView()
             }
             ToastView()

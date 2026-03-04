@@ -14,6 +14,7 @@ struct PopupView<Content: View>: View {
     var title: LocalizedStringResource
     var interceptEscape: () -> Bool = { return false }
     var interceptBack: () -> Bool = { return false }
+    var willClose: () -> () = {}
     var onExit: () -> () = {}
     @ViewBuilder var content: () -> Content
     @State var isReady: Bool = false
@@ -82,12 +83,15 @@ extension PopupView {
 
     private func close() {
         if !isReady { return }
-        withAnimation(.easeInOut(duration: 0.1)) {
-            isReady = false
-        }
-        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { _ in
-            uiController.showingPopup = nil
-            onExit()
+        willClose()
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isReady = false
+            }
+            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { _ in
+                uiController.showingPopup = nil
+                onExit()
+            }
         }
     }
 

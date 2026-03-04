@@ -35,6 +35,16 @@
     "%lld" : {
       "shouldTranslate" : false
     },
+    "%lld lines" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld行"
+          }
+        }
+      }
+    },
     "%lld of %lld selected" : {
       "localizations" : {
         "en" : {
@@ -76,6 +86,16 @@
     },
     "ADB" : {
       "shouldTranslate" : false
+    },
+    "All processes" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部"
+          }
+        }
+      }
     },
     "Android Dev Assistant" : {
       "localizations" : {
@@ -377,6 +397,16 @@
         }
       }
     },
+    "Filter by tag" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索"
+          }
+        }
+      }
+    },
     "Fold 1:1" : {
       "localizations" : {
         "zh-Hans" : {
@@ -460,6 +490,26 @@
         }
       }
     },
+    "Live" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "读取中"
+          }
+        }
+      }
+    },
+    "Logcat" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日志"
+          }
+        }
+      }
+    },
     "Long Clickable" : {
       "localizations" : {
         "zh-Hans" : {
@@ -496,6 +546,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未能在下载文件夹找到APK文件"
+          }
+        }
+      }
+    },
+    "No logs found" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未能找到日志"
           }
         }
       }
@@ -719,28 +779,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择对比的commit"
-          }
-        }
-      }
-    },
-    "Select Branch" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选择分支"
-          }
-        }
-      }
-    },
-    "Select Commit" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选择Commit"
           }
         }
       }

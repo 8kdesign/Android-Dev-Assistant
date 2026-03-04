@@ -25,6 +25,7 @@ class AdbHelper: ObservableObject {
     }
 
     var isInstalling: String? = nil
+    var logcatProcess: Process? = nil
     @Published var screenshotImage: NSImage? = nil
     @Published var lastAnalyzeItemHelper: AnalyzeScreenHelper? = nil
 
@@ -515,8 +516,9 @@ class AdbHelper: ObservableObject {
                         date: date
                     ))
                 }
+                let fixedItems = items
                 Task { @MainActor in
-                    callback(items)
+                    callback(fixedItems)
                     LogHelper.shared.insertLog(string: "Listed download APKs")
                 }
             } catch {
@@ -542,11 +544,154 @@ class AdbHelper: ObservableObject {
                     }
                 }
             }
+            let fixedDeleted = deleted
             Task { @MainActor in
-                callback(deleted)
-                LogHelper.shared.insertLog(string: "Deleted \(deleted) file(s)")
+                callback(fixedDeleted)
+                LogHelper.shared.insertLog(string: "Deleted \(fixedDeleted) file(s)")
             }
         }
+    }
+
+    func listRunningPackages(callback: @escaping @MainActor ([(package: String, pid: String)]) -> ()) {
+        guard let adbPath, let selectedDevice else { callback([]); return }
+        runOnLogicThread {
+            do {
+                let result = try await runCommand(
+                    path: adbPath,
+                    arguments: ["-s", selectedDevice, "shell", "ps", "-A", "-o", "PID,NAME"]
+                )
+                let packages = String(data: result, encoding: .utf8)?
+                    .split(separator: "\n")
+                    .compactMap { line -> (package: String, pid: String)? in
+                        let parts = line.trimmingCharacters(in: .whitespaces)
+                            .split(separator: " ", maxSplits: 1)
+                            .map { String($0).trimmingCharacters(in: .whitespaces) }
+                        guard parts.count == 2,
+                              Int(parts[0]) != nil,
+                              parts[1].contains(".")
+                        else { return nil }
+                        return (package: parts[1], pid: parts[0])
+                    }
+                    .sorted { $0.package < $1.package }
+                    ?? []
+                Task { @MainActor in
+                    callback(packages)
+                }
+            } catch {
+                Task { @MainActor in
+                    callback([])
+                }
+            }
+        }
+    }
+
+    func getPidsForPackage(_ packageName: String, callback: @escaping @MainActor (Set<String>) -> ()) {
+        guard let adbPath, let selectedDevice else { callback([]); return }
+        runOnLogicThread {
+            do {
+                let result = try await runCommand(
+                    path: adbPath,
+                    arguments: ["-s", selectedDevice, "shell", "pidof", packageName]
+                )
+                let pids = String(data: result, encoding: .utf8)?
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .split(separator: " ")
+                    .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty && Int($0) != nil }
+                Task { @MainActor in
+                    callback(Set(pids ?? []))
+                }
+            } catch {
+                Task { @MainActor in
+                    callback([])
+                }
+            }
+        }
+    }
+
+    private final class LogcatStreamState: @unchecked Sendable {
+        let lock = NSLock()
+        var buffer = Data()
+        var accumulated: [String] = []
+        var flushPending = false
+        nonisolated init() {}
+    }
+
+    func startLogcatStream(onLines: @escaping @MainActor ([String]) -> ()) {
+        stopLogcatStream()
+        guard let adbPath, let selectedDevice else { return }
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: adbPath)
+        process.arguments = ["-s", selectedDevice, "logcat", "-v", "threadtime", "-T", "0"]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        let state = LogcatStreamState()
+        let newline = UInt8(ascii: "\n")
+        pipe.fileHandleForReading.readabilityHandler = { handle in
+            let chunk = handle.availableData
+            guard !chunk.isEmpty else {
+                pipe.fileHandleForReading.readabilityHandler = nil
+                state.lock.lock()
+                let remaining = state.accumulated
+                state.accumulated = []
+                state.lock.unlock()
+                if !remaining.isEmpty {
+                    Task { @MainActor in
+                        onLines(remaining)
+                    }
+                }
+                return
+            }
+            state.buffer.append(chunk)
+            var lines: [String] = []
+            var start = state.buffer.startIndex
+            while start < state.buffer.endIndex, let idx = state.buffer[start...].firstIndex(of: newline) {
+                if let line = String(data: state.buffer[start..<idx], encoding: .utf8) {
+                    lines.append(line)
+                }
+                start = state.buffer.index(after: idx)
+            }
+            if start > state.buffer.startIndex {
+                state.buffer.removeSubrange(state.buffer.startIndex..<start)
+            }
+            guard !lines.isEmpty else { return }
+
+            state.lock.lock()
+            state.accumulated.append(contentsOf: lines)
+            let shouldSchedule = !state.flushPending
+            let shouldFlushNow = state.accumulated.count >= 1000
+            if shouldSchedule && !shouldFlushNow { state.flushPending = true }
+            let immediateFlush: [String]? = shouldFlushNow ? state.accumulated : nil
+            if shouldFlushNow { state.accumulated = []; state.flushPending = false }
+            state.lock.unlock()
+
+            if let batch = immediateFlush {
+                Task { @MainActor in onLines(batch) }
+            } else if shouldSchedule {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    state.lock.lock()
+                    let batch = state.accumulated
+                    state.accumulated = []
+                    state.flushPending = false
+                    state.lock.unlock()
+                    if !batch.isEmpty { onLines(batch) }
+                }
+            }
+        }
+
+        do {
+            try process.run()
+            self.logcatProcess = process
+        } catch {
+            LogHelper.shared.insertLog(string: error.localizedDescription)
+        }
+    }
+
+    func stopLogcatStream() {
+        if let process = logcatProcess, process.isRunning {
+            process.terminate()
+        }
+        logcatProcess = nil
     }
 
     @LogicActor private func getDpScale(_ output: String) -> CGFloat? {

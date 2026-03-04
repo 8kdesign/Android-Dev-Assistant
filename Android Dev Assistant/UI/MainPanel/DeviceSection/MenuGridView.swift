@@ -42,6 +42,9 @@ struct MenuGridView: View {
                 MenuGridItem(name: "Shared Prefs", icon: "tray.full.fill", iconColor: .green, requireAdb: true) {
                     uiController.showingPopup = .sharedPreferences
                 }
+                MenuGridItem(name: "Logcat", icon: "list.bullet.rectangle", iconColor: .cyan, requireAdb: true) {
+                    uiController.showingPopup = .logcat
+                }
                 MenuGridItem(name: "APK Cleaner", icon: "trash.circle.fill", iconColor: .pink, requireAdb: true) {
                     uiController.showingPopup = .downloadCleanup
                 }
