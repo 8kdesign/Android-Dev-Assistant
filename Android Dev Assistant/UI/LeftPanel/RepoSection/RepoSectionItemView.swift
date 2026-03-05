@@ -42,7 +42,7 @@ struct RepoSectionItemView: View {
                 .opacity(0.5)
         }.padding(.all)
             .frame(maxWidth: .infinity)
-            .background(theme.surfaceHighlighted)
+            .background(theme.backgroundTertiary)
             .opacity(isSelected ? 1 : 0.3)
             .onTapGesture {
                 select()
