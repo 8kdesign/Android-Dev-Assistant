@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct KeyCatcher: NSViewRepresentable {
-    
+
     let keyCode: Int
     let onChange: (Bool) -> Void
 
@@ -24,27 +24,33 @@ struct KeyCatcher: NSViewRepresentable {
     class KeyView: NSView {
         var keyCode: Int?
         var onChange: ((Bool) -> Void)?
-
-        override var acceptsFirstResponder: Bool { true }
-
-        override func keyDown(with event: NSEvent) {
-            if let keyCode, event.keyCode == keyCode {
-                onChange?(true)
-            } else {
-                super.keyDown(with: event)
-            }
-        }
-        
-        override func keyUp(with event: NSEvent) {
-            if let keyCode, event.keyCode == keyCode {
-                onChange?(false)
-            } else {
-                super.keyUp(with: event)
-            }
-        }
+        var keyDownMonitor: Any?
+        var keyUpMonitor: Any?
 
         override func viewDidMoveToWindow() {
-            window?.makeFirstResponder(self)
+            guard window != nil else { return }
+            keyDownMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+                if let self, let keyCode = self.keyCode, event.keyCode == keyCode {
+                    self.onChange?(true)
+                    return nil
+                }
+                return event
+            }
+            keyUpMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyUp) { [weak self] event in
+                if let self, let keyCode = self.keyCode, event.keyCode == keyCode {
+                    self.onChange?(false)
+                    return nil
+                }
+                return event
+            }
+        }
+
+        override func removeFromSuperview() {
+            if let keyDownMonitor { NSEvent.removeMonitor(keyDownMonitor) }
+            if let keyUpMonitor { NSEvent.removeMonitor(keyUpMonitor) }
+            keyDownMonitor = nil
+            keyUpMonitor = nil
+            super.removeFromSuperview()
         }
     }
 }
