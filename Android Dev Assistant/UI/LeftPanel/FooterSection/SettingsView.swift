@@ -91,6 +91,9 @@ struct SettingsView: View {
                 HeaderItemView(title: "Folders")
                 FolderItemView(title: "ADB", path: adbHelper.adbPath)
                 FolderItemView(title: "AAPT", path: apkHelper.aaptPath)
+                HeaderItemView(title: "Dependencies")
+                DependencyItemView(name: "HighlightSwift", url: "https://github.com/appstefan/HighlightSwift")
+                DependencyItemView(name: "SwiftyXMLParser", url: "https://github.com/yahoojapan/SwiftyXMLParser")
             }.padding(.all, 20)
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -159,6 +162,26 @@ struct SettingsView: View {
                 .background(theme.backgroundSecondary)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         }
+    }
+
+    private func DependencyItemView(name: String, url: String) -> some View {
+        Button {
+            if let link = URL(string: url) {
+                openURL(link)
+            }
+        } label: {
+            HStack {
+                Text(name)
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                Spacer()
+                Image(systemName: "arrow.up.right")
+                    .foregroundStyle(.secondary)
+                    .font(.caption)
+            }
+        }.buttonStyle(.plain)
+            .hoverOpacity()
     }
 
 }
