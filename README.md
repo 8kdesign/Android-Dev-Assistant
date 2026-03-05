@@ -1,6 +1,6 @@
 # Android Dev Assistant
 
-**Android Dev Assistant** is a productivity tool for macOS designed to help Android developers save time. It combines essential tools for debugging and testing into one intuitive interface that anyone can use.
+**Android Dev Assistant** is a productivity tool for macOS designed to help Android developers save time. It combines essential debugging and testing tools into an intuitive interface that anyone can use.
 
 ## Features
 
@@ -20,9 +20,13 @@
 
    Check the last crash logs on your device with a click, sorted from most recent to oldest.
 
+- **View logs, network, and shared preferences**
+
+   Trace logs and network on the device in real time. Check shared preferences values for debuggable apps.
+
 - **Off-Commit File Search**
 
-   View a file's state on another branch/commit without switching your current branch. Designed for large projects where switching branches could easily take a couple of minutes.
+   View and compare a file's state on another branch/commit without switching your current branch. Designed for large projects where switching branches could easily take a couple of minutes.
 
 ## Installation
 
@@ -43,7 +47,7 @@ Toggle between apk/device and repository mode with the tabs above.
 In this mode, you can perform apk and device-specific tasks, such as installing apk, viewing crash logs, and mocking screen sizes.
 
 <p align="center">
-<img width="1012" height="944" alt="image" src="https://github.com/user-attachments/assets/3e29278b-dca2-4e63-8ec2-9116d13051a3" />
+<img width="1012" height="944" alt="image" src="https://github.com/user-attachments/assets/72b2f5ed-6951-4858-83e2-f80ea30580e1" />
 </p>
 
 To import an apk file, drag it to the left panel. Ideally, the apk should be in the original folder it was generated in, so that it can be replaced by the latest build every time. After importing, you can tap on the toggles below to install, force restart, or uninstall the app.
@@ -55,7 +59,7 @@ To import an apk file, drag it to the left panel. Ideally, the apk should be in 
 On the main panel, you will find tools for interacting with your device via ADB. If you have multiple devices connected, tap on the device name at the top to open the menu to select your device.
 
 <p align="center">
-<img width="640" height="200" alt="image" src="https://github.com/user-attachments/assets/e7dd448a-2e86-4ee1-a1a0-b20fa6964b77" />
+<img width="637" height="284" alt="image" src="https://github.com/user-attachments/assets/af951c83-cfa3-4a35-acdc-df5cc14415d3" />
 </p>
 
 #### 1. Screenshot
@@ -84,7 +88,7 @@ Select a screen size from the list, and your device will mock it.
 
 #### 3. Crash Logs
 
-Even after your app has closed, the crash logs are still stored on the device for a period of time. Quickly view the logs sorted in chronological order, starting with the most recent crash, and quickly copy them if needed.
+Even after your app closed, the crash logs are still stored on the device for a period of time. Quickly view the logs sorted in chronological order, starting with the most recent crash, and quickly copy them if needed.
 
 <p align="center">
 <img width="826" height="533" alt="image" src="https://github.com/user-attachments/assets/9f192ac3-c446-4336-a18e-815e96393068" />
@@ -96,6 +100,22 @@ Capture the current screen layout and compare on-screen views. Click/right-click
 
 <p align="center">
 <img width="812" height="713" alt="image" src="https://github.com/user-attachments/assets/647cfc2a-3b09-4ac3-89e4-6b300d63897d" />
+</p>
+
+#### 5. View Device Logs
+
+Find what went wrong inside of logcat. Filter by tag to only keep the relevant logs.
+
+<p align="center">
+<img width="820" height="713" alt="image" src="https://github.com/user-attachments/assets/5a6faec9-3e04-43a6-a2b9-0cee5fef28e3" />
+</p>
+
+#### 6. View Network Logs
+
+Capture network logs for unprotected requests.
+
+<p align="center">
+<img width="820" height="713" alt="image" src="https://github.com/user-attachments/assets/647bc5be-1c32-4931-9cf9-28552609bd13" />
 </p>
 
 ### 🗃️ Repository Mode
