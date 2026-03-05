@@ -161,9 +161,9 @@ struct NetworkInterceptView: View {
 extension NetworkInterceptView {
 
     private func FilterBar() -> some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 8) {
-                Image(systemName: "line.3.horizontal.decrease")
+        VStack(spacing: 15) {
+            HStack(spacing: 10) {
+                Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
                 TextField("Search", text: $tagFilter)
                     .textFieldStyle(.plain)
@@ -178,8 +178,10 @@ extension NetworkInterceptView {
                     }.buttonStyle(.plain)
                         .hoverOpacity()
                 }
-            }
-            HStack(spacing: 8) {
+            }.padding(.horizontal, 20)
+                .frame(height: 40)
+                .background(Capsule().fill(theme.background))
+            HStack(spacing: 10) {
                 Button {
                     startStream()
                 } label: {
@@ -220,7 +222,7 @@ extension NetworkInterceptView {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
-        .background(theme.backgroundInput)
+        .background(theme.backgroundElevated)
     }
 
 }

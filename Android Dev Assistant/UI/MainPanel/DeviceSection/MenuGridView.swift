@@ -48,7 +48,7 @@ struct MenuGridView: View {
                 MenuGridItem(name: "Network", icon: "antenna.radiowaves.left.and.right", iconColor: .indigo, requireAdb: true) {
                     uiController.showingPopup = .networkIntercept
                 }
-                MenuGridItem(name: "APK Cleaner", icon: "trash.circle.fill", iconColor: .pink, requireAdb: true) {
+                MenuGridItem(name: "APK Cleaner", icon: "trash.circle", iconColor: .pink, requireAdb: true) {
                     uiController.showingPopup = .downloadCleanup
                 }
             }.padding([.horizontal, .bottom])

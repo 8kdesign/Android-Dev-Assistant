@@ -114,36 +114,8 @@ extension LogcatView {
 
     private func FilterBar() -> some View {
         VStack(spacing: 15) {
-            HStack(spacing: 8) {
-                Image(systemName: "shippingbox")
-                    .foregroundStyle(.secondary)
-                Menu {
-                    Button("All processes") { selectPackage("") }
-                    Divider()
-                    ForEach(runningPackages, id: \.package) { item in
-                        Button(item.package) { selectPackage(item.package) }
-                    }
-                } label: {
-                    HStack {
-                        Text(selectedPackage.isEmpty ? String(localized: "All processes") : selectedPackage)
-                            .lineLimit(1)
-                        Spacer()
-                        Image(systemName: "chevron.up.chevron.down")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                Button {
-                    loadPackages()
-                } label: {
-                    Image(systemName: "arrow.clockwise")
-                        .foregroundStyle(.secondary)
-                }.buttonStyle(.plain)
-                    .hoverOpacity()
-            }
-            HStack(spacing: 8) {
-                Image(systemName: "tag")
+            HStack(spacing: 10) {
+                Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
                 TextField("Filter by tag", text: $tagFilter)
                     .textFieldStyle(.plain)
@@ -158,9 +130,10 @@ extension LogcatView {
                     }.buttonStyle(.plain)
                         .hoverOpacity()
                 }
-            }
-            Divider()
-            HStack(spacing: 8) {
+            }.padding(.horizontal, 20)
+                .frame(height: 40)
+                .background(Capsule().fill(theme.background))
+            HStack(spacing: 10) {
                 Button {
                     startStream()
                 } label: {
@@ -197,11 +170,34 @@ extension LogcatView {
                 Text("\(displayedLines.count) lines")
                     .font(.callout)
                     .foregroundStyle(.secondary)
+                Menu {
+                    Button("All processes") { selectPackage("") }
+                    Divider()
+                    ForEach(runningPackages, id: \.package) { item in
+                        Button(item.package) { selectPackage(item.package) }
+                    }
+                } label: {
+                    HStack {
+                        Text(selectedPackage.isEmpty ? String(localized: "All processes") : selectedPackage)
+                            .lineLimit(1)
+                        Spacer()
+                        Image(systemName: "shippingbox")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Button {
+                    loadPackages()
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .foregroundStyle(.secondary)
+                }.buttonStyle(.plain)
+                    .hoverOpacity()
             }
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
-        .background(theme.backgroundInput)
+        .background(theme.backgroundElevated)
     }
 
 }
