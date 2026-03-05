@@ -488,9 +488,9 @@ class AdbHelper: ObservableObject {
         guard let adbPath, let selectedDevice else { return }
         runOnLogicThread {
             do {
-                // List APK files in /sdcard/Download with details
-                // Use find + ls to get modification epoch, compatible with Android toybox
-                let script = "find /sdcard/Download -name '*.apk' -type f 2>/dev/null | while read f; do echo \"$(ls -ld --full-time \"$f\" 2>/dev/null | awk '{print $6\" \"$7}')|$f\"; done"
+                // List APK files across device storage with details
+                // Use find -L to follow symlinks (Android /sdcard is often symlinked)
+                let script = "find -L /sdcard -name '*.apk' -type f 2>/dev/null | while read f; do echo \"$(ls -ld --full-time \"$f\" 2>/dev/null | awk '{print $6\" \"$7}')|$f\"; done"
                 let result = try await runCommand(
                     path: adbPath,
                     arguments: ["-s", selectedDevice, "shell", script]

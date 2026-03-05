@@ -580,12 +580,12 @@
         }
       }
     },
-    "No APK files found in Downloads" : {
+    "No APK files found" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未能在下载文件夹找到APK文件"
+            "value" : "未能找到APK文件"
           }
         }
       }
