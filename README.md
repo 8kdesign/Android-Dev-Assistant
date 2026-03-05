@@ -141,6 +141,12 @@ Then, on the main panel, tap on the current branch to select the branch you want
 Once the files are ready, the spinner should disappear, and you will be able to use the search bar to look for any file in the project. Right-click to copy the entire file, or click to select lines, then right-clicking to copy a range of lines.
 
 <p align="center">
-<img width="416" height="451" alt="image" src="https://github.com/user-attachments/assets/8a7235e7-5fca-44c9-ac77-2b966c96d7f0" />
+<img width="418" height="384" alt="image" src="https://github.com/user-attachments/assets/b7db6bec-36ce-4190-98de-0870dd395055" />
+</p>
+
+Tap on the compare icon to the right of the current file item to compare the file across commits.
+
+<p align="center">
+<img width="968" height="700" alt="image" src="https://github.com/user-attachments/assets/968e5c0a-a5e3-4295-8d67-5033c9e3095b" />
 </p>
 
